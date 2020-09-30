@@ -4,6 +4,7 @@ import de.timmi6790.commons.utilities.GsonUtilities;
 import de.timmi6790.commons.utilities.ReflectionUtilities;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.flywaydb.core.Flyway;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -38,6 +39,13 @@ public class MineplexStatsApiApplication {
     public static void main(final String[] args) throws IOException {
         basePath = Paths.get(".").toAbsolutePath().normalize();
         setup();
+
+        final Config.DatabaseConfig databaseConfig = getConfig().getDatabase();
+        final Flyway flyway = Flyway.configure()
+                .dataSource(databaseConfig.getUrl(), databaseConfig.getName(), databaseConfig.getPassword())
+                .baselineOnMigrate(true)
+                .load();
+        flyway.migrate();
 
         final SpringApplication app = new SpringApplication(MineplexStatsApiApplication.class);
         app.run(args);

@@ -2,6 +2,9 @@ package de.timmi6790.mineplex_stats_api.versions.v1.website.controller;
 
 import de.timmi6790.mineplex_stats_api.configs.OpenApiConfig;
 import de.timmi6790.mineplex_stats_api.validator.java.ValidJavaPlayerName;
+import de.timmi6790.mineplex_stats_api.versions.v1.exception.InvalidGameException;
+import de.timmi6790.mineplex_stats_api.versions.v1.exception.InvalidPlayerNameException;
+import de.timmi6790.mineplex_stats_api.versions.v1.website.model.WebsitePlayerModel;
 import de.timmi6790.mineplex_stats_api.versions.v1.website.service.WebsiteService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
+import java.util.Optional;
 
 @Validated
 @RestController
@@ -23,25 +29,39 @@ public class WebsiteController {
         this.websiteService = websiteService;
     }
 
+    private WebsitePlayerModel getWebsitePlayerModel(final String playerName) {
+        final Optional<WebsitePlayerModel> playerData = this.websiteService.retrievePlayerSync(playerName);
+        if (playerData.isPresent()) {
+            return playerData.get();
+        }
+
+        throw new InvalidPlayerNameException(playerName);
+    }
+
     @GetMapping(value = "{player}")
-    public void getPlayer(
+    public WebsitePlayerModel getPlayer(
             @PathVariable("player") @ValidJavaPlayerName final String player
     ) {
-
+        return this.getWebsitePlayerModel(player);
     }
 
     @GetMapping(value = "{player}/stats")
-    public void getPlayerStats(
+    public Map<String, Map<String, Long>> getPlayerStats(
             @PathVariable("player") @ValidJavaPlayerName final String player
     ) {
-
+        return this.getWebsitePlayerModel(player).getStats();
     }
 
     @GetMapping(value = "{player}/stats/{game}")
-    public void getPlayerStatsGame(
+    public Map<String, Long> getPlayerStatsGame(
             @PathVariable("player") @ValidJavaPlayerName final String player,
             @PathVariable("game") final String game
     ) {
+        final Map<String, Map<String, Long>> stats = this.getWebsitePlayerModel(player).getStats();
+        if (stats.containsKey(game)) {
+            return stats.get(game);
+        }
 
+        throw new InvalidGameException();
     }
 }

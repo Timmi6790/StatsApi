@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class BedrockPlayerController {
     @GetMapping(value = "{player}")
     public BedrockPlayerStatsModel getSaves(
-            @PathVariable("player") @ValidBedrockPlayerName final String player,
+            @PathVariable @ValidBedrockPlayerName final String player,
             @RequestParam(required = false, defaultValue = "#{T(java.time.LocalDateTime).now()}")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final LocalDateTime dateTime,
             @RequestParam(required = false, defaultValue = "true") final boolean filter

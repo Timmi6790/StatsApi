@@ -31,7 +31,7 @@ public class BedrockInfoController {
 
     @GetMapping(value = "saves/{game}")
     public List<Long> getSaves(
-            @PathVariable("game") @ValidBedrockGame final String game
+            @PathVariable @ValidBedrockGame final String game
     ) {
         return null;
 
@@ -39,7 +39,7 @@ public class BedrockInfoController {
 
     @GetMapping(value = "filtered/{game}")
     public List<String> getFilteredPlayer(
-            @PathVariable("game") @ValidBedrockGame final String game
+            @PathVariable @ValidBedrockGame final String game
     ) {
         return null;
 

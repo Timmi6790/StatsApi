@@ -26,7 +26,7 @@ public class BedrockLeaderboardController {
 
     @GetMapping(value = "{game}")
     public BedrockLeaderboardModel getLeaderboard(
-            @PathVariable("game") @ValidBedrockGame final String game,
+            @PathVariable @ValidBedrockGame final String game,
             @RequestParam(required = false, defaultValue = "1") @Min(1) @Max(100) final int startPosition,
             @RequestParam(required = false, defaultValue = "100") @Min(1) @Max(100) final int endPosition,
             @RequestParam(required = false, defaultValue = "true") final boolean filter,

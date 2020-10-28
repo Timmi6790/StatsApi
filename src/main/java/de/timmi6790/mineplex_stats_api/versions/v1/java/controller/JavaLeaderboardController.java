@@ -15,9 +15,9 @@ import java.time.LocalDateTime;
 public class JavaLeaderboardController {
     @GetMapping(value = "{game}/{stat}/{board}")
     public void getLeaderboard(
-            @PathVariable("game") final String game,
-            @PathVariable("stat") final String stat,
-            @PathVariable("board") final String board,
+            @PathVariable final String game,
+            @PathVariable final String stat,
+            @PathVariable final String board,
             @RequestParam(required = false, defaultValue = "1") @Min(1) @Max(1_000) final int startPosition,
             @RequestParam(required = false, defaultValue = "1000") @Min(1) @Max(1_000) final int endPosition,
             @RequestParam(required = false, defaultValue = "true") final boolean filter,

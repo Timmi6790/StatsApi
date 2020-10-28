@@ -18,18 +18,18 @@ public class JavaInfoController {
 
     @GetMapping(value = "saves/{game}/{stat}/{board}")
     public void getSaves(
-            @PathVariable("game") final String game,
-            @PathVariable("stat") final String stat,
-            @PathVariable("board") final String board
+            @PathVariable final String game,
+            @PathVariable final String stat,
+            @PathVariable final String board
     ) {
 
     }
 
     @GetMapping(value = "filtered/{game}/{stat}/{board}")
     public void getFilteredPlayer(
-            @PathVariable("game") final String game,
-            @PathVariable("stat") final String stat,
-            @PathVariable("board") final String board
+            @PathVariable final String game,
+            @PathVariable final String stat,
+            @PathVariable final String board
     ) {
 
     }

@@ -38,13 +38,13 @@ public class JavaPlayerController {
     @Operation(summary = "Get player stats")
     @GetMapping(value = "{player}/{game}/{board}")
     public PlayerStatsModel getPlayerStats(
-            @PathVariable("player") @ValidJavaPlayerName final String player,
-            @PathVariable("game") final String game,
-            @PathVariable("board") final String board,
+            @PathVariable @ValidJavaPlayerName final String player,
+            @PathVariable final String game,
+            @PathVariable final String board,
             @RequestParam(required = false, defaultValue = "#{T(java.time.LocalDateTime).now()}")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final LocalDateTime dateTime,
-            @RequestParam(value = "filter", required = false, defaultValue = "true") final boolean filter,
-            @RequestParam("playerUUID") final Optional<UUID> playerUUIDOpt
+            @RequestParam(required = false, defaultValue = "true") final boolean filter,
+            @RequestParam(required = false, defaultValue = "null") final UUID playerUUID
     ) {
         return null;
     }
@@ -52,17 +52,16 @@ public class JavaPlayerController {
     @SneakyThrows
     @GetMapping(value = "{player}/ratio/{stat}/{board}")
     public PlayerStatsRatioModel getPlayerStatRatio(
-            @PathVariable("player") @ValidJavaPlayerName final String player,
-            @PathVariable("stat") final String stat,
-            @PathVariable("board") final String board,
+            @PathVariable @ValidJavaPlayerName final String player,
+            @PathVariable final String stat,
+            @PathVariable final String board,
             @RequestParam(required = false, defaultValue = "#{T(java.time.LocalDateTime).now()}")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final LocalDateTime dateTime,
-            @RequestParam(value = "filter", required = false, defaultValue = "true") final boolean filter,
-            @RequestParam("playerUUID") final Optional<UUID> playerUUIDOpt
+            @RequestParam(required = false, defaultValue = "true") final boolean filter,
+            @RequestParam(required = false, defaultValue = "null") final UUID playerUUID
     ) {
-        final CompletableFuture<Optional<WebsitePlayerModel>> webStatsFuture = this.websiteService.getPlayerStats(player);
+        final CompletableFuture<Optional<WebsitePlayerModel>> webStatsFuture = this.websiteService.retrievePlayer(player);
 
-        final UUID playerUUID = playerUUIDOpt.orElse(null);
         final String boardName = board;
         final String playerName = player;
 

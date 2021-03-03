@@ -1,7 +1,6 @@
 package de.timmi6790.mineplex_stats_api.configs;
 
 import de.timmi6790.mineplex_stats_api.Config;
-import de.timmi6790.mineplex_stats_api.MineplexStatsApiApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import redis.clients.jedis.JedisPool;
@@ -12,16 +11,16 @@ public class RedisConfiguration {
     private JedisPool pool;
 
     @Bean
-    public JedisPool getRedisPool() {
+    public JedisPool getRedisPool(final Config config) {
         if (this.pool == null) {
-            final Config.RedisConfig config = MineplexStatsApiApplication.getConfig().getRedis();
+            final Config.RedisConfig redisConfig = config.getRedis();
             this.pool = new JedisPool(
                     new JedisPoolConfig(),
-                    config.getHost(),
-                    config.getPort(),
+                    redisConfig.getHost(),
+                    redisConfig.getPort(),
                     60,
-                    config.getPassword(),
-                    config.getDatabase()
+                    redisConfig.getPassword(),
+                    redisConfig.getDatabase()
             );
         }
 

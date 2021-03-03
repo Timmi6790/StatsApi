@@ -4,7 +4,6 @@ import de.timmi6790.commons.utilities.GsonUtilities;
 import de.timmi6790.commons.utilities.ReflectionUtilities;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.flywaydb.core.Flyway;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -50,13 +49,6 @@ public class MineplexStatsApiApplication {
         if (!setup()) {
             return;
         }
-
-        final Config.RepositoryConfig repositoryConfig = getConfig().getRepository();
-        final Flyway flyway = Flyway.configure()
-                .dataSource(repositoryConfig.getUrl(), repositoryConfig.getName(), repositoryConfig.getPassword())
-                .baselineOnMigrate(true)
-                .load();
-        flyway.migrate();
 
         final SpringApplication app = new SpringApplication(MineplexStatsApiApplication.class);
         app.run(args);

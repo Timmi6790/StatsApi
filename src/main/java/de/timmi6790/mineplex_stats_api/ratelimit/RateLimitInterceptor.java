@@ -21,9 +21,9 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler)
-            throws Exception {
-
+    public boolean preHandle(final HttpServletRequest request,
+                             final HttpServletResponse response,
+                             final Object handler) throws Exception {
         final String apiKey = request.getHeader("X-api-key");
         final Bucket tokenBucket = this.rateLimitService.resolveBucket(apiKey, request.getRemoteAddr());
         final ConsumptionProbe probe = tokenBucket.tryConsumeAndReturnRemaining(1);

@@ -8,9 +8,19 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class DatabaseConfiguration {
+    private Jdbi jdbi;
+
     @Bean
     public Jdbi jdbi() {
-        final Config config = MineplexStatsApiApplication.getConfig();
-        return Jdbi.create(config.getDatabase().getUrl(), config.getDatabase().getName(), config.getDatabase().getPassword());
+        if (this.jdbi == null) {
+            final Config.RepositoryConfig config = MineplexStatsApiApplication.getConfig().getRepository();
+            this.jdbi = Jdbi.create(
+                    config.getUrl(),
+                    config.getName(),
+                    config.getPassword()
+            );
+        }
+
+        return this.jdbi;
     }
 }

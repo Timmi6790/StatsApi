@@ -40,6 +40,14 @@ public class RateLimitService {
         return this.createBucket(30, 1_000);
     }
 
+    private Optional<ApiKey> getApiKey(@Nullable final String apiKey) {
+        if (apiKey == null || apiKey.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return this.apiKeyService.getApiKey(apiKey);
+    }
+
     /**
      * Gets the current cooldown bucket for the input. If the api key exists and is valid it will return a bucket based
      * on the apiKey. Otherwise, the bucket is based on the ip.
@@ -49,12 +57,14 @@ public class RateLimitService {
      * @return the bucket
      */
     public Bucket resolveBucket(final @Nullable String apiKey, final String ipAddress) {
-        if (apiKey != null && !apiKey.isEmpty()) {
-            final Optional<ApiKey> apiKeyOpt = this.apiKeyService.getApiKey(apiKey);
-            if (apiKeyOpt.isPresent()) {
-                final ApiKey key = apiKeyOpt.get();
-                return this.cache.get(apiKey, d -> this.createBucket(key.getMinuteRateLimitLimit(), key.getDailyRateLimit()));
-            }
+        // check if the api is valid
+        final Optional<ApiKey> apiKeyOpt = this.getApiKey(apiKey);
+        if (apiKeyOpt.isPresent()) {
+            final ApiKey key = apiKeyOpt.get();
+            return this.cache.get(
+                    apiKey,
+                    k -> this.createBucket(key.getMinuteRateLimitLimit(), key.getDailyRateLimit())
+            );
         }
 
         return this.cache.get(ipAddress, key -> this.newDefaultBucket());

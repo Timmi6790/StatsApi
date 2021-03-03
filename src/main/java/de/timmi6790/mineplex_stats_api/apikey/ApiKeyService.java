@@ -18,11 +18,17 @@ public class ApiKeyService {
     public ApiKeyService() {
         final Path basePath = Paths.get(".").toAbsolutePath().normalize();
         this.apiKeyPath = Paths.get(basePath + "/apiKeys.json");
+
+        this.setUpStorage();
+        this.loadKeysFromStorage();
+    }
+
+    private void setUpStorage() {
         if (!this.apiKeyPath.toFile().exists()) {
             log.info("Created new master api key");
             GsonUtilities.saveToJson(
                     this.apiKeyPath,
-                    new ApiKeySave(Collections.singletonList(
+                    new ApiKeyStorage(Collections.singletonList(
                             new ApiKey(
                                     UUID.randomUUID(),
                                     1_000_000,
@@ -32,8 +38,10 @@ public class ApiKeyService {
                     ))
             );
         }
+    }
 
-        final ApiKeySave save = GsonUtilities.readJsonFile(this.apiKeyPath, ApiKeySave.class);
+    private void loadKeysFromStorage() {
+        final ApiKeyStorage save = GsonUtilities.readJsonFile(this.apiKeyPath, ApiKeyStorage.class);
         for (final ApiKey apiKey : save.getApiKeys()) {
             this.apiKeys.put(apiKey.getKey(), apiKey);
         }
@@ -50,7 +58,7 @@ public class ApiKeyService {
 
     public void addApiKey(final ApiKey apiKey) {
         this.apiKeys.put(apiKey.getKey(), apiKey);
-        GsonUtilities.saveToJson(this.apiKeyPath, new ApiKeySave(new ArrayList<>(this.apiKeys.values())));
+        GsonUtilities.saveToJson(this.apiKeyPath, new ApiKeyStorage(new ArrayList<>(this.apiKeys.values())));
     }
 
     public Optional<ApiKey> getApiKey(final String apiKey) {

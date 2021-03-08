@@ -1,7 +1,7 @@
-package de.timmi6790.mpstats.api.versions.v1.java.base.repository.postgres;
+package de.timmi6790.mpstats.api.versions.v1.java.board.repository.postgres;
 
-import de.timmi6790.mpstats.api.versions.v1.java.base.repository.JavaBoardRepository;
-import de.timmi6790.mpstats.api.versions.v1.java.base.repository.models.Board;
+import de.timmi6790.mpstats.api.versions.v1.java.board.repository.JavaBoardRepository;
+import de.timmi6790.mpstats.api.versions.v1.java.board.repository.models.Board;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,10 +20,10 @@ public class JavaBoardPostgresRepository implements JavaBoardRepository {
     }
 
     @Override
-    public Board createBoard(String boardName, String websiteName, int updateTime) {
+    public Board createBoard(final String boardName, final String websiteName, final int updateTime) {
         return null;
     }
-    
+
     @Override
     public void removeBoard(final int boardId) {
 

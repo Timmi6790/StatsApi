@@ -1,6 +1,6 @@
-package de.timmi6790.mpstats.api.versions.v1.java.base.repository;
+package de.timmi6790.mpstats.api.versions.v1.java.stat.repository;
 
-import de.timmi6790.mpstats.api.versions.v1.java.base.repository.models.Stat;
+import de.timmi6790.mpstats.api.versions.v1.java.stat.repository.models.Stat;
 
 import java.util.List;
 import java.util.Optional;

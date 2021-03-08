@@ -1,6 +1,6 @@
-package de.timmi6790.mpstats.api.versions.v1.java.base.repository;
+package de.timmi6790.mpstats.api.versions.v1.java.player.repository;
 
-import de.timmi6790.mpstats.api.versions.v1.java.base.repository.models.Player;
+import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.Player;
 
 import java.util.Optional;
 import java.util.UUID;

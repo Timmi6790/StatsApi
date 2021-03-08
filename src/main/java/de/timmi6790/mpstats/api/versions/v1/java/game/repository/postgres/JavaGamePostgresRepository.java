@@ -1,8 +1,8 @@
-package de.timmi6790.mpstats.api.versions.v1.java.base.repository.postgres;
+package de.timmi6790.mpstats.api.versions.v1.java.game.repository.postgres;
 
-import de.timmi6790.mpstats.api.versions.v1.java.base.repository.JavaGameRepository;
-import de.timmi6790.mpstats.api.versions.v1.java.base.repository.models.Game;
-import de.timmi6790.mpstats.api.versions.v1.java.base.repository.models.GameCategory;
+import de.timmi6790.mpstats.api.versions.v1.java.game.repository.JavaGameRepository;
+import de.timmi6790.mpstats.api.versions.v1.java.game.repository.models.Game;
+import de.timmi6790.mpstats.api.versions.v1.java.game.repository.models.GameCategory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

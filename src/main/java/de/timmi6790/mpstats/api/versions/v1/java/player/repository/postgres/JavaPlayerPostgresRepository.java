@@ -1,7 +1,7 @@
-package de.timmi6790.mpstats.api.versions.v1.java.base.repository.postgres;
+package de.timmi6790.mpstats.api.versions.v1.java.player.repository.postgres;
 
-import de.timmi6790.mpstats.api.versions.v1.java.base.repository.JavaPlayerRepository;
-import de.timmi6790.mpstats.api.versions.v1.java.base.repository.models.Player;
+import de.timmi6790.mpstats.api.versions.v1.java.player.repository.JavaPlayerRepository;
+import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.Player;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

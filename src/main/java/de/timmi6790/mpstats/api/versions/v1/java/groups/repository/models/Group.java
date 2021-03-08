@@ -1,7 +1,7 @@
 package de.timmi6790.mpstats.api.versions.v1.java.groups.repository.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import de.timmi6790.mpstats.api.versions.v1.java.base.repository.models.Game;
+import de.timmi6790.mpstats.api.versions.v1.java.game.repository.models.Game;
 import lombok.Data;
 
 import java.util.List;

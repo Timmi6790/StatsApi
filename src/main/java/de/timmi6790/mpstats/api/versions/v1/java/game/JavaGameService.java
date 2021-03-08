@@ -1,7 +1,7 @@
-package de.timmi6790.mpstats.api.versions.v1.java.base.services;
+package de.timmi6790.mpstats.api.versions.v1.java.game;
 
-import de.timmi6790.mpstats.api.versions.v1.java.base.repository.JavaGameRepository;
-import de.timmi6790.mpstats.api.versions.v1.java.base.repository.models.Game;
+import de.timmi6790.mpstats.api.versions.v1.java.game.repository.JavaGameRepository;
+import de.timmi6790.mpstats.api.versions.v1.java.game.repository.models.Game;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

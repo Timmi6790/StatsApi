@@ -1,7 +1,7 @@
-package de.timmi6790.mpstats.api.versions.v1.java.base.services;
+package de.timmi6790.mpstats.api.versions.v1.java.board;
 
-import de.timmi6790.mpstats.api.versions.v1.java.base.repository.JavaBoardRepository;
-import de.timmi6790.mpstats.api.versions.v1.java.base.repository.models.Board;
+import de.timmi6790.mpstats.api.versions.v1.java.board.repository.JavaBoardRepository;
+import de.timmi6790.mpstats.api.versions.v1.java.board.repository.models.Board;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,8 +29,8 @@ public class JavaBoardService {
     public Optional<Board> getBoard(final String boardName) {
         return Optional.empty();
     }
-    
-    public Board createBoard(String boardName, String websiteName, int updateTime) {
+
+    public Board createBoard(final String boardName, final String websiteName, final int updateTime) {
         return null;
     }
 

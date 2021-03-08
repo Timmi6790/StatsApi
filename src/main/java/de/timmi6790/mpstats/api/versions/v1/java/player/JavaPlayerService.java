@@ -1,9 +1,9 @@
-package de.timmi6790.mpstats.api.versions.v1.java.base.services;
+package de.timmi6790.mpstats.api.versions.v1.java.player;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import de.timmi6790.mpstats.api.versions.v1.java.base.repository.JavaPlayerRepository;
-import de.timmi6790.mpstats.api.versions.v1.java.base.repository.models.Player;
+import de.timmi6790.mpstats.api.versions.v1.java.player.repository.JavaPlayerRepository;
+import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.Player;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,8 +1,8 @@
-package de.timmi6790.mpstats.api.versions.v1.java.player.repository.mysql;
+package de.timmi6790.mpstats.api.versions.v1.java.player_stats.repository.postgres;
 
-import de.timmi6790.mpstats.api.versions.v1.java.groups.repository.mysql.mappers.GroupsMapper;
-import de.timmi6790.mpstats.api.versions.v1.java.player.repository.JavaPlayerRepository;
-import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.PlayerStatsDatabaseModel;
+import de.timmi6790.mpstats.api.versions.v1.java.groups.repository.postgres.mappers.GroupMapper;
+import de.timmi6790.mpstats.api.versions.v1.java.player_stats.repository.JavaPlayerStatsRepository;
+import de.timmi6790.mpstats.api.versions.v1.java.player_stats.repository.models.PlayerStatsDatabaseModel;
 import lombok.NonNull;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class JavaPlayerMysqlRepository implements JavaPlayerRepository {
+public class JavaPlayerStatsPostgresRepository implements JavaPlayerStatsRepository {
     private static final String SET_PLAYER_ID_NAME = "SET @playerId = (SELECT id FROM java_player WHERE player_name = :playerName LIMIT 1);";
     private static final String SET_PLAYER_ID_UUID = "SET @playerId = (SELECT id FROM java_player WHERE uuid = :uuid LIMIT 1);";
 
@@ -44,10 +44,10 @@ public class JavaPlayerMysqlRepository implements JavaPlayerRepository {
     private final Jdbi database;
 
     @Autowired
-    public JavaPlayerMysqlRepository(final Jdbi jdbi) {
+    public JavaPlayerStatsPostgresRepository(final Jdbi jdbi) {
         this.database = jdbi;
 
-        this.database.registerRowMapper(new GroupsMapper());
+        this.database.registerRowMapper(new GroupMapper());
     }
 
     @Override

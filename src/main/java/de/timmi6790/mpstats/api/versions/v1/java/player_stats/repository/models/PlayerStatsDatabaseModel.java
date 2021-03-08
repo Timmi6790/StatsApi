@@ -1,4 +1,4 @@
-package de.timmi6790.mpstats.api.versions.v1.java.player.repository.models;
+package de.timmi6790.mpstats.api.versions.v1.java.player_stats.repository.models;
 
 import de.timmi6790.commons.utilities.UUIDUtilities;
 import lombok.AllArgsConstructor;

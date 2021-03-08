@@ -1,4 +1,4 @@
-package de.timmi6790.mpstats.api.versions.v1.java.player.models;
+package de.timmi6790.mpstats.api.versions.v1.java.player_stats.models;
 
 import lombok.Data;
 

@@ -1,8 +1,8 @@
-package de.timmi6790.mpstats.api.versions.v1.java.player;
+package de.timmi6790.mpstats.api.versions.v1.java.player_stats;
 
-import de.timmi6790.mpstats.api.versions.v1.java.player.models.PlayerStatsModel;
-import de.timmi6790.mpstats.api.versions.v1.java.player.repository.JavaPlayerRepository;
-import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.PlayerStatsDatabaseModel;
+import de.timmi6790.mpstats.api.versions.v1.java.player_stats.models.PlayerStatsModel;
+import de.timmi6790.mpstats.api.versions.v1.java.player_stats.repository.JavaPlayerStatsRepository;
+import de.timmi6790.mpstats.api.versions.v1.java.player_stats.repository.models.PlayerStatsDatabaseModel;
 import de.timmi6790.mpstats.api.versions.v1.website.WebsiteService;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +13,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class JavaPlayerService {
+public class JavaPlayerStatsService {
     final WebsiteService websiteService;
-    private final JavaPlayerRepository javaRepository;
+    private final JavaPlayerStatsRepository javaRepository;
 
     @Autowired
-    public JavaPlayerService(final WebsiteService websiteService, final JavaPlayerRepository javaRepository) {
+    public JavaPlayerStatsService(final WebsiteService websiteService, final JavaPlayerStatsRepository javaRepository) {
         this.websiteService = websiteService;
         this.javaRepository = javaRepository;
     }

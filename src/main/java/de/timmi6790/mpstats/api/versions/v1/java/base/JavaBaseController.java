@@ -1,4 +1,4 @@
-package de.timmi6790.mpstats.api.versions.v1.java.info;
+package de.timmi6790.mpstats.api.versions.v1.java.base;
 
 import de.timmi6790.mpstats.api.configs.OpenApiConfig;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/v1/java/info/")
 @Tag(name = OpenApiConfig.TAG_JAVA)
-public class JavaInfoController {
+public class JavaBaseController {
     @GetMapping(value = "games")
     public void getGames() {
 

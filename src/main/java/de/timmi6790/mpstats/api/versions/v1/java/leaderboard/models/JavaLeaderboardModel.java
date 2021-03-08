@@ -1,6 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.java.leaderboard.models;
 
-import de.timmi6790.mpstats.api.versions.v1.java.player.models.JavaPlayerModel;
+import de.timmi6790.mpstats.api.versions.v1.java.player_stats.models.JavaPlayerModel;
 import lombok.Data;
 
 @Data

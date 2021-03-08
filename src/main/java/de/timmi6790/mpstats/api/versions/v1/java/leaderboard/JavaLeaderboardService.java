@@ -2,7 +2,7 @@ package de.timmi6790.mpstats.api.versions.v1.java.leaderboard;
 
 import de.timmi6790.mpstats.api.versions.v1.java.cache.JavaCache;
 import de.timmi6790.mpstats.api.versions.v1.java.leaderboard.models.JavaLeaderboardModel;
-import de.timmi6790.mpstats.api.versions.v1.java.player.models.JavaPlayerModel;
+import de.timmi6790.mpstats.api.versions.v1.java.player_stats.models.JavaPlayerModel;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

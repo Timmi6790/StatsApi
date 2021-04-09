@@ -8,9 +8,9 @@ import java.util.Optional;
 public interface JavaBoardRepository {
     List<Board> getBoards();
 
-    Optional<Board> getBoard(String boardName, String websiteName, long updateTime);
+    Optional<Board> getBoard(String boardName);
 
-    Board createBoard(String boardName, String websiteName, int updateTime);
+    Board createBoard(String boardName, String websiteName, String cleanName, int updateTime);
 
     void removeBoard(int boardId);
 

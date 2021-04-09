@@ -9,7 +9,11 @@ import java.util.Set;
 public class Board {
     @JsonIgnore
     private final int repositoryId;
+    @JsonIgnore
+    private final String websiteName;
 
     private final String boardName;
+    private final String cleanName;
+    private final int updateTime;
     private final Set<String> aliasNames;
 }

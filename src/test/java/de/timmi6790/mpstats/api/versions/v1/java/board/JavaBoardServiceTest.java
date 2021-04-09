@@ -31,7 +31,6 @@ class JavaBoardServiceTest {
         return "BOARD" + BOARD_ID.incrementAndGet();
     }
 
-
     private Board generateBoard(final String boardName) {
         final String websiteName = this.generateBoardName();
         final String cleanName = this.generateBoardName();
@@ -85,7 +84,7 @@ class JavaBoardServiceTest {
         final Optional<Board> boardFoundUpper = javaBoardService.getBoard(boardName.toUpperCase());
         assertThat(boardFoundUpper).isPresent();
 
-        assertThat(boardFoundLower.get()).isEqualTo(boardFoundUpper.get());
+        assertThat(boardFoundLower).contains(boardFoundUpper.get());
     }
 
     @Test
@@ -106,11 +105,11 @@ class JavaBoardServiceTest {
 
         final Optional<Board> boardFound = javaBoardService.getBoard(boardName);
         assertThat(boardFound).isPresent();
-        assertThat(boardFound.get()).isEqualTo(createdBoard);
+        assertThat(boardFound).contains(createdBoard);
 
         final Optional<Board> boardCacheFound = javaBoardRepository.getBoard(boardName);
         assertThat(boardCacheFound).isPresent();
-        assertThat(boardCacheFound.get()).isEqualTo(createdBoard);
+        assertThat(boardCacheFound).contains(createdBoard);
     }
 
     @Test
@@ -138,6 +137,9 @@ class JavaBoardServiceTest {
 
         final Optional<Board> boardNotFound = javaBoardService.getBoard(boardName);
         assertThat(boardNotFound).isNotPresent();
+
+        final Optional<Board> boardCacheNotFound = javaBoardRepository.getBoard(boardName);
+        assertThat(boardCacheNotFound).isNotPresent();
     }
 
     @Test
@@ -166,6 +168,6 @@ class JavaBoardServiceTest {
 
         final Optional<Board> boardFound = newJavaBoardService.getBoard(boardName);
         assertThat(boardFound).isPresent();
-        assertThat(boardFound.get()).isEqualTo(board);
+        assertThat(boardFound).contains(board);
     }
 }

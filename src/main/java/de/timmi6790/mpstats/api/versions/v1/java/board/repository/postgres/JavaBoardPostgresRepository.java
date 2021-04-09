@@ -24,8 +24,7 @@ public class JavaBoardPostgresRepository implements JavaBoardRepository {
 
     private static final String INSERT_BOARD = "INSERT INTO java.boards(website_name, board_name, clean_name, update_time) VALUES(:websiteName, :boardName, :cleanName, :updateTime);";
     private static final String REMOVE_BOARD = "DELETE FROM java.boards WHERE id = :boardId;";
-
-
+    
     private final Jdbi database;
 
     @Autowired

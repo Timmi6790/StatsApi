@@ -12,16 +12,9 @@ public class Group {
     private final int repositoryId;
 
     private final String groupName;
+    private final String cleanName;
     private final String description;
     private final List<String> aliasNames;
 
     private final List<Game> games;
-
-    public void addAliasNameRepositoryOnly(final String aliasName) {
-        this.aliasNames.add(aliasName);
-    }
-
-    public void addGameRepositoryOnly(final Game game) {
-        this.games.add(game);
-    }
 }

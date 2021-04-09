@@ -14,15 +14,15 @@ import java.util.stream.Collectors;
 
 @Service
 public class JavaGroupPostgresRepository implements JavaGroupRepository {
-    private static final String INSERT_GROUP = "INSERT INTO java_group.groups(group_name) VALUES(:groupName) RETURNING id group_id, group_name, group_description;";
+    private static final String INSERT_GROUP = "INSERT INTO java_group.groups(group_name, clean_name) VALUES(:groupName, :cleanName) RETURNING id group_id, group_name, clean_name, group_description;";
     private static final String DELETE_GROUP = "DELETE FROM java_group.groups WHERE id = :groupId;";
 
-    private static final String GET_GROUPS_BASE = "SELECT id group_id, group_name, group_description " +
+    private static final String GET_GROUPS_BASE = "SELECT id group_id, group_name, clean_name, group_description " +
             "FROM java_group.groups " +
             "%s;";
 
     private static final String GET_GROUPS = String.format(GET_GROUPS_BASE, "");
-    private static final String GET_GROUP = String.format(GET_GROUPS_BASE, "WHERE group_name = :groupName");
+    private static final String GET_GROUP = String.format(GET_GROUPS_BASE, "WHERE LOWER(group_name) = LOWER(:groupName)");
 
     private final Jdbi database;
 
@@ -53,10 +53,11 @@ public class JavaGroupPostgresRepository implements JavaGroupRepository {
     }
 
     @Override
-    public Group createGroup(final String groupName) {
+    public Group createGroup(final String groupName, final String cleanName) {
         return this.database.withHandle(handle ->
                 handle.createQuery(INSERT_GROUP)
                         .bind("groupName", groupName)
+                        .bind("cleanName", cleanName)
                         .mapTo(Group.class)
                         .first()
         );

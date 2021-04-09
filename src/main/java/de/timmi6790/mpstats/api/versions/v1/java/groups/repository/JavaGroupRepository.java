@@ -10,7 +10,7 @@ public interface JavaGroupRepository {
 
     Optional<Group> getGroup(String groupName);
 
-    Group createGroup(String groupName);
+    Group createGroup(String groupName, String cleanName);
 
     void deleteGroup(int groupId);
 

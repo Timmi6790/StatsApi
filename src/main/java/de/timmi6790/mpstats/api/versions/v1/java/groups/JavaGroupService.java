@@ -56,7 +56,7 @@ public class JavaGroupService {
         return this.groupNames.contains(groupName);
     }
 
-    public Group createGroup(final String groupName) {
+    public Group createGroup(final String groupName, final String cleanName) {
         final Lock lock = this.getGroupLock(groupName);
         lock.lock();
 
@@ -66,7 +66,7 @@ public class JavaGroupService {
             }
 
             log.info("Creating group {}", groupName);
-            final Group group = this.javaGroupRepository.createGroup(groupName);
+            final Group group = this.javaGroupRepository.createGroup(groupName, cleanName);
             this.insertGroupIntoCache(group);
             this.groupNames.add(group.getGroupName());
             return group;

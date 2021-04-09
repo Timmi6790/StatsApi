@@ -23,7 +23,7 @@ public class JavaGroupController {
     }
 
     @PutMapping(value = "/{groupName}")
-    public Group createGroup(@PathVariable final String groupName) {
+    public Group createGroup(@PathVariable final String groupName, @RequestParam final String cleanName) {
         return null;
     }
 

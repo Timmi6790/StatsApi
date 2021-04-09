@@ -35,7 +35,7 @@ class JavaGroupServiceTest {
         final String groupName = this.generateGroupName();
 
         // Insert group
-        final Group groupCreate = javaGroupService.createGroup(groupName);
+        final Group groupCreate = javaGroupService.createGroup(groupName, groupName);
         assertThat(groupCreate.getGroupName()).isEqualTo(groupName);
 
         // Verify cache
@@ -50,10 +50,37 @@ class JavaGroupServiceTest {
     }
 
     @Test
+    void createGroup_duplicate() {
+        final String groupName = this.generateGroupName();
+
+        // Insert group
+        final Group group = javaGroupService.createGroup(groupName, groupName);
+        final Group groupDuplicate = javaGroupService.createGroup(groupName, groupName);
+
+        assertThat(group).isEqualTo(groupDuplicate);
+    }
+
+    @Test
+    void createGroup_ignore_case() {
+        final String groupName = this.generateGroupName();
+
+        // Insert group
+        final Group group = javaGroupService.createGroup(groupName, groupName);
+
+        // Lower check
+        final Group groupLower = javaGroupService.createGroup(groupName.toLowerCase(), groupName);
+        assertThat(group).isEqualTo(groupLower);
+
+        // Upper check
+        final Group groupUpper = javaGroupService.createGroup(groupName.toUpperCase(), groupName);
+        assertThat(group).isEqualTo(groupUpper);
+    }
+
+    @Test
     void deleteGroup() {
         final String groupName = this.generateGroupName();
 
-        javaGroupService.createGroup(groupName);
+        javaGroupService.createGroup(groupName, groupName);
         javaGroupService.deleteGroup(groupName);
 
         // Verify cache
@@ -74,7 +101,7 @@ class JavaGroupServiceTest {
         assertThat(groupNotFound).isNotPresent();
 
         // Create group
-        javaGroupService.createGroup(groupName);
+        javaGroupService.createGroup(groupName, groupName);
 
         final Optional<Group> groupFound = javaGroupService.getGroup(groupName);
         assertThat(groupFound).isPresent();
@@ -82,6 +109,20 @@ class JavaGroupServiceTest {
         // Verify none cache
         final Optional<Group> groupNoCache = javaGroupRepository.getGroup(groupName);
         assertThat(groupNoCache).isPresent();
+    }
+
+    @Test
+    void getGroup_ignore_case() {
+        final String groupName = this.generateGroupName();
+        final Group group = javaGroupService.createGroup(groupName, groupName);
+
+        final Optional<Group> groupLower = javaGroupService.getGroup(groupName.toLowerCase());
+        assertThat(groupLower).isPresent();
+        assertThat(groupLower.get()).isEqualTo(group);
+
+        final Optional<Group> groupUpper = javaGroupService.getGroup(groupName.toUpperCase());
+        assertThat(groupUpper).isPresent();
+        assertThat(groupUpper.get()).isEqualTo(group);
     }
 
     @Test
@@ -97,8 +138,8 @@ class JavaGroupServiceTest {
         assertThat(groupsNotContains).doesNotContain(groupName1, groupName2);
 
         // Create groups
-        javaGroupService.createGroup(groupName1);
-        javaGroupService.createGroup(groupName2);
+        javaGroupService.createGroup(groupName1, groupName1);
+        javaGroupService.createGroup(groupName2, groupName2);
 
         final List<String> groupsContains = javaGroupService.getGroups()
                 .stream()
@@ -115,7 +156,7 @@ class JavaGroupServiceTest {
         assertThat(groupNotFound).isFalse();
 
         // Create group
-        javaGroupService.createGroup(groupName);
+        javaGroupService.createGroup(groupName, groupName);
 
         final boolean groupFound = javaGroupService.hasGroup(groupName);
         assertThat(groupFound).isTrue();

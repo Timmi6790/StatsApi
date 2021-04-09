@@ -16,6 +16,7 @@ public class GroupMapper implements RowMapper<Group> {
         return new Group(
                 rs.getInt("group_id"),
                 rs.getString("group_name"),
+                rs.getString("clean_name"),
                 description == null ? "" : description,
                 new ArrayList<>(),
                 new ArrayList<>()

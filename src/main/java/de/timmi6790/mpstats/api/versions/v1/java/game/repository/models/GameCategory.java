@@ -8,5 +8,5 @@ public class GameCategory {
     @JsonIgnore
     private final int repositoryId;
 
-    private final String repositoryName;
+    private final String categoryName;
 }

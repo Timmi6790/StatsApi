@@ -9,8 +9,6 @@ public interface JavaPlayerRepository {
     Optional<Player> getPlayer(String playerName, UUID playerUUID);
 
     Player insertPlayer(String playerName, UUID playerUUID);
-
-    void removePlayer(int playerId);
-
+    
     void changePlayerName(int playerId, String newName);
 }

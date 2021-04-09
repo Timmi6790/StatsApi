@@ -11,7 +11,7 @@ public interface JavaGameRepository {
 
     Optional<Game> getGame(String gameName);
 
-    Game createGame(String websiteName, String gameName);
+    Game createGame(String websiteName, String gameName, String cleanName, int categoryId);
 
     void removeGame(int gameId);
 

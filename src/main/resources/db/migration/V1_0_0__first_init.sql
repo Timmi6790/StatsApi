@@ -24,6 +24,9 @@ CREATE TABLE "bedrock"."games"
     "id"           serial4,
     "website_name" varchar(255) NOT NULL,
     "game_name"    varchar(255) NOT NULL,
+    "clean_name"   varchar(255) NOT NULL,
+    "description"  text,
+    "wiki_url"     varchar(255),
     PRIMARY KEY ("id"),
     CONSTRAINT "games-game_name" UNIQUE ("game_name")
 );
@@ -74,6 +77,8 @@ CREATE TABLE "java"."boards"
     "id"           serial4,
     "website_name" varchar(255) NOT NULL,
     "board_name"   varchar(255) NOT NULL,
+    "clean_name"   varchar(255) NOT NULL,
+    "update_time"  int4         NOT NULL,
     PRIMARY KEY ("id"),
     CONSTRAINT "boards-board_name" UNIQUE ("board_name")
 );
@@ -113,8 +118,9 @@ CREATE TABLE "java"."games"
     "category_id"  int4         NOT NULL,
     "website_name" varchar(255) NOT NULL,
     "game_name"    varchar(255) NOT NULL,
+    "clean_name"   varchar(255) NOT NULL,
     "description"  text,
-    "wiki_url"     text,
+    "wiki_url"     varchar(255),
     PRIMARY KEY ("id"),
     CONSTRAINT "games-game_name" UNIQUE ("game_name")
 );
@@ -180,6 +186,9 @@ CREATE TABLE "java"."stats"
     "id"           serial4,
     "website_name" varchar(255) NOT NULL,
     "stat_name"    varchar(255) NOT NULL,
+    "clean_name"   varchar(255) NOT NULL,
+    "description"  text,
+    "achievement"  bool         NOT NULL,
     PRIMARY KEY ("id"),
     CONSTRAINT "stats-stat_name" UNIQUE ("stat_name")
 );
@@ -206,6 +215,7 @@ CREATE TABLE "java_group"."groups"
 (
     "id"                serial4,
     "group_name"        varchar(255) NOT NULL,
+    "clean_name"        varchar(255) NOT NULL,
     "group_description" varchar(255),
     PRIMARY KEY ("id"),
     CONSTRAINT "groups-group_name" UNIQUE ("group_name")

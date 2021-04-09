@@ -16,6 +16,10 @@ public class JavaStatService {
     @Autowired
     public JavaStatService(final JavaStatRepository javaStatRepository) {
         this.javaStatRepository = javaStatRepository;
+
+        for (final Stat stat : this.getStats()) {
+            this.statNames.add(stat.getStatName());
+        }
     }
 
     public boolean hasStat(final String statName) {
@@ -23,18 +27,35 @@ public class JavaStatService {
     }
 
     public List<Stat> getStats() {
-        return new ArrayList<>();
+        return this.javaStatRepository.getStats();
     }
 
     public Optional<Stat> getStat(final String statName) {
+        if (this.hasStat(statName)) {
+            return this.javaStatRepository.getStat(statName);
+        }
+
         return Optional.empty();
     }
 
-    public Stat createStat(final String statName, final String websiteName, final boolean isAchievement) {
-        return null;
+    public Stat getOrCreateStat(final String websiteName,
+                                final String statName,
+                                final String cleanName,
+                                final boolean isAchievement) {
+        if (this.hasStat(statName)) {
+            return this.getStat(statName).orElseThrow(RuntimeException::new);
+        }
+
+        final Stat stat = this.javaStatRepository.createStat(websiteName, statName, cleanName, isAchievement);
+        this.statNames.add(stat.getStatName());
+        return stat;
     }
 
-    public void deleteStat(final String gameName) {
-
+    public void deleteStat(final String statName) {
+        final Optional<Stat> statOpt = this.getStat(statName);
+        if (statOpt.isPresent()) {
+            this.statNames.remove(statName);
+            this.javaStatRepository.removeStat(statOpt.get().getRepositoryId());
+        }
     }
 }

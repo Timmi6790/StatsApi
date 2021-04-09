@@ -10,7 +10,7 @@ public interface JavaStatRepository {
 
     Optional<Stat> getStat(String statName);
 
-    Stat createStat(String websiteName, String statName, boolean isAchievement);
+    Stat createStat(String websiteName, String statName, String cleanName, boolean isAchievement);
 
     void removeStat(int statId);
 

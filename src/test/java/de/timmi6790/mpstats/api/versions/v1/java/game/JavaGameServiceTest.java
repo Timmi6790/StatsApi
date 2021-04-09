@@ -177,7 +177,7 @@ class JavaGameServiceTest {
     @Test
     void innit_with_existing_categories() {
         final String categoryName = this.generateCategoryName();
-        final GameCategory category = javaGameService.getOrCreateCategory(categoryName);
+        final GameCategory category = javaGameService.getCategoryOrCreate(categoryName);
 
         final JavaGameService newJavaGameService = new JavaGameService(javaGameRepository);
 
@@ -192,8 +192,8 @@ class JavaGameServiceTest {
     @Test
     void getOrCreateCategory_duplicate() {
         final String categoryName = this.generateCategoryName();
-        final GameCategory category = javaGameService.getOrCreateCategory(categoryName);
-        final GameCategory categoryDuplicate = javaGameService.getOrCreateCategory(categoryName);
+        final GameCategory category = javaGameService.getCategoryOrCreate(categoryName);
+        final GameCategory categoryDuplicate = javaGameService.getCategoryOrCreate(categoryName);
 
         assertThat(category).isEqualTo(categoryDuplicate);
     }

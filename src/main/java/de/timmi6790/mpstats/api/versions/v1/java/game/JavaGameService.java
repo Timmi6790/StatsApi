@@ -63,7 +63,7 @@ public class JavaGameService {
         return Optional.ofNullable(this.categories.get(categoryName));
     }
 
-    public GameCategory getOrCreateCategory(final String categoryName) {
+    public GameCategory getCategoryOrCreate(final String categoryName) {
         final Lock lock = this.getCategoryLock(categoryName);
         lock.lock();
         try {
@@ -102,7 +102,7 @@ public class JavaGameService {
                 return this.getGame(gameName).orElseThrow(RuntimeException::new);
             }
 
-            final GameCategory gameCategory = this.getOrCreateCategory(categoryName);
+            final GameCategory gameCategory = this.getCategoryOrCreate(categoryName);
             final Game game = this.javaGameRepository.createGame(websiteName, gameName, cleanName, gameCategory.getRepositoryId());
             this.games.put(game.getGameName(), game);
             return game;

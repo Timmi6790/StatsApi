@@ -35,7 +35,7 @@ class JavaStatServiceTest {
         final String websiteName = this.generateStatName();
         final String cleanName = this.generateStatName();
 
-        return javaStatService.getOrCreateStat(websiteName, boardName, cleanName, true);
+        return javaStatService.getStatOrCreate(websiteName, boardName, cleanName, true);
     }
 
     @Test
@@ -96,7 +96,7 @@ class JavaStatServiceTest {
         final Optional<Stat> boardNotFound = javaStatService.getStat(boardName);
         assertThat(boardNotFound).isNotPresent();
 
-        final Stat createdStat = javaStatService.getOrCreateStat(websiteName, boardName, cleanName, isAchievement);
+        final Stat createdStat = javaStatService.getStatOrCreate(websiteName, boardName, cleanName, isAchievement);
         assertThat(createdStat.getWebsiteName()).isEqualTo(websiteName);
         assertThat(createdStat.getCleanName()).isEqualTo(cleanName);
         assertThat(createdStat.getStatName()).isEqualTo(boardName);
@@ -118,8 +118,8 @@ class JavaStatServiceTest {
         final String boardName = this.generateStatName();
         final boolean isAchievement = false;
 
-        final Stat board1 = javaStatService.getOrCreateStat(websiteName, boardName, cleanName, isAchievement);
-        final Stat board2 = javaStatService.getOrCreateStat(websiteName, boardName, cleanName, isAchievement);
+        final Stat board1 = javaStatService.getStatOrCreate(websiteName, boardName, cleanName, isAchievement);
+        final Stat board2 = javaStatService.getStatOrCreate(websiteName, boardName, cleanName, isAchievement);
 
         assertThat(board1).isEqualTo(board2);
     }

@@ -48,7 +48,7 @@ public class JavaStatService {
         return Optional.ofNullable(this.stats.get(statName));
     }
 
-    public Stat getOrCreateStat(final String websiteName,
+    public Stat getStatOrCreate(final String websiteName,
                                 final String statName,
                                 final String cleanName,
                                 final boolean isAchievement) {

@@ -83,7 +83,7 @@ class JavaStatServiceTest {
         final Optional<Stat> boardFoundUpper = javaStatService.getStat(boardName.toUpperCase());
         assertThat(boardFoundUpper).isPresent();
 
-        assertThat(boardFoundLower.get()).isEqualTo(boardFoundUpper.get());
+        assertThat(boardFoundLower).contains(boardFoundUpper.get());
     }
 
     @Test
@@ -104,11 +104,11 @@ class JavaStatServiceTest {
 
         final Optional<Stat> boardFound = javaStatService.getStat(boardName);
         assertThat(boardFound).isPresent();
-        assertThat(boardFound.get()).isEqualTo(createdStat);
+        assertThat(boardFound).contains(createdStat);
 
         final Optional<Stat> boardCacheFound = javaStatRepository.getStat(boardName);
         assertThat(boardCacheFound).isPresent();
-        assertThat(boardCacheFound.get()).isEqualTo(createdStat);
+        assertThat(boardCacheFound).contains(createdStat);
     }
 
     @Test
@@ -164,6 +164,6 @@ class JavaStatServiceTest {
 
         final Optional<Stat> boardFound = newJavaStatService.getStat(boardName);
         assertThat(boardFound).isPresent();
-        assertThat(boardFound.get()).isEqualTo(board);
+        assertThat(boardFound).contains(board);
     }
 }

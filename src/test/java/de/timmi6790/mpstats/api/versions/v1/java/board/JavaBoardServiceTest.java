@@ -104,12 +104,14 @@ class JavaBoardServiceTest {
         assertThat(createdBoard.getUpdateTime()).isEqualTo(updateTime);
 
         final Optional<Board> boardFound = javaBoardService.getBoard(boardName);
-        assertThat(boardFound).isPresent();
-        assertThat(boardFound).contains(createdBoard);
+        assertThat(boardFound)
+                .isPresent()
+                .contains(createdBoard);
 
         final Optional<Board> boardCacheFound = javaBoardRepository.getBoard(boardName);
-        assertThat(boardCacheFound).isPresent();
-        assertThat(boardCacheFound).contains(createdBoard);
+        assertThat(boardCacheFound)
+                .isPresent()
+                .contains(createdBoard);
     }
 
     @Test
@@ -167,7 +169,8 @@ class JavaBoardServiceTest {
         assertThat(foundBoard).isTrue();
 
         final Optional<Board> boardFound = newJavaBoardService.getBoard(boardName);
-        assertThat(boardFound).isPresent();
-        assertThat(boardFound).contains(board);
+        assertThat(boardFound)
+                .isPresent()
+                .contains(board);
     }
 }

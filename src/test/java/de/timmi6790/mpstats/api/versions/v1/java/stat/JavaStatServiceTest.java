@@ -103,12 +103,14 @@ class JavaStatServiceTest {
         assertThat(createdStat.isAchievement()).isEqualTo(isAchievement);
 
         final Optional<Stat> boardFound = javaStatService.getStat(boardName);
-        assertThat(boardFound).isPresent();
-        assertThat(boardFound).contains(createdStat);
+        assertThat(boardFound)
+                .isPresent()
+                .contains(createdStat);
 
         final Optional<Stat> boardCacheFound = javaStatRepository.getStat(boardName);
-        assertThat(boardCacheFound).isPresent();
-        assertThat(boardCacheFound).contains(createdStat);
+        assertThat(boardCacheFound)
+                .isPresent()
+                .contains(createdStat);
     }
 
     @Test
@@ -163,7 +165,8 @@ class JavaStatServiceTest {
         assertThat(foundStat).isTrue();
 
         final Optional<Stat> boardFound = newJavaStatService.getStat(boardName);
-        assertThat(boardFound).isPresent();
-        assertThat(boardFound).contains(board);
+        assertThat(boardFound)
+                .isPresent()
+                .contains(board);
     }
 }

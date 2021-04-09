@@ -110,12 +110,14 @@ class JavaGameServiceTest {
         assertThat(createdGame.getCategoryName()).isEqualTo(categoryName);
 
         final Optional<Game> gameFound = javaGameService.getGame(gameName);
-        assertThat(gameFound).isPresent();
-        assertThat(gameFound).contains(createdGame);
+        assertThat(gameFound)
+                .isPresent()
+                .contains(createdGame);
 
         final Optional<Game> gameCacheFound = javaGameRepository.getGame(gameName);
-        assertThat(gameCacheFound).isPresent();
-        assertThat(gameCacheFound).contains(createdGame);
+        assertThat(gameCacheFound)
+                .isPresent()
+                .contains(createdGame);
     }
 
     @Test
@@ -170,8 +172,9 @@ class JavaGameServiceTest {
         assertThat(foundGame).isTrue();
 
         final Optional<Game> gameFound = newJavaGameService.getGame(gameName);
-        assertThat(gameFound).isPresent();
-        assertThat(gameFound).contains(game);
+        assertThat(gameFound)
+                .isPresent()
+                .contains(game);
     }
 
     @Test
@@ -185,8 +188,9 @@ class JavaGameServiceTest {
         assertThat(foundCategory).isTrue();
 
         final Optional<GameCategory> categoryFound = newJavaGameService.getCategory(categoryName);
-        assertThat(categoryFound).isPresent();
-        assertThat(categoryFound).contains(category);
+        assertThat(categoryFound)
+                .isPresent()
+                .contains(category);
     }
 
     @Test

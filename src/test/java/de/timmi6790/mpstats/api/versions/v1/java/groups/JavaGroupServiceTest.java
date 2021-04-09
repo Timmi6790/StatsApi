@@ -45,8 +45,9 @@ class JavaGroupServiceTest {
 
         // Verify none cache
         final Optional<Group> groupNoCache = javaGroupRepository.getGroup(groupName);
-        assertThat(groupNoCache).isPresent();
-        assertThat(groupNoCache).isEqualTo(groupCache);
+        assertThat(groupNoCache)
+                .isPresent()
+                .isEqualTo(groupCache);
     }
 
     @Test
@@ -117,12 +118,14 @@ class JavaGroupServiceTest {
         final Group group = javaGroupService.createGroup(groupName, groupName);
 
         final Optional<Group> groupLower = javaGroupService.getGroup(groupName.toLowerCase());
-        assertThat(groupLower).isPresent();
-        assertThat(groupLower.get()).isEqualTo(group);
+        assertThat(groupLower)
+                .isPresent()
+                .contains(group);
 
         final Optional<Group> groupUpper = javaGroupService.getGroup(groupName.toUpperCase());
-        assertThat(groupUpper).isPresent();
-        assertThat(groupUpper.get()).isEqualTo(group);
+        assertThat(groupUpper)
+                .isPresent()
+                .contains(group);
     }
 
     @Test

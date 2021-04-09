@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,7 +25,7 @@ public class JavaBoardService {
         this.javaBoardRepository = javaBoardRepository;
 
         // Load existing boards from repository
-        final List<Board> existingBoards = this.getBoards();
+        final List<Board> existingBoards = javaBoardRepository.getBoards();
         this.boards = new LinkedCaseInsensitiveMap<>(existingBoards.size());
         for (final Board board : existingBoards) {
             this.boards.put(board.getBoardName(), board);
@@ -40,7 +41,7 @@ public class JavaBoardService {
     }
 
     public List<Board> getBoards() {
-        return this.javaBoardRepository.getBoards();
+        return new ArrayList<>(this.boards.values());
     }
 
     public Optional<Board> getBoard(final String boardName) {
@@ -70,10 +71,9 @@ public class JavaBoardService {
         final Lock lock = this.getBoardLock(boardName);
         lock.lock();
         try {
-            final Optional<Board> boardOpt = this.getBoard(boardName);
-            if (boardOpt.isPresent()) {
-                this.boards.remove(boardOpt.get().getBoardName());
-                this.javaBoardRepository.removeBoard(boardOpt.get().getRepositoryId());
+            final Board board = this.boards.remove(boardName);
+            if (board != null) {
+                this.javaBoardRepository.removeBoard(board.getRepositoryId());
             }
         } finally {
             lock.unlock();

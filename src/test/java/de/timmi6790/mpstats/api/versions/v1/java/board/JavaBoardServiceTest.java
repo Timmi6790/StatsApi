@@ -93,14 +93,16 @@ class JavaBoardServiceTest {
         final String websiteName = this.generateBoardName();
         final String cleanName = this.generateBoardName();
         final String boardName = this.generateBoardName();
+        final int updateTime = 1;
 
         final Optional<Board> boardNotFound = javaBoardService.getBoard(boardName);
         assertThat(boardNotFound).isNotPresent();
 
-        final Board createdBoard = javaBoardService.getOrCreateBoard(websiteName, boardName, cleanName, 1);
+        final Board createdBoard = javaBoardService.getOrCreateBoard(websiteName, boardName, cleanName, updateTime);
         assertThat(createdBoard.getWebsiteName()).isEqualTo(websiteName);
         assertThat(createdBoard.getCleanName()).isEqualTo(cleanName);
         assertThat(createdBoard.getBoardName()).isEqualTo(boardName);
+        assertThat(createdBoard.getUpdateTime()).isEqualTo(updateTime);
 
         final Optional<Board> boardFound = javaBoardService.getBoard(boardName);
         assertThat(boardFound).isPresent();

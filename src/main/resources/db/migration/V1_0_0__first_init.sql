@@ -145,13 +145,12 @@ CREATE TABLE "java"."leaderboard_saves"
 
 CREATE TABLE "java"."leaderboards"
 (
-    "id"                  serial4,
-    "game_id"             int4        NOT NULL,
-    "stat_id"             int4        NOT NULL,
-    "stat_description_id" int4        NOT NULL,
-    "board_id"            int4        NOT NULL,
-    "deprecated"          bit(1)      NOT NULL,
-    "last_update"         timestamptz NOT NULL,
+    "id"          serial4,
+    "game_id"     int4        NOT NULL,
+    "stat_id"     int4        NOT NULL,
+    "board_id"    int4        NOT NULL,
+    "deprecated"  boolean     NOT NULL,
+    "last_update" timestamptz NOT NULL DEFAULT TO_TIMESTAMP(0),
     PRIMARY KEY ("id")
 );
 
@@ -169,17 +168,6 @@ CREATE TABLE "java"."stat_alias"
     "alias_name" varchar(255) NOT NULL,
     CONSTRAINT "stat_alias-alias_name" UNIQUE ("alias_name")
 );
-
-CREATE TABLE "java"."stat_descriptions"
-(
-    "id"          serial4,
-    "description" text NOT NULL,
-    PRIMARY KEY ("id"),
-    CONSTRAINT "stat_descriptions-description" UNIQUE ("description")
-);
-CREATE UNIQUE INDEX "description_lower" ON "java"."stat_descriptions" USING btree (
-                                                                                   LOWER(description)
-    );
 
 CREATE TABLE "java"."stats"
 (
@@ -272,14 +260,8 @@ ALTER TABLE "java"."leaderboards"
     ADD CONSTRAINT "leaderboards_stat_id-stats_id" FOREIGN KEY ("stat_id") REFERENCES "java"."stats" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 ALTER TABLE "java"."leaderboards"
     ADD CONSTRAINT "leaderboards_board_id-boards_id" FOREIGN KEY ("board_id") REFERENCES "java"."boards" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
-ALTER TABLE "java"."leaderboards"
-    ADD CONSTRAINT "leaderboards-stat_description_id-stat_descriptions-id" FOREIGN KEY ("stat_description_id") REFERENCES "java"."stat_descriptions" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 ALTER TABLE "java"."stat_alias"
     ADD CONSTRAINT "stat_alias-stat_id-stats-id" FOREIGN KEY ("stat_id") REFERENCES "java"."stats" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
-DROP INDEX "java"."description_lower";
-CREATE UNIQUE INDEX "description_lower" ON "java"."stat_descriptions" USING btree (
-                                                                                   LOWER(description)
-    );
 DROP INDEX "java"."stats-stat_name_lower";
 CREATE UNIQUE INDEX "stats-stat_name_lower" ON "java"."stats" USING btree (
                                                                            LOWER(stat_name)
@@ -294,4 +276,3 @@ DROP INDEX "java_group"."groups-group_name_lower";
 CREATE UNIQUE INDEX "groups-group_name_lower" ON "java_group"."groups" USING btree (
                                                                                     LOWER(group_name)
     );
-

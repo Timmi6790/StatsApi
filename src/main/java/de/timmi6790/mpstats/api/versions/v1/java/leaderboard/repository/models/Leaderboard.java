@@ -1,4 +1,4 @@
-package de.timmi6790.mpstats.api.versions.v1.java.leaderboard.models;
+package de.timmi6790.mpstats.api.versions.v1.java.leaderboard.repository.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.timmi6790.mpstats.api.versions.v1.java.board.repository.models.Board;
@@ -6,8 +6,10 @@ import de.timmi6790.mpstats.api.versions.v1.java.game.repository.models.Game;
 import de.timmi6790.mpstats.api.versions.v1.java.stat.repository.models.Stat;
 import lombok.Data;
 
+import java.sql.Timestamp;
+
 @Data
-public class LeaderboardData {
+public class Leaderboard {
     @JsonIgnore
     private final int repositoryId;
 
@@ -15,5 +17,5 @@ public class LeaderboardData {
     private final Stat stat;
     private final Board board;
     private final boolean deprecated;
-    private final long lastUpdate;
+    private final Timestamp lastUpdate;
 }

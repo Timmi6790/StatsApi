@@ -41,7 +41,7 @@ public class JavaLeaderboardService {
         );
     }
 
-    private Lock getGLeaderboardLock(final Game game, final Stat stat, final Board board) {
+    private Lock getLeaderboardLock(final Game game, final Stat stat, final Board board) {
         final String uniqName = this.getUniqName(game, stat, board);
         return this.leaderboardLock.get(uniqName);
     }
@@ -65,9 +65,9 @@ public class JavaLeaderboardService {
     }
 
     public Optional<Leaderboard> getLeaderboard(final Game game, final Stat stat, final Board board) {
-        final Optional<Leaderboard> leaderboardCache = this.getLeaderboardFromCache(game, stat, board);
-        if (leaderboardCache.isPresent()) {
-            return leaderboardCache;
+        final Optional<Leaderboard> leaderboardCached = this.getLeaderboardFromCache(game, stat, board);
+        if (leaderboardCached.isPresent()) {
+            return leaderboardCached;
         }
 
         final Optional<Leaderboard> leaderboardOpt = this.javaLeaderboardRepository.getLeaderboard(game, stat, board);
@@ -80,7 +80,7 @@ public class JavaLeaderboardService {
                                               final Stat stat,
                                               final Board board,
                                               final boolean deprecated) {
-        final Lock lock = this.getGLeaderboardLock(game, stat, board);
+        final Lock lock = this.getLeaderboardLock(game, stat, board);
         lock.lock();
         try {
             final Optional<Leaderboard> leaderboardOpt = this.getLeaderboard(game, stat, board);

@@ -2,7 +2,6 @@ package de.timmi6790.mpstats.api.versions.v1.common.board;
 
 import de.timmi6790.mpstats.api.versions.v1.common.board.repository.BoardRepository;
 import de.timmi6790.mpstats.api.versions.v1.common.board.repository.models.Board;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -14,8 +13,7 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Disabled(value = "This is only used to test the specific BoardService implementations")
-public class AbstractBoardServiceTest {
+public abstract class AbstractBoardServiceTest {
     private static final AtomicInteger BOARD_ID = new AtomicInteger(0);
 
     private final Supplier<BoardService> boardServiceSupplier;

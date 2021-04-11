@@ -2,7 +2,6 @@ package de.timmi6790.mpstats.api.versions.v1.common.game;
 
 import de.timmi6790.mpstats.api.versions.v1.common.game.models.Game;
 import de.timmi6790.mpstats.api.versions.v1.common.game.models.GameCategory;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -13,8 +12,7 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Disabled(value = "This is only used to test the specific GameService implementations")
-public class AbstractGameServiceTest {
+public abstract class AbstractGameServiceTest {
     private static final AtomicInteger GAME_ID = new AtomicInteger(0);
     private static final AtomicInteger CATEGORY_ID = new AtomicInteger(0);
 

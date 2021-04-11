@@ -1,11 +1,11 @@
-package de.timmi6790.mpstats.api.versions.v1.java.board.repository;
+package de.timmi6790.mpstats.api.versions.v1.common.board.repository;
 
-import de.timmi6790.mpstats.api.versions.v1.java.board.repository.models.Board;
+import de.timmi6790.mpstats.api.versions.v1.common.board.repository.models.Board;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface JavaBoardRepository {
+public interface BoardRepository {
     List<Board> getBoards();
 
     Optional<Board> getBoard(String boardName);

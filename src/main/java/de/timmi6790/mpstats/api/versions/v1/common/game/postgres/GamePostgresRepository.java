@@ -6,13 +6,14 @@ import de.timmi6790.mpstats.api.versions.v1.common.game.models.GameCategory;
 import de.timmi6790.mpstats.api.versions.v1.common.game.postgres.mappers.GameCategoryMapper;
 import de.timmi6790.mpstats.api.versions.v1.common.game.postgres.mappers.GameMapper;
 import de.timmi6790.mpstats.api.versions.v1.common.game.postgres.reducers.GameReducer;
+import de.timmi6790.mpstats.api.versions.v1.common.utilities.PostgresRepository;
 import org.jdbi.v3.core.Jdbi;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class GamePostgresRepository implements GameRepository {
+public class GamePostgresRepository extends PostgresRepository implements GameRepository {
     private final String getGames;
     private final String getGame;
 
@@ -23,15 +24,12 @@ public class GamePostgresRepository implements GameRepository {
     private final String getCategory;
     private final String insertCategory;
     private final String removeCategory;
-
-    private final Jdbi database;
-    private final String schema;
-
+    
     public GamePostgresRepository(final Jdbi database, final String schema) {
-        this.database = database;
-        this.schema = schema;
+        super(database, schema);
 
-        database.registerRowMapper(new GameMapper())
+        this.getDatabase()
+                .registerRowMapper(new GameMapper())
                 .registerRowMapper(new GameCategoryMapper());
 
         // Create queries
@@ -47,13 +45,10 @@ public class GamePostgresRepository implements GameRepository {
         this.removeCategory = this.formatQuery(QueryTemplates.REMOVE_CATEGORY);
     }
 
-    private String formatQuery(final String query) {
-        return query.replaceAll("\\$schema\\$", this.schema);
-    }
 
     @Override
     public List<Game> getGames() {
-        return this.database.withHandle(handle ->
+        return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getGames)
                         .reduceRows(new GameReducer())
                         .collect(Collectors.toList())
@@ -62,7 +57,7 @@ public class GamePostgresRepository implements GameRepository {
 
     @Override
     public Optional<Game> getGame(final String gameName) {
-        return this.database.withHandle(handle ->
+        return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getGame)
                         .bind("gameName", gameName)
                         .reduceRows(new GameReducer())
@@ -75,7 +70,7 @@ public class GamePostgresRepository implements GameRepository {
                            final String gameName,
                            final String cleanName,
                            final int categoryId) {
-        this.database.useHandle(handle ->
+        this.getDatabase().useHandle(handle ->
                 handle.createUpdate(this.insertGame)
                         .bind("websiteName", websiteName)
                         .bind("gameName", gameName)
@@ -89,7 +84,7 @@ public class GamePostgresRepository implements GameRepository {
 
     @Override
     public void removeGame(final int gameId) {
-        this.database.useHandle(handle ->
+        this.getDatabase().useHandle(handle ->
                 handle.createUpdate(this.removeGame)
                         .bind("gameId", gameId)
                         .execute()
@@ -123,7 +118,7 @@ public class GamePostgresRepository implements GameRepository {
 
     @Override
     public List<GameCategory> geGameCategories() {
-        return this.database.withHandle(handle ->
+        return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getCategories)
                         .mapTo(GameCategory.class)
                         .list()
@@ -132,7 +127,7 @@ public class GamePostgresRepository implements GameRepository {
 
     @Override
     public Optional<GameCategory> getGameCategory(final String gameCategoryName) {
-        return this.database.withHandle(handle ->
+        return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getCategory)
                         .bind("categoryName", gameCategoryName)
                         .mapTo(GameCategory.class)
@@ -142,7 +137,7 @@ public class GamePostgresRepository implements GameRepository {
 
     @Override
     public GameCategory createGameCategory(final String gameCategoryName) {
-        return this.database.withHandle(handler ->
+        return this.getDatabase().withHandle(handler ->
                 handler.createQuery(this.insertCategory)
                         .bind("categoryName", gameCategoryName)
                         .mapTo(GameCategory.class)
@@ -152,7 +147,7 @@ public class GamePostgresRepository implements GameRepository {
 
     @Override
     public void removeGameCategory(final int categoryId) {
-        this.database.useHandle(handle ->
+        this.getDatabase().useHandle(handle ->
                 handle.createUpdate(this.removeCategory)
                         .bind("categoryId", categoryId)
                         .execute()

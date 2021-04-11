@@ -2,6 +2,27 @@ CREATE SCHEMA bedrock;
 CREATE SCHEMA java;
 CREATE SCHEMA java_group;
 
+CREATE TABLE "bedrock"."board_alias"
+(
+    "board_id"   int4         NOT NULL,
+    "alias_name" varchar(255) NOT NULL,
+    CONSTRAINT "board_alias-alias_name" UNIQUE ("alias_name")
+);
+
+CREATE TABLE "bedrock"."boards"
+(
+    "id"           serial4,
+    "website_name" varchar(255) NOT NULL,
+    "board_name"   varchar(255) NOT NULL,
+    "clean_name"   varchar(255) NOT NULL,
+    "update_time"  int4         NOT NULL,
+    CONSTRAINT "_copy_3_copy_1" PRIMARY KEY ("id"),
+    CONSTRAINT "boards-board_name" UNIQUE ("board_name")
+);
+CREATE UNIQUE INDEX "boards-board_name_lower" ON "bedrock"."boards" USING btree (
+                                                                                 LOWER(board_name)
+    );
+
 CREATE TABLE "bedrock"."filters"
 (
     "id"             serial4,
@@ -36,7 +57,7 @@ CREATE TABLE "bedrock"."games"
     "clean_name"   varchar(255) NOT NULL,
     "description"  text,
     "wiki_url"     varchar(255),
-    PRIMARY KEY ("id"),
+    CONSTRAINT "_copy_1_copy_1" PRIMARY KEY ("id"),
     CONSTRAINT "games-game_name" UNIQUE ("game_name")
 );
 
@@ -221,6 +242,12 @@ CREATE UNIQUE INDEX "groups-group_name_lower" ON "java_group"."groups" USING btr
                                                                                     LOWER(group_name)
     );
 
+ALTER TABLE "bedrock"."board_alias"
+    ADD CONSTRAINT "board_alias-board_id-boards" FOREIGN KEY ("board_id") REFERENCES "bedrock"."boards" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+DROP INDEX "bedrock"."boards-board_name_lower";
+CREATE UNIQUE INDEX "boards-board_name_lower" ON "bedrock"."boards" USING btree (
+                                                                                 LOWER(board_name)
+    );
 ALTER TABLE "bedrock"."filters"
     ADD CONSTRAINT "filters-player_id-players-id" FOREIGN KEY ("player_id") REFERENCES "bedrock"."players" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 ALTER TABLE "bedrock"."filters"

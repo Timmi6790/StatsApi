@@ -19,9 +19,18 @@ CREATE TABLE "bedrock"."game_alias"
     "alias_name" varchar(255) NOT NULL
 );
 
+CREATE TABLE "bedrock"."game_category"
+(
+    "id"            serial4,
+    "category_name" varchar(255) NOT NULL,
+    PRIMARY KEY ("id"),
+    CONSTRAINT "game_category-category_name_copy_1" UNIQUE ("category_name")
+);
+
 CREATE TABLE "bedrock"."games"
 (
     "id"           serial4,
+    "category_id"  int4         NOT NULL,
     "website_name" varchar(255) NOT NULL,
     "game_name"    varchar(255) NOT NULL,
     "clean_name"   varchar(255) NOT NULL,
@@ -94,7 +103,7 @@ CREATE TABLE "java"."filters"
     "filter_reason"  text,
     "filter_start"   timestamptz NOT NULL,
     "filter_end"     timestamptz NOT NULL,
-    PRIMARY KEY ("id")
+    CONSTRAINT "_copy_11" PRIMARY KEY ("id")
 );
 
 CREATE TABLE "java"."game_alias"
@@ -218,6 +227,8 @@ ALTER TABLE "bedrock"."filters"
     ADD CONSTRAINT "filters-leaderboard_id-leaderboards-id" FOREIGN KEY ("leaderboard_id") REFERENCES "bedrock"."leaderboards" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 ALTER TABLE "bedrock"."game_alias"
     ADD CONSTRAINT "game_alias-alias_name-games-game_name" FOREIGN KEY ("game_id") REFERENCES "bedrock"."games" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "bedrock"."games"
+    ADD CONSTRAINT "games-category_id-game_category-id" FOREIGN KEY ("category_id") REFERENCES "bedrock"."game_category" ("id") ON DELETE SET NULL ON UPDATE NO ACTION;
 ALTER TABLE "bedrock"."leaderboard_save_ids"
     ADD CONSTRAINT "leaderboard_save_ids-leaderboard_id-leaderboards-id" FOREIGN KEY ("leaderboard_id") REFERENCES "bedrock"."leaderboards" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 ALTER TABLE "bedrock"."leaderboard_saves"

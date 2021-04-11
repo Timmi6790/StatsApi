@@ -57,8 +57,9 @@ public class WebsiteController {
             @PathVariable("game") final String game
     ) {
         final Map<String, Map<String, Long>> stats = this.getWebsitePlayerModel(player).getStats();
-        if (stats.containsKey(game)) {
-            return stats.get(game);
+        final Map<String, Long> gameStats = stats.get(game);
+        if (gameStats != null) {
+            return gameStats;
         }
 
         throw new InvalidGameException();

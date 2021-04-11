@@ -15,11 +15,9 @@ import java.util.concurrent.TimeoutException;
 
 @Service
 public class WebsiteService {
-    private final WebsiteParser websiteParser = new WebsiteParser();
-
     private final AsyncLoadingCache<String, Optional<WebsitePlayerModel>> playerStatsCache = Caffeine
             .newBuilder()
-            .buildAsync(this.websiteParser::retrievePlayerStats);
+            .buildAsync(playerName -> new WebsiteParser().retrievePlayerStats(playerName));
 
     public CompletableFuture<Optional<WebsitePlayerModel>> retrievePlayer(final String player) {
         return this.playerStatsCache.get(player);

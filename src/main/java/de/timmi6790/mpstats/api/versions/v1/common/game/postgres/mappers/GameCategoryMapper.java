@@ -1,6 +1,6 @@
-package de.timmi6790.mpstats.api.versions.v1.java.game.repository.postgres.mappers;
+package de.timmi6790.mpstats.api.versions.v1.common.game.postgres.mappers;
 
-import de.timmi6790.mpstats.api.versions.v1.java.game.repository.models.GameCategory;
+import de.timmi6790.mpstats.api.versions.v1.common.game.models.GameCategory;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 

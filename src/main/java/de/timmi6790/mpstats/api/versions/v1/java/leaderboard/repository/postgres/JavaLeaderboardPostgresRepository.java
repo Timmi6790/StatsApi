@@ -1,9 +1,9 @@
 package de.timmi6790.mpstats.api.versions.v1.java.leaderboard.repository.postgres;
 
+import de.timmi6790.mpstats.api.versions.v1.common.game.models.Game;
 import de.timmi6790.mpstats.api.versions.v1.java.board.JavaBoardService;
 import de.timmi6790.mpstats.api.versions.v1.java.board.repository.models.Board;
 import de.timmi6790.mpstats.api.versions.v1.java.game.JavaGameService;
-import de.timmi6790.mpstats.api.versions.v1.java.game.repository.models.Game;
 import de.timmi6790.mpstats.api.versions.v1.java.leaderboard.repository.JavaLeaderboardRepository;
 import de.timmi6790.mpstats.api.versions.v1.java.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.java.leaderboard.repository.postgres.mappers.LeaderboardMapper;

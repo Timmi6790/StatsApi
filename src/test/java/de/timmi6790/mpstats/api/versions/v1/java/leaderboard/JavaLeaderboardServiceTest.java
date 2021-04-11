@@ -1,12 +1,11 @@
 package de.timmi6790.mpstats.api.versions.v1.java.leaderboard;
 
 import de.timmi6790.mpstats.api.AbstractIntegrationTest;
+import de.timmi6790.mpstats.api.versions.v1.common.game.models.Game;
 import de.timmi6790.mpstats.api.versions.v1.java.board.JavaBoardService;
 import de.timmi6790.mpstats.api.versions.v1.java.board.repository.models.Board;
 import de.timmi6790.mpstats.api.versions.v1.java.board.repository.postgres.JavaBoardPostgresRepository;
 import de.timmi6790.mpstats.api.versions.v1.java.game.JavaGameService;
-import de.timmi6790.mpstats.api.versions.v1.java.game.repository.models.Game;
-import de.timmi6790.mpstats.api.versions.v1.java.game.repository.postgres.JavaGamePostgresRepository;
 import de.timmi6790.mpstats.api.versions.v1.java.leaderboard.repository.JavaLeaderboardRepository;
 import de.timmi6790.mpstats.api.versions.v1.java.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.java.leaderboard.repository.postgres.JavaLeaderboardPostgresRepository;
@@ -41,7 +40,7 @@ class JavaLeaderboardServiceTest {
     static void beforeAll() {
         final Jdbi jdbi = AbstractIntegrationTest.jdbi();
 
-        javaGameService = new JavaGameService(new JavaGamePostgresRepository(jdbi));
+        javaGameService = new JavaGameService(jdbi);
         javaBoardService = new JavaBoardService(new JavaBoardPostgresRepository(jdbi));
         javaStatService = new JavaStatService(new JavaStatPostgresRepository(jdbi));
 

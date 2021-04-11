@@ -16,7 +16,7 @@ CREATE TABLE "bedrock"."boards"
     "board_name"   varchar(255) NOT NULL,
     "clean_name"   varchar(255) NOT NULL,
     "update_time"  int4         NOT NULL,
-    CONSTRAINT "_copy_3_copy_1" PRIMARY KEY ("id"),
+    PRIMARY KEY ("id"),
     CONSTRAINT "boards-board_name" UNIQUE ("board_name")
 );
 CREATE UNIQUE INDEX "boards-board_name_lower" ON "bedrock"."boards" USING btree (
@@ -45,7 +45,7 @@ CREATE TABLE "bedrock"."game_category"
     "id"            serial4,
     "category_name" varchar(255) NOT NULL,
     PRIMARY KEY ("id"),
-    CONSTRAINT "game_category-category_name_copy_1" UNIQUE ("category_name")
+    CONSTRAINT "game_category-category_name" UNIQUE ("category_name")
 );
 
 CREATE TABLE "bedrock"."games"
@@ -57,7 +57,7 @@ CREATE TABLE "bedrock"."games"
     "clean_name"   varchar(255) NOT NULL,
     "description"  text,
     "wiki_url"     varchar(255),
-    CONSTRAINT "_copy_1_copy_1" PRIMARY KEY ("id"),
+    PRIMARY KEY ("id"),
     CONSTRAINT "games-game_name" UNIQUE ("game_name")
 );
 
@@ -80,8 +80,10 @@ CREATE TABLE "bedrock"."leaderboards"
 (
     "id"          serial4,
     "game_id"     int4        NOT NULL,
-    "deprecated"  int4        NOT NULL,
-    "last_update" timestamptz NOT NULL,
+    "stat_id"     int4        NOT NULL,
+    "board_id"    int4        NOT NULL,
+    "deprecated"  boolean     NOT NULL,
+    "last_update" timestamptz NOT NULL DEFAULT TO_TIMESTAMP(0),
     PRIMARY KEY ("id")
 );
 
@@ -99,7 +101,7 @@ CREATE TABLE "bedrock"."stat_alias"
 (
     "stat_id"    int4         NOT NULL,
     "alias_name" varchar(255) NOT NULL,
-    CONSTRAINT "stat_alias-alias_name_copy_1" UNIQUE ("alias_name")
+    CONSTRAINT "stat_alias-alias_name" UNIQUE ("alias_name")
 );
 
 CREATE TABLE "bedrock"."stats"
@@ -110,8 +112,8 @@ CREATE TABLE "bedrock"."stats"
     "clean_name"   varchar(255) NOT NULL,
     "description"  text,
     "achievement"  bool         NOT NULL,
-    CONSTRAINT "_copy_4_copy_1" PRIMARY KEY ("id"),
-    CONSTRAINT "stats-stat_name_copy_1" UNIQUE ("stat_name")
+    PRIMARY KEY ("id"),
+    CONSTRAINT "stats-stat_name" UNIQUE ("stat_name")
 );
 CREATE UNIQUE INDEX "stats-stat_name_lower" ON "bedrock"."stats" USING btree (
                                                                               LOWER(stat_name)
@@ -146,7 +148,7 @@ CREATE TABLE "java"."filters"
     "filter_reason"  text,
     "filter_start"   timestamptz NOT NULL,
     "filter_end"     timestamptz NOT NULL,
-    CONSTRAINT "_copy_11" PRIMARY KEY ("id")
+    PRIMARY KEY ("id")
 );
 
 CREATE TABLE "java"."game_alias"
@@ -279,13 +281,17 @@ ALTER TABLE "bedrock"."game_alias"
 ALTER TABLE "bedrock"."games"
     ADD CONSTRAINT "games-category_id-game_category-id" FOREIGN KEY ("category_id") REFERENCES "bedrock"."game_category" ("id") ON DELETE SET NULL ON UPDATE NO ACTION;
 ALTER TABLE "bedrock"."leaderboard_save_ids"
-    ADD CONSTRAINT "leaderboard_save_ids-leaderboard_id-leaderboards-id" FOREIGN KEY ("leaderboard_id") REFERENCES "bedrock"."leaderboards" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+    ADD CONSTRAINT "leaderboard_save_ids-leaderboard_id-leaderboards-id" FOREIGN KEY ("leaderboard_id") REFERENCES "bedrock"."leaderboards" ON DELETE CASCADE ON UPDATE NO ACTION;
 ALTER TABLE "bedrock"."leaderboard_saves"
     ADD CONSTRAINT "leaderboard_saves-leaderboard_save_id-leaderboard_save_ids-id" FOREIGN KEY ("leaderboard_save_id") REFERENCES "bedrock"."leaderboard_save_ids" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 ALTER TABLE "bedrock"."leaderboard_saves"
     ADD CONSTRAINT "leaderboard_saves-player_id-players_id" FOREIGN KEY ("player_id") REFERENCES "bedrock"."players" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 ALTER TABLE "bedrock"."leaderboards"
-    ADD CONSTRAINT "leaderboards-game_id-games-id" FOREIGN KEY ("game_id") REFERENCES "bedrock"."games" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+    ADD CONSTRAINT "leaderboards_game_id-games_id" FOREIGN KEY ("game_id") REFERENCES "bedrock"."games" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "bedrock"."leaderboards"
+    ADD CONSTRAINT "leaderboards_stat_id-stats_id" FOREIGN KEY ("stat_id") REFERENCES "bedrock"."stats" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "bedrock"."leaderboards"
+    ADD CONSTRAINT "leaderboards_board_id-boards_id" FOREIGN KEY ("board_id") REFERENCES "bedrock"."boards" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 DROP INDEX "bedrock"."players-player_name_lower";
 CREATE UNIQUE INDEX "players-player_name_lower" ON "bedrock"."players" (
                                                                         LOWER(player_name)

@@ -2,13 +2,13 @@ package de.timmi6790.mpstats.api.versions.v1.java.leaderboard.repository.postgre
 
 import de.timmi6790.mpstats.api.versions.v1.common.board.repository.models.Board;
 import de.timmi6790.mpstats.api.versions.v1.common.game.models.Game;
+import de.timmi6790.mpstats.api.versions.v1.common.stat.repository.models.Stat;
 import de.timmi6790.mpstats.api.versions.v1.java.board.JavaBoardService;
 import de.timmi6790.mpstats.api.versions.v1.java.game.JavaGameService;
 import de.timmi6790.mpstats.api.versions.v1.java.leaderboard.repository.JavaLeaderboardRepository;
 import de.timmi6790.mpstats.api.versions.v1.java.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.java.leaderboard.repository.postgres.mappers.LeaderboardMapper;
 import de.timmi6790.mpstats.api.versions.v1.java.stat.JavaStatService;
-import de.timmi6790.mpstats.api.versions.v1.java.stat.repository.models.Stat;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

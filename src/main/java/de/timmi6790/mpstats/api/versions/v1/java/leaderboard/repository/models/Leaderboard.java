@@ -3,7 +3,7 @@ package de.timmi6790.mpstats.api.versions.v1.java.leaderboard.repository.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.timmi6790.mpstats.api.versions.v1.common.board.repository.models.Board;
 import de.timmi6790.mpstats.api.versions.v1.common.game.models.Game;
-import de.timmi6790.mpstats.api.versions.v1.java.stat.repository.models.Stat;
+import de.timmi6790.mpstats.api.versions.v1.common.stat.repository.models.Stat;
 import lombok.Data;
 
 import java.sql.Timestamp;

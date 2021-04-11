@@ -1,4 +1,4 @@
-package de.timmi6790.mpstats.api.versions.v1.java.stat.repository.models;
+package de.timmi6790.mpstats.api.versions.v1.common.stat.repository.models;
 
 import lombok.Data;
 import net.minidev.json.annotate.JsonIgnore;

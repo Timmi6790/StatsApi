@@ -95,6 +95,28 @@ CREATE UNIQUE INDEX "players-player_name_lower" ON "bedrock"."players" (
                                                                         LOWER(player_name)
     );
 
+CREATE TABLE "bedrock"."stat_alias"
+(
+    "stat_id"    int4         NOT NULL,
+    "alias_name" varchar(255) NOT NULL,
+    CONSTRAINT "stat_alias-alias_name_copy_1" UNIQUE ("alias_name")
+);
+
+CREATE TABLE "bedrock"."stats"
+(
+    "id"           serial4,
+    "website_name" varchar(255) NOT NULL,
+    "stat_name"    varchar(255) NOT NULL,
+    "clean_name"   varchar(255) NOT NULL,
+    "description"  text,
+    "achievement"  bool         NOT NULL,
+    CONSTRAINT "_copy_4_copy_1" PRIMARY KEY ("id"),
+    CONSTRAINT "stats-stat_name_copy_1" UNIQUE ("stat_name")
+);
+CREATE UNIQUE INDEX "stats-stat_name_lower" ON "bedrock"."stats" USING btree (
+                                                                              LOWER(stat_name)
+    );
+
 CREATE TABLE "java"."board_alias"
 (
     "board_id"   int4         NOT NULL,
@@ -267,6 +289,12 @@ ALTER TABLE "bedrock"."leaderboards"
 DROP INDEX "bedrock"."players-player_name_lower";
 CREATE UNIQUE INDEX "players-player_name_lower" ON "bedrock"."players" (
                                                                         LOWER(player_name)
+    );
+ALTER TABLE "bedrock"."stat_alias"
+    ADD CONSTRAINT "stat_alias-stat_id-stats-id" FOREIGN KEY ("stat_id") REFERENCES "bedrock"."stats" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+DROP INDEX "bedrock"."stats-stat_name_lower";
+CREATE UNIQUE INDEX "stats-stat_name_lower" ON "bedrock"."stats" USING btree (
+                                                                              LOWER(stat_name)
     );
 ALTER TABLE "java"."board_alias"
     ADD CONSTRAINT "board_alias-board_id-boards-id" FOREIGN KEY ("board_id") REFERENCES "java"."boards" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;

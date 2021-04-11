@@ -1,11 +1,11 @@
-package de.timmi6790.mpstats.api.versions.v1.java.stat.repository;
+package de.timmi6790.mpstats.api.versions.v1.common.stat.repository;
 
-import de.timmi6790.mpstats.api.versions.v1.java.stat.repository.models.Stat;
+import de.timmi6790.mpstats.api.versions.v1.common.stat.repository.models.Stat;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface JavaStatRepository {
+public interface StatRepository {
     List<Stat> getStats();
 
     Optional<Stat> getStat(String statName);

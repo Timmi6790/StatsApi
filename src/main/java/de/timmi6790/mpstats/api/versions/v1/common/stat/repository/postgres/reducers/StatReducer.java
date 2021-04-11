@@ -1,6 +1,6 @@
-package de.timmi6790.mpstats.api.versions.v1.java.stat.repository.postgres.reducers;
+package de.timmi6790.mpstats.api.versions.v1.common.stat.repository.postgres.reducers;
 
-import de.timmi6790.mpstats.api.versions.v1.java.stat.repository.models.Stat;
+import de.timmi6790.mpstats.api.versions.v1.common.stat.repository.models.Stat;
 import org.jdbi.v3.core.result.LinkedHashMapRowReducer;
 import org.jdbi.v3.core.result.RowView;
 

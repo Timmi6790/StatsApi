@@ -63,11 +63,15 @@ CREATE TABLE "bedrock"."games"
 
 CREATE TABLE "bedrock"."leaderboard_save_ids"
 (
-    "id"             serial4,
     "save_time"      timestamptz NOT NULL,
+    "id"             serial4,
     "leaderboard_id" int4        NOT NULL,
     PRIMARY KEY ("id")
 );
+CREATE INDEX "leaderboard_save_ids-save_time-leaderboard_id" ON "bedrock"."leaderboard_save_ids" (
+                                                                                                  "save_time" DESC,
+                                                                                                  "leaderboard_id"
+    );
 
 CREATE TABLE "bedrock"."leaderboard_saves"
 (
@@ -189,6 +193,10 @@ CREATE TABLE "java"."leaderboard_save_ids"
     "leaderboard_id" int4        NOT NULL,
     PRIMARY KEY ("id")
 );
+CREATE INDEX "leaderboard_save_ids-save_time-leaderboard_id" ON "java"."leaderboard_save_ids" (
+                                                                                               "save_time" DESC,
+                                                                                               "leaderboard_id"
+    );
 
 CREATE TABLE "java"."leaderboard_saves"
 (
@@ -280,8 +288,13 @@ ALTER TABLE "bedrock"."game_alias"
     ADD CONSTRAINT "game_alias-alias_name-games-game_name" FOREIGN KEY ("game_id") REFERENCES "bedrock"."games" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 ALTER TABLE "bedrock"."games"
     ADD CONSTRAINT "games-category_id-game_category-id" FOREIGN KEY ("category_id") REFERENCES "bedrock"."game_category" ("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+DROP INDEX "bedrock"."leaderboard_save_ids-save_time-leaderboard_id";
 ALTER TABLE "bedrock"."leaderboard_save_ids"
     ADD CONSTRAINT "leaderboard_save_ids-leaderboard_id-leaderboards-id" FOREIGN KEY ("leaderboard_id") REFERENCES "bedrock"."leaderboards" ON DELETE CASCADE ON UPDATE NO ACTION;
+CREATE INDEX "leaderboard_save_ids-save_time-leaderboard_id" ON "bedrock"."leaderboard_save_ids" (
+                                                                                                  "save_time" DESC,
+                                                                                                  "leaderboard_id"
+    );
 ALTER TABLE "bedrock"."leaderboard_saves"
     ADD CONSTRAINT "leaderboard_saves-leaderboard_save_id-leaderboard_save_ids-id" FOREIGN KEY ("leaderboard_save_id") REFERENCES "bedrock"."leaderboard_save_ids" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 ALTER TABLE "bedrock"."leaderboard_saves"
@@ -320,8 +333,13 @@ ALTER TABLE "java"."games"
 CREATE UNIQUE INDEX "games-game_name_lower" ON "java"."games" USING btree (
                                                                            LOWER(game_name)
     );
+DROP INDEX "java"."leaderboard_save_ids-save_time-leaderboard_id";
 ALTER TABLE "java"."leaderboard_save_ids"
     ADD CONSTRAINT "leaderboard_save_ids_leaderboard_id-leaderboards_id" FOREIGN KEY ("leaderboard_id") REFERENCES "java"."leaderboards" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+CREATE INDEX "leaderboard_save_ids-save_time-leaderboard_id" ON "java"."leaderboard_save_ids" (
+                                                                                               "save_time" DESC,
+                                                                                               "leaderboard_id"
+    );
 ALTER TABLE "java"."leaderboard_saves"
     ADD CONSTRAINT "leaderboard_saves-player_id-players_id" FOREIGN KEY ("player_id") REFERENCES "java"."players" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 ALTER TABLE "java"."leaderboard_saves"

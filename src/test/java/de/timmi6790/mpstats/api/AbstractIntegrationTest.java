@@ -18,11 +18,16 @@ public abstract class AbstractIntegrationTest {
 
     static {
         POSTGRE_SQL_CONTAINER.start();
-        DatabaseConfiguration.setupDatabase(
-                POSTGRE_SQL_CONTAINER.getJdbcUrl(),
-                POSTGRE_SQL_CONTAINER.getUsername(),
-                POSTGRE_SQL_CONTAINER.getPassword()
-        );
+        try {
+            DatabaseConfiguration.setupDatabase(
+                    POSTGRE_SQL_CONTAINER.getJdbcUrl(),
+                    POSTGRE_SQL_CONTAINER.getUsername(),
+                    POSTGRE_SQL_CONTAINER.getPassword()
+            );
+        } catch (final Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     public static Jdbi jdbi() {

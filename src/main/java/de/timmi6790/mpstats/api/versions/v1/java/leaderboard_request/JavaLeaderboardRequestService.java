@@ -3,7 +3,7 @@ package de.timmi6790.mpstats.api.versions.v1.java.leaderboard_request;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import de.timmi6790.mpstats.api.Config;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.AbstractLeaderboardRequest;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.AbstractLeaderboardRequestService;
 import de.timmi6790.mpstats.api.versions.v1.java.leaderboard_request.models.JavaWebLeaderboard;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class JavaLeaderboardRequestService extends AbstractLeaderboardRequest<JavaWebLeaderboard> {
+public class JavaLeaderboardRequestService extends AbstractLeaderboardRequestService<JavaWebLeaderboard> {
     private static final Pattern LEADERBOARD_PATTERN = Pattern.compile("^<td>\\d*<\\/td>.*avatars\\/(.*)\\?size.*\\/players\\/(\\w{1,16}).*<td> ([\\d|,]*)<");
 
     @Autowired

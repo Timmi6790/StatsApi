@@ -15,16 +15,16 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public abstract class AbstractLeaderboardRequestTest<L extends WebLeaderboard> {
-    private final AbstractLeaderboardRequest<L> leaderboardRequest;
+public abstract class AbstractLeaderboardRequestServiceTest<L extends WebLeaderboard> {
+    private final AbstractLeaderboardRequestService<L> leaderboardRequest;
 
-    public AbstractLeaderboardRequestTest(final AbstractLeaderboardRequest<L> leaderboardRequest) {
+    public AbstractLeaderboardRequestServiceTest(final AbstractLeaderboardRequestService<L> leaderboardRequest) {
         this.leaderboardRequest = leaderboardRequest;
     }
 
     @SneakyThrows
     private String getContentFromFile(final String path) {
-        final ClassLoader classLoader = AbstractLeaderboardRequestTest.class.getClassLoader();
+        final ClassLoader classLoader = AbstractLeaderboardRequestServiceTest.class.getClassLoader();
 
         final URI uri = classLoader.getResource(path).toURI();
         final byte[] encoded = Files.readAllBytes(Paths.get(uri));

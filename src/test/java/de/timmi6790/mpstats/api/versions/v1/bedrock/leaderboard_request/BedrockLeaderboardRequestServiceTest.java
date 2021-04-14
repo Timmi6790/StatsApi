@@ -1,7 +1,7 @@
 package de.timmi6790.mpstats.api.versions.v1.bedrock.leaderboard_request;
 
 import de.timmi6790.mpstats.api.Config;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.AbstractLeaderboardRequestTest;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.AbstractLeaderboardRequestServiceTest;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.models.WebLeaderboard;
 import org.junit.jupiter.api.Test;
 
@@ -10,7 +10,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class BedrockLeaderboardRequestServiceTest extends AbstractLeaderboardRequestTest<WebLeaderboard> {
+class BedrockLeaderboardRequestServiceTest extends AbstractLeaderboardRequestServiceTest<WebLeaderboard> {
     private static final String BASE_PATH = "leaderboard_request/bedrock/";
 
     public BedrockLeaderboardRequestServiceTest() {

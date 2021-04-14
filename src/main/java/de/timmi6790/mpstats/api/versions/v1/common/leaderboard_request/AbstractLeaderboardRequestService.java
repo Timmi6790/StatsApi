@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 @Data
 @Log4j2
-public abstract class AbstractLeaderboardRequest<L extends WebLeaderboard> {
+public abstract class AbstractLeaderboardRequestService<L extends WebLeaderboard> {
     private static final int TIMEOUT = (int) TimeUnit.SECONDS.toMillis(15);
     private static final String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36";
     private static final Pattern HTML_ROW_PARSER = Pattern.compile("<tr>|<tr >|<tr class=\"LeaderboardsOdd\">|<tr class=\"LeaderboardsHead\">[^<]*");
@@ -29,7 +29,7 @@ public abstract class AbstractLeaderboardRequest<L extends WebLeaderboard> {
     @Getter(value = AccessLevel.PROTECTED)
     private final UnirestInstance unirest;
 
-    protected AbstractLeaderboardRequest(final String leaderboardBaseUrl, final int estimatedResultSize) {
+    protected AbstractLeaderboardRequestService(final String leaderboardBaseUrl, final int estimatedResultSize) {
         this.leaderboardBaseUrl = leaderboardBaseUrl;
         this.estimatedResultSize = estimatedResultSize;
 

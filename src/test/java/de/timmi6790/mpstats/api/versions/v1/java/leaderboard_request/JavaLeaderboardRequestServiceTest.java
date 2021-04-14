@@ -1,7 +1,7 @@
 package de.timmi6790.mpstats.api.versions.v1.java.leaderboard_request;
 
 import de.timmi6790.mpstats.api.Config;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.AbstractLeaderboardRequestTest;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.AbstractLeaderboardRequestServiceTest;
 import de.timmi6790.mpstats.api.versions.v1.java.leaderboard_request.models.JavaWebLeaderboard;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JavaLeaderboardRequestServiceTest extends AbstractLeaderboardRequestTest<JavaWebLeaderboard> {
+class JavaLeaderboardRequestServiceTest extends AbstractLeaderboardRequestServiceTest<JavaWebLeaderboard> {
     private static final String BASE_PATH = "leaderboard_request/java/";
 
     public JavaLeaderboardRequestServiceTest() {

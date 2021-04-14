@@ -1,7 +1,7 @@
 package de.timmi6790.mpstats.api.versions.v1.java.player.repository.postgres;
 
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.JavaPlayerRepository;
-import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.Player;
+import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaRepositoryPlayer;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.postgres.mappers.PlayerMapper;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,21 +26,21 @@ public class JavaPlayerPostgresRepository implements JavaPlayerRepository {
     }
 
     @Override
-    public Optional<Player> getPlayer(final UUID playerUUID) {
+    public Optional<JavaRepositoryPlayer> getPlayer(final UUID playerUUID) {
         return this.database.withHandle(handle ->
                 handle.createQuery(SELECT_PLAYER)
                         .bind("playerUUID", playerUUID)
-                        .mapTo(Player.class)
+                        .mapTo(JavaRepositoryPlayer.class)
                         .findFirst()
         );
     }
 
     @Override
-    public Optional<Player> getPlayer(final String playerName, final UUID playerUUID) {
-        final Optional<Player> playerOpt = this.getPlayer(playerUUID);
+    public Optional<JavaRepositoryPlayer> getPlayer(final String playerName, final UUID playerUUID) {
+        final Optional<JavaRepositoryPlayer> playerOpt = this.getPlayer(playerUUID);
         // Assure that the name was not changed
         if (playerOpt.isPresent()) {
-            final Player player = playerOpt.get();
+            final JavaRepositoryPlayer player = playerOpt.get();
             if (!player.getPlayerName().equals(playerName)) {
                 this.changePlayerName(player.getRepositoryId(), playerName);
                 player.setPlayerName(playerName);
@@ -50,12 +50,12 @@ public class JavaPlayerPostgresRepository implements JavaPlayerRepository {
     }
 
     @Override
-    public Player insertPlayer(final String playerName, final UUID playerUUID) {
+    public JavaRepositoryPlayer insertPlayer(final String playerName, final UUID playerUUID) {
         return this.database.withHandle(handle ->
                 handle.createQuery(INSERT_PLAYER)
                         .bind("playerName", playerName)
                         .bind("playerUUID", playerUUID)
-                        .mapTo(Player.class)
+                        .mapTo(JavaRepositoryPlayer.class)
                         .first()
         );
     }

@@ -5,13 +5,14 @@ import com.google.re2j.Pattern;
 import de.timmi6790.mpstats.api.Config;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.AbstractLeaderboardRequestService;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.models.WebLeaderboard;
+import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class BedrockLeaderboardRequestService extends AbstractLeaderboardRequestService<WebLeaderboard> {
+public class BedrockLeaderboardRequestService extends AbstractLeaderboardRequestService<Player> {
     private static final Pattern LEADERBOARD_PATTERN = Pattern.compile("^<td>\\d*<\\/td><td>(.{1,33})<\\/td><td> ([\\d,]*)<\\/td>");
 
     @Autowired
@@ -20,12 +21,12 @@ public class BedrockLeaderboardRequestService extends AbstractLeaderboardRequest
     }
 
     @Override
-    protected Optional<WebLeaderboard> parseRow(final String row) {
+    protected Optional<WebLeaderboard<Player>> parseRow(final String row) {
         final Matcher leaderboardMatcher = LEADERBOARD_PATTERN.matcher(row);
         if (leaderboardMatcher.find()) {
             return Optional.of(
-                    new WebLeaderboard(
-                            leaderboardMatcher.group(1),
+                    new WebLeaderboard<>(
+                            new Player(leaderboardMatcher.group(1)),
                             Long.parseLong(leaderboardMatcher.group(2).replace(",", ""))
                     )
             );

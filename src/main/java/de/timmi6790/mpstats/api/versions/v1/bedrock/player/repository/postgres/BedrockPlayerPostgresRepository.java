@@ -1,7 +1,7 @@
 package de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.postgres;
 
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.BedrockPlayerRepository;
-import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.Player;
+import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockRepositoryPlayer;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.postgres.mappers.PlayerMapper;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,21 +24,21 @@ public class BedrockPlayerPostgresRepository implements BedrockPlayerRepository 
     }
 
     @Override
-    public Optional<Player> getPlayer(final String playerName) {
+    public Optional<BedrockRepositoryPlayer> getPlayer(final String playerName) {
         return this.database.withHandle(handle ->
                 handle.createQuery(SELECT_PLAYER)
                         .bind("playerName", playerName)
-                        .mapTo(Player.class)
+                        .mapTo(BedrockRepositoryPlayer.class)
                         .findFirst()
         );
     }
 
     @Override
-    public Player insertPlayer(final String playerName) {
+    public BedrockRepositoryPlayer insertPlayer(final String playerName) {
         return this.database.withHandle(handle ->
                 handle.createQuery(INSERT_PLAYER)
                         .bind("playerName", playerName)
-                        .mapTo(Player.class)
+                        .mapTo(BedrockRepositoryPlayer.class)
                         .first()
         );
     }

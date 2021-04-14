@@ -3,7 +3,9 @@ package de.timmi6790.mpstats.api.versions.v1.website;
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import de.timmi6790.mpstats.api.versions.v1.website.models.WebsitePlayerModel;
+import de.timmi6790.mpstats.api.versions.v1.website.parser.WebsiteParser;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -15,9 +17,14 @@ import java.util.concurrent.TimeoutException;
 
 @Service
 public class WebsiteService {
-    private final AsyncLoadingCache<String, Optional<WebsitePlayerModel>> playerStatsCache = Caffeine
-            .newBuilder()
-            .buildAsync(playerName -> new WebsiteParser().retrievePlayerStats(playerName));
+    private final AsyncLoadingCache<String, Optional<WebsitePlayerModel>> playerStatsCache;
+
+    @Autowired
+    public WebsiteService(final WebsiteParser websiteParser) {
+        this.playerStatsCache = Caffeine
+                .newBuilder()
+                .buildAsync(websiteParser::retrievePlayerStats);
+    }
 
     public CompletableFuture<Optional<WebsitePlayerModel>> retrievePlayer(final String player) {
         return this.playerStatsCache.get(player);

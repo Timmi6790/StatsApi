@@ -1,6 +1,5 @@
-package de.timmi6790.mpstats.api.versions.v1.website;
+package de.timmi6790.mpstats.api.versions.v1.website.parser;
 
-import de.timmi6790.commons.builders.SetBuilder;
 import de.timmi6790.mpstats.api.versions.v1.website.models.WebsitePlayerModel;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
@@ -8,16 +7,17 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Service
 public class WebsiteParser {
     private static final String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36";
 
@@ -32,64 +32,26 @@ public class WebsiteParser {
 
     private static final Pattern GENERAL_STATS_PATTERN = Pattern.compile("^([\\d.,]*) (.*)$");
 
-    private static final Set<String> GENERAL_FILTERED_STATS = SetBuilder.<String>ofHashSet()
-            .addAll(
-                    "KDR",
-                    "Total games",
-                    "Damage Taken in PvP",
-                    "Damage Taken",
-                    "Damage Dealt",
-                    "Blue Kills",
-                    "Yellow Kills",
-                    "Red Kills",
-                    "Green Kills",
-                    "Blue Deaths",
-                    "Yellow Deaths",
-                    "Red Deaths",
-                    "Green Deaths",
-                    "SWAT Kills",
-                    "Bombers Kills",
-                    "SWAT Deaths",
-                    "Bombers Deaths"
-            ).build();
+    private final WebsiteConverter websiteConverter;
+    private final WebsiteFilter websiteFilter;
 
-    private long convertValue(final String game, final String stat, final String value) {
-        if (game.equalsIgnoreCase(CLANS_GAME_NAME) && stat.equalsIgnoreCase("Time Played")) {
-            return TimeUnit.DAYS.toSeconds(Long.parseLong(value.replace(",", "")));
-        }
-
-        return Long.parseLong(value.replace(",", ""));
-    }
-
-    private String convertGame(final String game) {
-        return game
-                .replace(" ", "")
-                .replace("Solo", "");
-    }
-
-    private String convertStat(final String game, final String stat) {
-        return stat;
-    }
-
-    private boolean isStatFiltered(final String game, final String stat) {
-        if (GENERAL_FILTERED_STATS.contains(stat)) {
-            return true;
-        }
-
-        return false;
+    @Autowired
+    public WebsiteParser(final WebsiteConverter websiteConverter, final WebsiteFilter websiteFilter) {
+        this.websiteConverter = websiteConverter;
+        this.websiteFilter = websiteFilter;
     }
 
     private void addToStatsList(final String game,
                                 final String stat,
                                 final String value,
                                 final Map<String, Long> statsMap) {
-        final String statValue = this.convertStat(game, stat);
+        final String statValue = this.websiteConverter.convertStat(game, stat);
         // Don't save stats we don't want to show
-        if (this.isStatFiltered(game, statValue)) {
+        if (this.websiteFilter.isStatFiltered(game, statValue)) {
             return;
         }
 
-        statsMap.put(stat, this.convertValue(game, stat, value));
+        statsMap.put(stat, this.websiteConverter.convertValue(game, stat, value));
     }
 
     private Matcher getClansCardMatcher(final String htmlBody) {
@@ -124,6 +86,19 @@ public class WebsiteParser {
         return Optional.empty();
     }
 
+    private Optional<UUID> getPlayerUUID(final Document doc) {
+        final Elements imageElements = doc.select("img");
+        for (final Element imageElement : imageElements) {
+            final String srcValue = imageElement.attr("src");
+            final Matcher matcher = PLAYER_UUID_PATTERN.matcher(srcValue);
+            if (matcher.find()) {
+                final UUID playerUUID = UUID.fromString(matcher.group(1));
+                return Optional.of(playerUUID);
+            }
+        }
+        return Optional.empty();
+    }
+
     public Optional<WebsitePlayerModel> retrievePlayerStats(final String player) {
         final Optional<String> htmlOpt = this.getHtmlString(player);
         if (!htmlOpt.isPresent()) {
@@ -143,16 +118,10 @@ public class WebsiteParser {
         final String playerName = playerNameParts[playerNameParts.length - 1];
         final String rank = playerNameParts.length == 1 ? "Player" : playerNameParts[0];
 
-        // UUID | I just assume that we will always find one
-        UUID playerUUID = null;
-        final Elements imageElements = doc.select("img");
-        for (final Element imageElement : imageElements) {
-            final String srcValue = imageElement.attr("src");
-            final Matcher matcher = PLAYER_UUID_PATTERN.matcher(srcValue);
-            if (matcher.find()) {
-                playerUUID = UUID.fromString(matcher.group(1));
-                break;
-            }
+        // PlayerUUID
+        final Optional<UUID> playerUUIDOpt = this.getPlayerUUID(doc);
+        if (!playerUUIDOpt.isPresent()) {
+            return Optional.empty();
         }
 
         final Map<String, Map<String, Long>> stats = new LinkedCaseInsensitiveMap<>();
@@ -193,7 +162,7 @@ public class WebsiteParser {
             final int tableSplitCount = statsTableElements.size() / gameNameElements.size();
 
             for (int index = 0; gameNameElements.size() > index; index++) {
-                final String gameName = this.convertGame(gameNameElements.get(index).text());
+                final String gameName = this.websiteConverter.convertGame(gameNameElements.get(index).text());
                 final Map<String, Long> statsMap = new LinkedCaseInsensitiveMap<>();
 
                 // General stats
@@ -226,7 +195,7 @@ public class WebsiteParser {
         return Optional.of(
                 new WebsitePlayerModel(
                         playerName,
-                        playerUUID,
+                        playerUUIDOpt.get(),
                         rank,
                         stats
                 )

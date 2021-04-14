@@ -41,6 +41,18 @@ public class JavaPlayerService {
         return this.getPlayer(playerName).isPresent();
     }
 
+    public Optional<Player> getPlayer(final UUID playerUUID) {
+        // Cache check
+        final Player playerCached = this.playerCache.getIfPresent(playerUUID);
+        if (playerCached != null) {
+            return Optional.of(playerCached);
+        }
+
+        final Optional<Player> playerOpt = this.javaPlayerRepository.getPlayer(playerUUID);
+        playerOpt.ifPresent(player -> this.playerCache.put(playerUUID, player));
+        return playerOpt;
+    }
+
     public Optional<Player> getPlayer(final String playerName, final UUID playerUUID) {
         // Cache check
         final Player playerCached = this.playerCache.getIfPresent(playerUUID);

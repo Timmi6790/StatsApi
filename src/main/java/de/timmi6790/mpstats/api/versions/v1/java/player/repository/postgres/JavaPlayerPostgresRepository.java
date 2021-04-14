@@ -26,23 +26,27 @@ public class JavaPlayerPostgresRepository implements JavaPlayerRepository {
     }
 
     @Override
-    public Optional<Player> getPlayer(final String playerName, final UUID playerUUID) {
-        return this.database.withHandle(handle -> {
-            final Optional<Player> playerOpt = handle.createQuery(SELECT_PLAYER)
-                    .bind("playerUUID", playerUUID)
-                    .mapTo(Player.class)
-                    .findFirst();
+    public Optional<Player> getPlayer(final UUID playerUUID) {
+        return this.database.withHandle(handle ->
+                handle.createQuery(SELECT_PLAYER)
+                        .bind("playerUUID", playerUUID)
+                        .mapTo(Player.class)
+                        .findFirst()
+        );
+    }
 
-            // Update name if changed
-            if (playerOpt.isPresent()) {
-                final Player player = playerOpt.get();
-                if (!player.getPlayerName().equals(playerName)) {
-                    this.changePlayerName(player.getRepositoryId(), playerName);
-                    player.setPlayerName(playerName);
-                }
+    @Override
+    public Optional<Player> getPlayer(final String playerName, final UUID playerUUID) {
+        final Optional<Player> playerOpt = this.getPlayer(playerUUID);
+        // Assure that the name was not changed
+        if (playerOpt.isPresent()) {
+            final Player player = playerOpt.get();
+            if (!player.getPlayerName().equals(playerName)) {
+                this.changePlayerName(player.getRepositoryId(), playerName);
+                player.setPlayerName(playerName);
             }
-            return playerOpt;
-        });
+        }
+        return playerOpt;
     }
 
     @Override

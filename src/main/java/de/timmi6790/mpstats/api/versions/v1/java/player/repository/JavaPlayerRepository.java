@@ -6,9 +6,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface JavaPlayerRepository {
+    Optional<Player> getPlayer(UUID playerUUID);
+
     Optional<Player> getPlayer(String playerName, UUID playerUUID);
 
     Player insertPlayer(String playerName, UUID playerUUID);
-    
+
     void changePlayerName(int playerId, String newName);
 }

@@ -1,0 +1,16 @@
+<script type="0eacbfe2c39d546133d2b832-text/javascript">
+
+function displayPage(id){
+    //console.log(id);
+    $(".activeLeaderPage").removeClass("activeLeaderPage");
+	$(".activeLeaderButton").removeClass("activeLeaderButton");
+	$(".LeaderButton" + id).addClass("activeLeaderButton");
+    $(".LeaderPage" + id).addClass("activeLeaderPage");
+}
+</script>
+<div class="LeaderPage1 activeLeaderPage"><table class="leaderboardTable">
+<tr class="LeaderboardsHead"><th></th>
+<th></th>
+<th>IGN</th>
+<th class="gameStatType">Wins</th>
+</tr></table></div><div class="leaderButtonWrapper"><div class="LeaderButton1 activeLeaderButton" id="1" onclick="if (!window.__cfRLUnblockHandlers) return false; displayPage(1)" data-cf-modified-0eacbfe2c39d546133d2b832-=""> 1</div></div><script src="https://ajax.cloudflare.com/cdn-cgi/scripts/7089c43e/cloudflare-static/rocket-loader.min.js" data-cf-settings="0eacbfe2c39d546133d2b832-|49" defer=""></script>

@@ -62,6 +62,11 @@
             <artifactId>bucket4j-core</artifactId>
             <version>4.10.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.re2j</groupId>
+            <artifactId>re2j</artifactId>
+            <version>1.6</version>
+        </dependency>
 
         <!-- Database -->
         <dependency>
@@ -240,6 +245,12 @@
             <groupId>com.mmnaseri.utils</groupId>
             <artifactId>spring-data-mock</artifactId>
             <version>2.2.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.konghq</groupId>
+            <artifactId>unirest-mocks</artifactId>
+            <version>3.11.09</version>
             <scope>test</scope>
         </dependency>
 

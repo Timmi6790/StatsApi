@@ -119,4 +119,19 @@ class JavaPlayerServiceTest {
 
         assertThat(playerChangedName.getPlayerName()).isEqualTo(newPlayerName);
     }
+
+    @Test
+    void getPlayer() {
+        final String playerName = this.generatePlayerName();
+        final UUID playerUUID = this.generatePlayerUUID();
+
+        final Optional<Player> playerNotFound = javaPlayerService.getPlayer(playerUUID);
+        assertThat(playerNotFound).isNotPresent();
+
+        // Insert player
+        javaPlayerService.getPlayerOrCreate(playerName, playerUUID);
+
+        final Optional<Player> playerFound = javaPlayerService.getPlayer(playerUUID);
+        assertThat(playerFound).isPresent();
+    }
 }

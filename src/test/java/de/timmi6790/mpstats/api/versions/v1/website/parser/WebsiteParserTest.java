@@ -1,4 +1,4 @@
-package de.timmi6790.mpstats.api.versions.v1.website;
+package de.timmi6790.mpstats.api.versions.v1.website.parser;
 
 import de.timmi6790.commons.builders.MapBuilder;
 import de.timmi6790.mpstats.api.versions.v1.website.models.WebsitePlayerModel;
@@ -96,7 +96,7 @@ class WebsiteParserTest {
     }
 
     private WebsiteParser setUpWebsiteStats(final String htmlContentPath) {
-        final WebsiteParser websiteStats = spy(new WebsiteParser());
+        final WebsiteParser websiteStats = spy(new WebsiteParser(new WebsiteConverter(), new WebsiteFilter()));
         final String htmlContent = getContentFromFile(htmlContentPath);
         doReturn(Optional.of(htmlContent))
                 .when(websiteStats)

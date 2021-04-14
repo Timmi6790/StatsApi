@@ -78,17 +78,17 @@ public class BoardPostgresRepository extends PostgresRepository implements Board
 
     @Override
     public void setBoardName(final int boardId, final String newBoardName) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setBoardWebsiteName(final int boardId, final String newWebsiteName) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setBoardUpdateTime(final int boardId, final long newUpdateTime) {
-
+        throw new UnsupportedOperationException();
     }
 
     private static class QueryTemplates {

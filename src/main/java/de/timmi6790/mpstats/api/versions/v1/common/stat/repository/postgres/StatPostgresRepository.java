@@ -79,32 +79,32 @@ public class StatPostgresRepository extends PostgresRepository implements StatRe
 
     @Override
     public void setStatWebsiteName(final int statId, final String newWebsiteName) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setStatName(final int statId, final String newStatName) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setStatAchievement(final int statId, final boolean isAchievement) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setStatDescription(final int statId, final String description) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void addStatAlias(final int statId, final String aliasName) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void removeStatAliases(final int statId, final String aliasName) {
-
+        throw new UnsupportedOperationException();
     }
 
     private static class QueryTemplates {

@@ -24,7 +24,7 @@ public class GamePostgresRepository extends PostgresRepository implements GameRe
     private final String getCategory;
     private final String insertCategory;
     private final String removeCategory;
-    
+
     public GamePostgresRepository(final Jdbi database, final String schema) {
         super(database, schema);
 
@@ -93,27 +93,27 @@ public class GamePostgresRepository extends PostgresRepository implements GameRe
 
     @Override
     public void setGameName(final int gameId, final String newGameName) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setGameWebsiteName(final int gameId, final String newWebsiteName) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setGameDescription(final int gameId, final String description) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setGameWikiUrl(final int gameId, final String wikiUrl) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setGameCategory(final int gameId, final int categoryId) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -156,12 +156,12 @@ public class GamePostgresRepository extends PostgresRepository implements GameRe
 
     @Override
     public void addGameAlias(final int gameId, final String aliasName) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void removeGameAlias(final int gameId, final String aliasName) {
-
+        throw new UnsupportedOperationException();
     }
 
     private static class QueryTemplates {

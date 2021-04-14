@@ -74,21 +74,21 @@ public class JavaGroupPostgresRepository implements JavaGroupRepository {
 
     @Override
     public void renameGroup(final int groupId, final String newGroupName) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setDescription(final int groupId, final String newDescription) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void addGame(final int groupId, final int gameId) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void removeGame(final int groupId, final int gameId) {
-
+        throw new UnsupportedOperationException();
     }
 }

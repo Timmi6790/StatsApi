@@ -88,12 +88,12 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
 
     @Override
     public void setLeaderboardDeprecated(final int leaderboardId, final boolean deprecated) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setLeaderboardLastUpdate(final int leaderboardId, final long lastUpdate) {
-
+        throw new UnsupportedOperationException();
     }
 
     private static class QueryTemplates {

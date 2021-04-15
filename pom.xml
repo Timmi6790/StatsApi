@@ -35,6 +35,18 @@
             <url>https://repo1.maven.org/maven2/</url>
         </repository>
     </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-snapshots</id>
+            <name>Spring Snapshots</name>
+            <url>https://repo.spring.io/snapshot</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>spring</id>
+            <name>Spring</name>
+            <url>https://repo.spring.io</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <dependencies>
         <dependency>
@@ -247,14 +259,6 @@
             <artifactId>unirest-mocks</artifactId>
             <version>3.11.09</version>
             <scope>test</scope>
-        </dependency>
-
-        <!-- Plugin Dependencies -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-            <version>2.4.4</version>
-            <type>maven-plugin</type>
         </dependency>
     </dependencies>
 

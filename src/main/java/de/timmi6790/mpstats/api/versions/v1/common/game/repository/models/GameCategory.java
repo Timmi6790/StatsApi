@@ -1,4 +1,4 @@
-package de.timmi6790.mpstats.api.versions.v1.common.game.models;
+package de.timmi6790.mpstats.api.versions.v1.common.game.repository.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;

@@ -1,7 +1,7 @@
-package de.timmi6790.mpstats.api.versions.v1.common.game;
+package de.timmi6790.mpstats.api.versions.v1.common.game.repository;
 
-import de.timmi6790.mpstats.api.versions.v1.common.game.models.Game;
-import de.timmi6790.mpstats.api.versions.v1.common.game.models.GameCategory;
+import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.Game;
+import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.GameCategory;
 
 import java.util.List;
 import java.util.Optional;

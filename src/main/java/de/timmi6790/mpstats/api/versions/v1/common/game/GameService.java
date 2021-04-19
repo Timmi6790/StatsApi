@@ -1,9 +1,10 @@
 package de.timmi6790.mpstats.api.versions.v1.common.game;
 
 import com.google.common.util.concurrent.Striped;
-import de.timmi6790.mpstats.api.versions.v1.common.game.models.Game;
-import de.timmi6790.mpstats.api.versions.v1.common.game.models.GameCategory;
-import de.timmi6790.mpstats.api.versions.v1.common.game.postgres.GamePostgresRepository;
+import de.timmi6790.mpstats.api.versions.v1.common.game.repository.GameRepository;
+import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.Game;
+import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.GameCategory;
+import de.timmi6790.mpstats.api.versions.v1.common.game.repository.postgres.GamePostgresRepository;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.jdbi.v3.core.Jdbi;

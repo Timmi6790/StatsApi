@@ -1,11 +1,11 @@
-package de.timmi6790.mpstats.api.versions.v1.common.game.postgres;
+package de.timmi6790.mpstats.api.versions.v1.common.game.repository.postgres;
 
-import de.timmi6790.mpstats.api.versions.v1.common.game.GameRepository;
-import de.timmi6790.mpstats.api.versions.v1.common.game.models.Game;
-import de.timmi6790.mpstats.api.versions.v1.common.game.models.GameCategory;
-import de.timmi6790.mpstats.api.versions.v1.common.game.postgres.mappers.GameCategoryMapper;
-import de.timmi6790.mpstats.api.versions.v1.common.game.postgres.mappers.GameMapper;
-import de.timmi6790.mpstats.api.versions.v1.common.game.postgres.reducers.GameReducer;
+import de.timmi6790.mpstats.api.versions.v1.common.game.repository.GameRepository;
+import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.Game;
+import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.GameCategory;
+import de.timmi6790.mpstats.api.versions.v1.common.game.repository.postgres.mappers.GameCategoryMapper;
+import de.timmi6790.mpstats.api.versions.v1.common.game.repository.postgres.mappers.GameMapper;
+import de.timmi6790.mpstats.api.versions.v1.common.game.repository.postgres.reducers.GameReducer;
 import de.timmi6790.mpstats.api.versions.v1.common.utilities.PostgresRepository;
 import org.jdbi.v3.core.Jdbi;
 

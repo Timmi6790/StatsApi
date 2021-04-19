@@ -1,6 +1,6 @@
-package de.timmi6790.mpstats.api.versions.v1.common.game.postgres.reducers;
+package de.timmi6790.mpstats.api.versions.v1.common.game.repository.postgres.reducers;
 
-import de.timmi6790.mpstats.api.versions.v1.common.game.models.Game;
+import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.Game;
 import org.jdbi.v3.core.result.LinkedHashMapRowReducer;
 import org.jdbi.v3.core.result.RowView;
 

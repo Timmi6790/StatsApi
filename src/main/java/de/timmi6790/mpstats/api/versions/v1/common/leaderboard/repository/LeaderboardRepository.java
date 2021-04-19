@@ -1,7 +1,7 @@
 package de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository;
 
 import de.timmi6790.mpstats.api.versions.v1.common.board.repository.models.Board;
-import de.timmi6790.mpstats.api.versions.v1.common.game.models.Game;
+import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.Game;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.repository.models.Stat;
 

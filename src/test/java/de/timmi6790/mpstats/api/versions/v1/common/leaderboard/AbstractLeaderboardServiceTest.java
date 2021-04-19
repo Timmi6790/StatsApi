@@ -74,7 +74,7 @@ public abstract class AbstractLeaderboardServiceTest {
         final String cleanName = this.generateBoardName();
         final int updateTime = 1;
 
-        return this.boardService.getBordOrCreate(boardName, websiteName, cleanName, updateTime);
+        return this.boardService.getBoardOrCreate(boardName, websiteName, cleanName, updateTime);
     }
 
     private Stat generateStat() {

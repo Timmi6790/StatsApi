@@ -49,10 +49,10 @@ public class BoardService {
         return Optional.ofNullable(this.boards.get(boardName));
     }
 
-    public Board getBordOrCreate(final String websiteName,
-                                 final String boardName,
-                                 final String cleanName,
-                                 final int updateTime) {
+    public Board getBoardOrCreate(final String websiteName,
+                                  final String boardName,
+                                  final String cleanName,
+                                  final int updateTime) {
         final Lock lock = this.getBoardLock(boardName);
         lock.lock();
         try {

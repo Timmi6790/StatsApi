@@ -35,7 +35,7 @@ public abstract class AbstractBoardServiceTest {
         final String cleanName = this.generateBoardName();
         final int time = ThreadLocalRandom.current().nextInt(5_000);
 
-        return this.boardService.getBordOrCreate(websiteName, boardName, cleanName, time);
+        return this.boardService.getBoardOrCreate(websiteName, boardName, cleanName, time);
     }
 
     @Test
@@ -96,7 +96,7 @@ public abstract class AbstractBoardServiceTest {
         final Optional<Board> boardNotFound = this.boardService.getBoard(boardName);
         assertThat(boardNotFound).isNotPresent();
 
-        final Board createdBoard = this.boardService.getBordOrCreate(websiteName, boardName, cleanName, updateTime);
+        final Board createdBoard = this.boardService.getBoardOrCreate(websiteName, boardName, cleanName, updateTime);
         assertThat(createdBoard.getWebsiteName()).isEqualTo(websiteName);
         assertThat(createdBoard.getCleanName()).isEqualTo(cleanName);
         assertThat(createdBoard.getBoardName()).isEqualTo(boardName);
@@ -120,8 +120,8 @@ public abstract class AbstractBoardServiceTest {
         final String boardName = this.generateBoardName();
         final int updateTime = 1;
 
-        final Board board1 = this.boardService.getBordOrCreate(websiteName, boardName, cleanName, updateTime);
-        final Board board2 = this.boardService.getBordOrCreate(websiteName, boardName, cleanName, updateTime);
+        final Board board1 = this.boardService.getBoardOrCreate(websiteName, boardName, cleanName, updateTime);
+        final Board board2 = this.boardService.getBoardOrCreate(websiteName, boardName, cleanName, updateTime);
 
         assertThat(board1).isEqualTo(board2);
     }

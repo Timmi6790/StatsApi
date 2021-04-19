@@ -1,6 +1,5 @@
 package de.timmi6790.mpstats.api.versions.v1.java.groups;
 
-import de.timmi6790.mpstats.api.configs.OpenApiConfig;
 import de.timmi6790.mpstats.api.versions.v1.java.groups.repository.models.Group;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/v1/java/group")
-@Tag(name = OpenApiConfig.TAG_JAVA)
+@Tag(name = "Java - Group")
 public class JavaGroupController {
     private final JavaGroupService javaGroupService;
 

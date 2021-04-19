@@ -1,6 +1,5 @@
 package de.timmi6790.mpstats.api.versions.v1.java.player_stats;
 
-import de.timmi6790.mpstats.api.configs.OpenApiConfig;
 import de.timmi6790.mpstats.api.versions.v1.java.player_stats.models.PlayerStatsModel;
 import de.timmi6790.mpstats.api.versions.v1.java.player_stats.models.PlayerStatsRatioModel;
 import de.timmi6790.mpstats.api.versions.v1.java.validators.ValidJavaPlayerName;
@@ -18,7 +17,7 @@ import java.util.UUID;
 @Validated
 @RestController
 @RequestMapping("/v1/java/player/")
-@Tag(name = OpenApiConfig.TAG_JAVA)
+@Tag(name = "Java - Player - Stats")
 public class JavaPlayerStatsController {
     private final JavaPlayerStatsService javaPlayerStatsService;
 

@@ -1,6 +1,5 @@
 package de.timmi6790.mpstats.api.versions.v1.website;
 
-import de.timmi6790.mpstats.api.configs.OpenApiConfig;
 import de.timmi6790.mpstats.api.versions.v1.exceptions.InvalidGameException;
 import de.timmi6790.mpstats.api.versions.v1.exceptions.InvalidPlayerNameException;
 import de.timmi6790.mpstats.api.versions.v1.java.validators.ValidJavaPlayerName;
@@ -19,7 +18,7 @@ import java.util.Optional;
 @Validated
 @RestController
 @RequestMapping("/v1/website/")
-@Tag(name = OpenApiConfig.TAG_WEBSITE)
+@Tag(name = "Website")
 public class WebsiteController {
     private final WebsiteService websiteService;
 

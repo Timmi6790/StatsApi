@@ -1,5 +1,18 @@
 package de.timmi6790.mpstats.api.versions.v1.java.game;
 
-public class JavaGameController {
-    // TODO: Add
+
+import de.timmi6790.mpstats.api.versions.v1.common.game.GameController;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/v1/java/game")
+@Tag(name = "Java - Game")
+public class JavaGameController extends GameController {
+    @Autowired
+    public JavaGameController(final JavaGameService gameService) {
+        super(gameService);
+    }
 }

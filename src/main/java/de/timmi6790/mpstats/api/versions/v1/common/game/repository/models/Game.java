@@ -1,20 +1,14 @@
 package de.timmi6790.mpstats.api.versions.v1.common.game.repository.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import lombok.Data;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
 
-import java.io.Serializable;
 import java.util.Set;
 
 @Data
-@RedisHash("Game")
-public class Game implements Serializable {
-    private static final long serialVersionUID = -4902794194602567168L;
+public class Game {
     @JsonIgnore
-    @Id
     private final int repositoryId;
     @JsonIgnore
     private final String websiteName;

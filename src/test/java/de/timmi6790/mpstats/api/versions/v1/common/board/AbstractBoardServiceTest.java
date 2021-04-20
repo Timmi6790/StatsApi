@@ -1,5 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.common.board;
 
+import de.timmi6790.mpstats.api.utilities.BoardUtilities;
 import de.timmi6790.mpstats.api.versions.v1.common.board.repository.BoardRepository;
 import de.timmi6790.mpstats.api.versions.v1.common.board.repository.models.Board;
 import org.junit.jupiter.api.Test;
@@ -7,15 +8,12 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
+import static de.timmi6790.mpstats.api.utilities.BoardUtilities.generateBoardName;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractBoardServiceTest {
-    private static final AtomicInteger BOARD_ID = new AtomicInteger(0);
-
     private final Supplier<BoardService> boardServiceSupplier;
     private final BoardRepository boardRepository;
     private final BoardService boardService;
@@ -26,21 +24,17 @@ public abstract class AbstractBoardServiceTest {
         this.boardRepository = this.boardService.getBoardRepository();
     }
 
-    private String generateBoardName() {
-        return "BOARD" + BOARD_ID.incrementAndGet();
+    protected Board generateBoard(final String boardName) {
+        return BoardUtilities.generateBoard(this.boardService, boardName);
     }
 
-    private Board generateBoard(final String boardName) {
-        final String websiteName = this.generateBoardName();
-        final String cleanName = this.generateBoardName();
-        final int time = ThreadLocalRandom.current().nextInt(5_000);
-
-        return this.boardService.getBoardOrCreate(websiteName, boardName, cleanName, time);
+    protected Board generateBoard() {
+        return BoardUtilities.generateBoard(this.boardService);
     }
 
     @Test
     void hasBoard() {
-        final String boardName = this.generateBoardName();
+        final String boardName = generateBoardName();
 
         final boolean boardNotFound = this.boardService.hasBoard(boardName);
         assertThat(boardNotFound).isFalse();
@@ -53,7 +47,7 @@ public abstract class AbstractBoardServiceTest {
 
     @Test
     void hasBoard_case_insensitive() {
-        final String boardName = this.generateBoardName();
+        final String boardName = BoardUtilities.generateBoardName();
         this.generateBoard(boardName);
 
         final boolean boardFoundLower = this.boardService.hasBoard(boardName.toLowerCase());
@@ -65,8 +59,8 @@ public abstract class AbstractBoardServiceTest {
 
     @Test
     void getBoards() {
-        final Board board1 = this.generateBoard(this.generateBoardName());
-        final Board board2 = this.generateBoard(this.generateBoardName());
+        final Board board1 = this.generateBoard();
+        final Board board2 = this.generateBoard(generateBoardName());
 
         final List<Board> board = this.boardService.getBoards();
         assertThat(board).containsAll(Arrays.asList(board1, board2));
@@ -74,7 +68,7 @@ public abstract class AbstractBoardServiceTest {
 
     @Test
     void getBoard_case_insensitive() {
-        final String boardName = this.generateBoardName();
+        final String boardName = generateBoardName();
         this.generateBoard(boardName);
 
         final Optional<Board> boardFoundLower = this.boardService.getBoard(boardName.toLowerCase());
@@ -88,9 +82,9 @@ public abstract class AbstractBoardServiceTest {
 
     @Test
     void createBoard() {
-        final String websiteName = this.generateBoardName();
-        final String cleanName = this.generateBoardName();
-        final String boardName = this.generateBoardName();
+        final String websiteName = generateBoardName();
+        final String cleanName = generateBoardName();
+        final String boardName = generateBoardName();
         final int updateTime = 1;
 
         final Optional<Board> boardNotFound = this.boardService.getBoard(boardName);
@@ -115,9 +109,9 @@ public abstract class AbstractBoardServiceTest {
 
     @Test
     void createBoard_duplicate() {
-        final String websiteName = this.generateBoardName();
-        final String cleanName = this.generateBoardName();
-        final String boardName = this.generateBoardName();
+        final String websiteName = generateBoardName();
+        final String cleanName = generateBoardName();
+        final String boardName = generateBoardName();
         final int updateTime = 1;
 
         final Board board1 = this.boardService.getBoardOrCreate(websiteName, boardName, cleanName, updateTime);
@@ -128,7 +122,7 @@ public abstract class AbstractBoardServiceTest {
 
     @Test
     void deleteBoard() {
-        final String boardName = this.generateBoardName();
+        final String boardName = generateBoardName();
         this.generateBoard(boardName);
 
         this.boardService.deleteBoard(boardName);
@@ -145,7 +139,7 @@ public abstract class AbstractBoardServiceTest {
 
     @Test
     void deleteBoard_case_insensitive() {
-        final String boardName = this.generateBoardName();
+        final String boardName = generateBoardName();
         this.generateBoard(boardName);
 
         this.boardService.deleteBoard(boardName.toLowerCase());
@@ -159,7 +153,7 @@ public abstract class AbstractBoardServiceTest {
 
     @Test
     void innit_with_existing_boards() {
-        final String boardName = this.generateBoardName();
+        final String boardName = generateBoardName();
         final Board board = this.generateBoard(boardName);
 
         final BoardService newBoardService = this.boardServiceSupplier.get();

@@ -1,5 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.common.game;
 
+import de.timmi6790.mpstats.api.utilities.GameUtilities;
 import de.timmi6790.mpstats.api.versions.v1.common.game.repository.GameRepository;
 import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.Game;
 import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.GameCategory;
@@ -8,15 +9,13 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
+import static de.timmi6790.mpstats.api.utilities.GameUtilities.generateCategoryName;
+import static de.timmi6790.mpstats.api.utilities.GameUtilities.generateGameName;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractGameServiceTest {
-    private static final AtomicInteger GAME_ID = new AtomicInteger(0);
-    private static final AtomicInteger CATEGORY_ID = new AtomicInteger(0);
-
     private final Supplier<GameService> gameServiceSupplier;
     private final GameRepository gameRepository;
     private final GameService gameService;
@@ -27,25 +26,17 @@ public abstract class AbstractGameServiceTest {
         this.gameRepository = this.gameService.getGameRepository();
     }
 
-    private String generateGameName() {
-        return "GAME" + GAME_ID.incrementAndGet();
+    protected Game generateGame(final String gameName) {
+        return GameUtilities.generateGame(this.gameService, gameName);
     }
 
-    private String generateCategoryName() {
-        return "CATEGORY" + CATEGORY_ID.incrementAndGet();
-    }
-
-    private Game generateGame(final String gameName) {
-        final String websiteName = this.generateGameName();
-        final String cleanName = this.generateGameName();
-        final String categoryName = this.generateCategoryName();
-
-        return this.gameService.getOrCreateGame(websiteName, gameName, cleanName, categoryName);
+    protected Game generateGame() {
+        return GameUtilities.generateGame(this.gameService);
     }
 
     @Test
     void hasGame() {
-        final String gameName = this.generateGameName();
+        final String gameName = generateGameName();
 
         final boolean gameNotFound = this.gameService.hasGame(gameName);
         assertThat(gameNotFound).isFalse();
@@ -58,7 +49,7 @@ public abstract class AbstractGameServiceTest {
 
     @Test
     void hasGame_case_insensitive() {
-        final String gameName = this.generateGameName();
+        final String gameName = generateGameName();
         this.generateGame(gameName);
 
         final boolean gameFoundLower = this.gameService.hasGame(gameName.toLowerCase());
@@ -70,8 +61,8 @@ public abstract class AbstractGameServiceTest {
 
     @Test
     void getGames() {
-        final Game game1 = this.generateGame(this.generateGameName());
-        final Game game2 = this.generateGame(this.generateGameName());
+        final Game game1 = this.generateGame();
+        final Game game2 = this.generateGame();
 
         final List<Game> games = this.gameService.getGames();
         assertThat(games).containsAll(Arrays.asList(game1, game2));
@@ -79,7 +70,7 @@ public abstract class AbstractGameServiceTest {
 
     @Test
     void getGame_case_insensitive() {
-        final String gameName = this.generateGameName();
+        final String gameName = generateGameName();
         this.generateGame(gameName);
 
         final Optional<Game> gameFoundLower = this.gameService.getGame(gameName.toLowerCase());
@@ -93,10 +84,10 @@ public abstract class AbstractGameServiceTest {
 
     @Test
     void createGame() {
-        final String websiteName = this.generateGameName();
-        final String cleanName = this.generateGameName();
-        final String gameName = this.generateGameName();
-        final String categoryName = this.generateCategoryName();
+        final String websiteName = generateGameName();
+        final String cleanName = generateGameName();
+        final String gameName = generateGameName();
+        final String categoryName = generateCategoryName();
 
         final Optional<Game> gameNotFound = this.gameService.getGame(gameName);
         assertThat(gameNotFound).isNotPresent();
@@ -120,10 +111,10 @@ public abstract class AbstractGameServiceTest {
 
     @Test
     void createGame_duplicate() {
-        final String websiteName = this.generateGameName();
-        final String cleanName = this.generateGameName();
-        final String categoryName = this.generateCategoryName();
-        final String gameName = this.generateGameName();
+        final String websiteName = generateGameName();
+        final String cleanName = generateGameName();
+        final String categoryName = generateCategoryName();
+        final String gameName = generateGameName();
 
         final Game game1 = this.gameService.getOrCreateGame(websiteName, gameName, cleanName, categoryName);
         final Game game2 = this.gameService.getOrCreateGame(websiteName, gameName, cleanName, categoryName);
@@ -133,7 +124,7 @@ public abstract class AbstractGameServiceTest {
 
     @Test
     void deleteGame() {
-        final String gameName = this.generateGameName();
+        final String gameName = generateGameName();
         this.generateGame(gameName);
 
         this.gameService.deleteGame(gameName);
@@ -147,7 +138,7 @@ public abstract class AbstractGameServiceTest {
 
     @Test
     void deleteGame_case_insensitive() {
-        final String gameName = this.generateGameName();
+        final String gameName = generateGameName();
         this.generateGame(gameName);
 
         this.gameService.deleteGame(gameName.toLowerCase());
@@ -161,7 +152,7 @@ public abstract class AbstractGameServiceTest {
 
     @Test
     void innit_with_existing_games() {
-        final String gameName = this.generateGameName();
+        final String gameName = generateGameName();
         final Game game = this.generateGame(gameName);
 
         final GameService newGameService = this.gameServiceSupplier.get();
@@ -177,7 +168,7 @@ public abstract class AbstractGameServiceTest {
 
     @Test
     void innit_with_existing_categories() {
-        final String categoryName = this.generateCategoryName();
+        final String categoryName = generateCategoryName();
         final GameCategory category = this.gameService.getCategoryOrCreate(categoryName);
 
         final GameService newGameService = this.gameServiceSupplier.get();
@@ -193,7 +184,7 @@ public abstract class AbstractGameServiceTest {
 
     @Test
     void getOrCreateCategory_duplicate() {
-        final String categoryName = this.generateCategoryName();
+        final String categoryName = generateCategoryName();
         final GameCategory category = this.gameService.getCategoryOrCreate(categoryName);
         final GameCategory categoryDuplicate = this.gameService.getCategoryOrCreate(categoryName);
 

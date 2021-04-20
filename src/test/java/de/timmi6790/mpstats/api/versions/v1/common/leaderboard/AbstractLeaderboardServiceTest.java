@@ -1,5 +1,9 @@
 package de.timmi6790.mpstats.api.versions.v1.common.leaderboard;
 
+import de.timmi6790.mpstats.api.utilities.BoardUtilities;
+import de.timmi6790.mpstats.api.utilities.GameUtilities;
+import de.timmi6790.mpstats.api.utilities.LeaderboardUtilities;
+import de.timmi6790.mpstats.api.utilities.StatUtilities;
 import de.timmi6790.mpstats.api.versions.v1.common.board.BoardService;
 import de.timmi6790.mpstats.api.versions.v1.common.board.repository.models.Board;
 import de.timmi6790.mpstats.api.versions.v1.common.game.GameService;
@@ -13,17 +17,14 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
+import static de.timmi6790.mpstats.api.utilities.BoardUtilities.generateBoardName;
+import static de.timmi6790.mpstats.api.utilities.GameUtilities.generateGameName;
+import static de.timmi6790.mpstats.api.utilities.StatUtilities.generateStatName;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractLeaderboardServiceTest {
-    private static final AtomicInteger GAME_ID = new AtomicInteger(0);
-    private static final AtomicInteger CATEGORY_ID = new AtomicInteger(0);
-    private static final AtomicInteger STAT_ID = new AtomicInteger(0);
-    private static final AtomicInteger BOARD_ID = new AtomicInteger(0);
-
     private final LeaderboardService leaderboardService;
     private final LeaderboardRepository leaderboardRepository;
 
@@ -43,60 +44,24 @@ public abstract class AbstractLeaderboardServiceTest {
         this.statService = statService;
     }
 
-    private String generateGameName() {
-        return "GAMELEADERBOARD" + GAME_ID.incrementAndGet();
-    }
-
-    private String generateCategoryName() {
-        return "CATEGORYLEADERBOARDD" + CATEGORY_ID.incrementAndGet();
-    }
-
-    private String generateStatName() {
-        return "STATLEADERBOARD" + STAT_ID.incrementAndGet();
-    }
-
-    private String generateBoardName() {
-        return "BOARDLEADERBOARD" + BOARD_ID.incrementAndGet();
-    }
-
     private Game generateGame() {
-        final String gameName = this.generateGameName();
-        final String websiteName = this.generateGameName();
-        final String cleanName = this.generateGameName();
-        final String categoryName = this.generateCategoryName();
-
-        return this.gameService.getOrCreateGame(websiteName, gameName, cleanName, categoryName);
+        return GameUtilities.generateGame(this.gameService);
     }
 
     private Board generateBoard() {
-        final String boardName = this.generateBoardName();
-        final String websiteName = this.generateBoardName();
-        final String cleanName = this.generateBoardName();
-        final int updateTime = 1;
-
-        return this.boardService.getBoardOrCreate(boardName, websiteName, cleanName, updateTime);
+        return BoardUtilities.generateBoard(this.boardService);
     }
 
     private Stat generateStat() {
-        final String statName = this.generateStatName();
-        final String websiteName = this.generateStatName();
-        final String cleanName = this.generateStatName();
-        final boolean achievement = true;
-
-        return this.statService.getStatOrCreate(websiteName, statName, cleanName, achievement);
+        return StatUtilities.generateStat(this.statService);
     }
 
     private Leaderboard generateLeaderboard() {
-        final Game game = this.generateGame();
-        return this.generateLeaderboard(game);
+        return LeaderboardUtilities.generateLeaderboard(this.leaderboardService, this.gameService, this.statService, this.boardService);
     }
 
     private Leaderboard generateLeaderboard(final Game game) {
-        final Stat stat = this.generateStat();
-        final Board board = this.generateBoard();
-        final boolean deprecated = true;
-
-        return this.leaderboardService.getLeaderboardOrCreate(game, stat, board, deprecated);
+        return LeaderboardUtilities.generateLeaderboard(this.leaderboardService, this.statService, this.boardService, game);
     }
 
     @Test
@@ -200,7 +165,7 @@ public abstract class AbstractLeaderboardServiceTest {
         // Create leaderboard
         this.leaderboardService.getLeaderboardOrCreate(game, stat, board, deprecated);
 
-        final String uniqGameName = this.generateGameName();
+        final String uniqGameName = generateGameName();
         final Optional<Leaderboard> leaderboardNotFound = this.leaderboardService.getLeaderboard(
                 uniqGameName,
                 stat.getStatName(),
@@ -220,7 +185,7 @@ public abstract class AbstractLeaderboardServiceTest {
         // Create leaderboard
         this.leaderboardService.getLeaderboardOrCreate(game, stat, board, deprecated);
 
-        final String uniqStatName = this.generateStatName();
+        final String uniqStatName = generateStatName();
         final Optional<Leaderboard> leaderboardNotFound = this.leaderboardService.getLeaderboard(
                 game.getGameName(),
                 uniqStatName,
@@ -240,7 +205,7 @@ public abstract class AbstractLeaderboardServiceTest {
         // Create leaderboard
         this.leaderboardService.getLeaderboardOrCreate(game, stat, board, deprecated);
 
-        final String uniqBoardName = this.generateBoardName();
+        final String uniqBoardName = generateBoardName();
         final Optional<Leaderboard> leaderboardNotFound = this.leaderboardService.getLeaderboard(
                 game.getGameName(),
                 stat.getStatName(),

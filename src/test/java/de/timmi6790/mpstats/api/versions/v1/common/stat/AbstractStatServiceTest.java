@@ -1,5 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.common.stat;
 
+import de.timmi6790.mpstats.api.utilities.StatUtilities;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.repository.StatRepository;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.repository.models.Stat;
 import org.junit.jupiter.api.Test;
@@ -7,14 +8,12 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
+import static de.timmi6790.mpstats.api.utilities.StatUtilities.generateStatName;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractStatServiceTest {
-    private static final AtomicInteger STAT_ID = new AtomicInteger(0);
-
     private final Supplier<StatService> statServiceSupplier;
     private final StatService statService;
     private final StatRepository statRepository;
@@ -25,20 +24,13 @@ public abstract class AbstractStatServiceTest {
         this.statRepository = this.statService.getJavaStatRepository();
     }
 
-    private String generateStatName() {
-        return "STAT" + STAT_ID.incrementAndGet();
+    protected Stat generateStat(final String boardName) {
+        return StatUtilities.generateStat(statService, boardName);
     }
-
-    private Stat generateStat(final String boardName) {
-        final String websiteName = this.generateStatName();
-        final String cleanName = this.generateStatName();
-
-        return this.statService.getStatOrCreate(websiteName, boardName, cleanName, true);
-    }
-
+    
     @Test
     void hasStat() {
-        final String boardName = this.generateStatName();
+        final String boardName = generateStatName();
 
         final boolean boardNotFound = this.statService.hasStat(boardName);
         assertThat(boardNotFound).isFalse();
@@ -51,7 +43,7 @@ public abstract class AbstractStatServiceTest {
 
     @Test
     void hasStat_case_insensitive() {
-        final String boardName = this.generateStatName();
+        final String boardName = generateStatName();
         this.generateStat(boardName);
 
         final boolean boardFoundLower = this.statService.hasStat(boardName.toLowerCase());
@@ -63,8 +55,8 @@ public abstract class AbstractStatServiceTest {
 
     @Test
     void getStats() {
-        final Stat board1 = this.generateStat(this.generateStatName());
-        final Stat board2 = this.generateStat(this.generateStatName());
+        final Stat board1 = this.generateStat(generateStatName());
+        final Stat board2 = this.generateStat(generateStatName());
 
         final List<Stat> board = this.statService.getStats();
         assertThat(board).containsAll(Arrays.asList(board1, board2));
@@ -72,7 +64,7 @@ public abstract class AbstractStatServiceTest {
 
     @Test
     void getStat_case_insensitive() {
-        final String boardName = this.generateStatName();
+        final String boardName = generateStatName();
         this.generateStat(boardName);
 
         final Optional<Stat> boardFoundLower = this.statService.getStat(boardName.toLowerCase());
@@ -86,9 +78,9 @@ public abstract class AbstractStatServiceTest {
 
     @Test
     void createStat() {
-        final String websiteName = this.generateStatName();
-        final String cleanName = this.generateStatName();
-        final String boardName = this.generateStatName();
+        final String websiteName = generateStatName();
+        final String cleanName = generateStatName();
+        final String boardName = generateStatName();
         final boolean isAchievement = true;
 
         final Optional<Stat> boardNotFound = this.statService.getStat(boardName);
@@ -113,9 +105,9 @@ public abstract class AbstractStatServiceTest {
 
     @Test
     void createStat_duplicate() {
-        final String websiteName = this.generateStatName();
-        final String cleanName = this.generateStatName();
-        final String boardName = this.generateStatName();
+        final String websiteName = generateStatName();
+        final String cleanName = generateStatName();
+        final String boardName = generateStatName();
         final boolean isAchievement = false;
 
         final Stat board1 = this.statService.getStatOrCreate(websiteName, boardName, cleanName, isAchievement);
@@ -126,7 +118,7 @@ public abstract class AbstractStatServiceTest {
 
     @Test
     void deleteStat() {
-        final String boardName = this.generateStatName();
+        final String boardName = generateStatName();
         this.generateStat(boardName);
 
         this.statService.deleteStat(boardName);
@@ -140,7 +132,7 @@ public abstract class AbstractStatServiceTest {
 
     @Test
     void deleteStat_case_insensitive() {
-        final String boardName = this.generateStatName();
+        final String boardName = generateStatName();
         this.generateStat(boardName);
 
         this.statService.deleteStat(boardName.toLowerCase());
@@ -154,7 +146,7 @@ public abstract class AbstractStatServiceTest {
 
     @Test
     void innit_with_existing_boards() {
-        final String boardName = this.generateStatName();
+        final String boardName = generateStatName();
         final Stat board = this.generateStat(boardName);
 
         final StatService newStatService = this.statServiceSupplier.get();

@@ -175,6 +175,82 @@ public abstract class AbstractLeaderboardServiceTest {
     }
 
     @Test
+    void getLeaderboard_by_names() {
+        final Game game = this.generateGame();
+        final Stat stat = this.generateStat();
+        final Board board = this.generateBoard();
+        final boolean deprecated = true;
+
+        // Create leaderboard
+        final Leaderboard leaderboard = this.leaderboardService.getLeaderboardOrCreate(game, stat, board, deprecated);
+
+        final Optional<Leaderboard> leaderboardFound = this.leaderboardService.getLeaderboard(game.getGameName(), stat.getStatName(), board.getBoardName());
+        assertThat(leaderboardFound)
+                .isPresent()
+                .contains(leaderboard);
+    }
+
+    @Test
+    void getLeaderboard_by_names_invalid_game_name() {
+        final Game game = this.generateGame();
+        final Stat stat = this.generateStat();
+        final Board board = this.generateBoard();
+        final boolean deprecated = true;
+
+        // Create leaderboard
+        this.leaderboardService.getLeaderboardOrCreate(game, stat, board, deprecated);
+
+        final String uniqGameName = this.generateGameName();
+        final Optional<Leaderboard> leaderboardNotFound = this.leaderboardService.getLeaderboard(
+                uniqGameName,
+                stat.getStatName(),
+                board.getBoardName()
+        );
+        assertThat(leaderboardNotFound)
+                .isNotPresent();
+    }
+
+    @Test
+    void getLeaderboard_by_names_invalid_stat_name() {
+        final Game game = this.generateGame();
+        final Stat stat = this.generateStat();
+        final Board board = this.generateBoard();
+        final boolean deprecated = true;
+
+        // Create leaderboard
+        this.leaderboardService.getLeaderboardOrCreate(game, stat, board, deprecated);
+
+        final String uniqStatName = this.generateStatName();
+        final Optional<Leaderboard> leaderboardNotFound = this.leaderboardService.getLeaderboard(
+                game.getGameName(),
+                uniqStatName,
+                board.getBoardName()
+        );
+        assertThat(leaderboardNotFound)
+                .isNotPresent();
+    }
+
+    @Test
+    void getLeaderboard_by_names_invalid_board_name() {
+        final Game game = this.generateGame();
+        final Stat stat = this.generateStat();
+        final Board board = this.generateBoard();
+        final boolean deprecated = true;
+
+        // Create leaderboard
+        this.leaderboardService.getLeaderboardOrCreate(game, stat, board, deprecated);
+
+        final String uniqBoardName = this.generateBoardName();
+        final Optional<Leaderboard> leaderboardNotFound = this.leaderboardService.getLeaderboard(
+                game.getGameName(),
+                stat.getStatName(),
+                uniqBoardName
+        );
+        assertThat(leaderboardNotFound)
+                .isNotPresent();
+    }
+
+    @Test
     void getLeaderboardOrCreate() {
         final Game game = this.generateGame();
         final Stat stat = this.generateStat();

@@ -27,6 +27,10 @@ public class LeaderboardService {
     @Getter(value = AccessLevel.PROTECTED)
     private final LeaderboardRepository leaderboardRepository;
 
+    private final GameService gameService;
+    private final StatService statService;
+    private final BoardService boardService;
+
     private final Striped<Lock> leaderboardLock = Striped.lock(32);
     private final Cache<String, Leaderboard> leaderboardCache = Caffeine.newBuilder()
             .expireAfterAccess(10, TimeUnit.SECONDS)
@@ -44,6 +48,10 @@ public class LeaderboardService {
                 statService,
                 boardService
         );
+
+        this.gameService = gameService;
+        this.statService = statService;
+        this.boardService = boardService;
     }
 
     private String getUniqName(final Game game, final Stat stat, final Board board) {
@@ -81,6 +89,26 @@ public class LeaderboardService {
     public Optional<Leaderboard> getLeaderboard(final int repositoryId) {
         return this.leaderboardRepository.getLeaderboard(repositoryId);
     }
+
+    public Optional<Leaderboard> getLeaderboard(final String gameName, final String statName, final String boardName) {
+        Optional<Game> gameOpt = gameService.getGame(gameName);
+        if (!gameOpt.isPresent()) {
+            return Optional.empty();
+        }
+
+        Optional<Stat> statOpt = statService.getStat(statName);
+        if (!statOpt.isPresent()) {
+            return Optional.empty();
+        }
+        
+        Optional<Board> boardOpt = boardService.getBoard(boardName);
+        if (!boardOpt.isPresent()) {
+            return Optional.empty();
+        }
+
+        return getLeaderboard(gameOpt.get(), statOpt.get(), boardOpt.get());
+    }
+
 
     public Optional<Leaderboard> getLeaderboard(final Game game, final Stat stat, final Board board) {
         final Optional<Leaderboard> leaderboardCached = this.getLeaderboardFromCache(game, stat, board);

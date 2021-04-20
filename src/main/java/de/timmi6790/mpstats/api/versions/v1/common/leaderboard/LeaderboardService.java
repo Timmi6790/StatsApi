@@ -78,6 +78,10 @@ public class LeaderboardService {
         return this.leaderboardRepository.getLeaderboards(game);
     }
 
+    public Optional<Leaderboard> getLeaderboard(final int repositoryId) {
+        return this.leaderboardRepository.getLeaderboard(repositoryId);
+    }
+
     public Optional<Leaderboard> getLeaderboard(final Game game, final Stat stat, final Board board) {
         final Optional<Leaderboard> leaderboardCached = this.getLeaderboardFromCache(game, stat, board);
         if (leaderboardCached.isPresent()) {

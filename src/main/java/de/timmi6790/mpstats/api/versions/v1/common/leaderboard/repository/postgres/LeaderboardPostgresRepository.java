@@ -18,7 +18,8 @@ import java.util.Optional;
 public class LeaderboardPostgresRepository extends PostgresRepository implements LeaderboardRepository {
     private final String getLeaderboard;
     private final String getLeaderboards;
-    private final String getLeaderboardsGames;
+    private final String getLeaderboardByRepositoryId;
+    private final String getLeaderboardsByGameId;
 
     private final String insertLeaderboard;
 
@@ -37,7 +38,8 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
         // Create queries
         this.getLeaderboard = this.formatQuery(QueryTemplates.GET_LEADERBOARD);
         this.getLeaderboards = this.formatQuery(QueryTemplates.GET_LEADERBOARDS);
-        this.getLeaderboardsGames = this.formatQuery(QueryTemplates.GET_LEADERBOARDS_GAMES);
+        this.getLeaderboardByRepositoryId = this.formatQuery(QueryTemplates.GET_LEADERBOARDS_BY_REPOSITORY_ID);
+        this.getLeaderboardsByGameId = this.formatQuery(QueryTemplates.GET_LEADERBOARDS_BY_GAME_ID);
         this.insertLeaderboard = this.formatQuery(QueryTemplates.INSERT_LEADERBOARD);
     }
 
@@ -53,10 +55,20 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
     @Override
     public List<Leaderboard> getLeaderboards(final Game game) {
         return this.getDatabase().withHandle(handle ->
-                handle.createQuery(this.getLeaderboardsGames)
+                handle.createQuery(this.getLeaderboardsByGameId)
                         .bind("gameId", game.getRepositoryId())
                         .mapTo(Leaderboard.class)
                         .list()
+        );
+    }
+
+    @Override
+    public Optional<Leaderboard> getLeaderboard(final int repositoryId) {
+        return this.getDatabase().withHandle(handle ->
+                handle.createQuery(this.getLeaderboardByRepositoryId)
+                        .bind("repositoryId", repositoryId)
+                        .mapTo(Leaderboard.class)
+                        .findFirst()
         );
     }
 
@@ -105,7 +117,8 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
                 "%s;";
         private static final String GET_LEADERBOARD = String.format(GET_LEADERBOARD_BASE, "WHERE game_id = :gameId AND stat_id = :statId AND board_id = :boardId LIMIT 1");
         private static final String GET_LEADERBOARDS = String.format(GET_LEADERBOARD_BASE, "");
-        private static final String GET_LEADERBOARDS_GAMES = String.format(GET_LEADERBOARD_BASE, "WHERE game_id = :gameId");
+        private static final String GET_LEADERBOARDS_BY_REPOSITORY_ID = String.format(GET_LEADERBOARD_BASE, "WHERE leaderboard.\"id\" = :repositoryId");
+        private static final String GET_LEADERBOARDS_BY_GAME_ID = String.format(GET_LEADERBOARD_BASE, "WHERE game_id = :gameId");
 
         private static final String INSERT_LEADERBOARD = "INSERT INTO $schema$.leaderboards(game_id, stat_id, board_id, deprecated) VALUES(:gameId, :statId, :boardId, :deprecated);";
     }

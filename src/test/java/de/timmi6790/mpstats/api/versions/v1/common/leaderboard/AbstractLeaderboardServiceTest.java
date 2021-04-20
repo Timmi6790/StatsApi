@@ -159,6 +159,22 @@ public abstract class AbstractLeaderboardServiceTest {
     }
 
     @Test
+    void getLeaderboard_by_id() {
+        final Game game = this.generateGame();
+        final Stat stat = this.generateStat();
+        final Board board = this.generateBoard();
+        final boolean deprecated = true;
+
+        // Create leaderboard
+        final Leaderboard leaderboard = this.leaderboardService.getLeaderboardOrCreate(game, stat, board, deprecated);
+
+        final Optional<Leaderboard> leaderboardFound = this.leaderboardService.getLeaderboard(leaderboard.getRepositoryId());
+        assertThat(leaderboardFound)
+                .isPresent()
+                .contains(leaderboard);
+    }
+
+    @Test
     void getLeaderboardOrCreate() {
         final Game game = this.generateGame();
         final Stat stat = this.generateStat();

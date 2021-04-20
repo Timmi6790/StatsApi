@@ -13,6 +13,8 @@ public interface LeaderboardRepository {
 
     List<Leaderboard> getLeaderboards(Game game);
 
+    Optional<Leaderboard> getLeaderboard(int repositoryId);
+
     Optional<Leaderboard> getLeaderboard(Game game, Stat stat, Board board);
 
     Leaderboard createdLeaderboard(Game game, Stat stat, Board board, boolean deprecated);

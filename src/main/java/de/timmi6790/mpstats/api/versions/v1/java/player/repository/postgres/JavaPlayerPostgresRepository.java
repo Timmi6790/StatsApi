@@ -13,6 +13,7 @@ import java.util.UUID;
 @Service
 public class JavaPlayerPostgresRepository implements JavaPlayerRepository {
     private static final String SELECT_PLAYER = "SELECT id player_id, player_name player_name, player_uuid player_uuid FROM java.players WHERE player_uuid = :playerUUID LIMIT 1;";
+    private static final String SELECT_PLAYER_BY_ID = "SELECT id player_id, player_name player_name, player_uuid player_uuid FROM java.players WHERE id = :repositoryId LIMIT 1;";
     private static final String UPDATE_PLAYER_NAME = "UPDATE java.players SET player_name = :playerName WHERE id = :playerId;";
     private static final String INSERT_PLAYER = "INSERT INTO java.players(player_name, player_uuid) VALUES(:playerName, :playerUUID) RETURNING id player_id, player_name player_name, player_uuid player_uuid;";
 
@@ -23,6 +24,16 @@ public class JavaPlayerPostgresRepository implements JavaPlayerRepository {
         this.database = database;
 
         database.registerRowMapper(new PlayerMapper());
+    }
+
+    @Override
+    public Optional<JavaRepositoryPlayer> getPlayer(final int repositoryId) {
+        return this.database.withHandle(handle ->
+                handle.createQuery(SELECT_PLAYER_BY_ID)
+                        .bind("repositoryId", repositoryId)
+                        .mapTo(JavaRepositoryPlayer.class)
+                        .findFirst()
+        );
     }
 
     @Override

@@ -43,6 +43,11 @@ public class JavaPlayerService implements PlayerService<JavaRepositoryPlayer> {
         return this.getPlayer(playerName).isPresent();
     }
 
+    @Override
+    public Optional<JavaRepositoryPlayer> getPlayer(final int repositoryId) {
+        return this.javaPlayerRepository.getPlayer(repositoryId);
+    }
+
     public Optional<JavaRepositoryPlayer> getPlayer(final UUID playerUUID) {
         // Cache check
         final JavaRepositoryPlayer playerCached = this.playerCache.getIfPresent(playerUUID);

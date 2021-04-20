@@ -73,6 +73,19 @@ class BedrockPlayerServiceTest {
     }
 
     @Test
+    void getPlayer_by_id() {
+        final String playerName = this.generatePlayerName();
+
+        // Insert player
+        final BedrockRepositoryPlayer repositoryPlayer = bedrockPlayerService.getPlayerOrCreate(playerName);
+
+        final Optional<BedrockRepositoryPlayer> playerFound = bedrockPlayerService.getPlayer(repositoryPlayer.getRepositoryId());
+        assertThat(playerFound)
+                .isPresent()
+                .contains(repositoryPlayer);
+    }
+
+    @Test
     void getPlayer_ignore_case() {
         final String playerName = this.generatePlayerName();
 

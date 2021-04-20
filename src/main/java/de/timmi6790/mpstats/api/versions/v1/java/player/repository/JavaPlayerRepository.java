@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface JavaPlayerRepository {
+    Optional<JavaRepositoryPlayer> getPlayer(int repositoryId);
+
     Optional<JavaRepositoryPlayer> getPlayer(UUID playerUUID);
 
     Optional<JavaRepositoryPlayer> getPlayer(String playerName, UUID playerUUID);

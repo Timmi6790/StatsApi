@@ -57,10 +57,26 @@ class JavaPlayerServiceTest {
         assertThat(playerNotFound).isNotPresent();
 
         // Insert player
-        javaPlayerService.getPlayerOrCreate(playerName, playerUUID);
+        final JavaRepositoryPlayer repositoryPlayer = javaPlayerService.getPlayerOrCreate(playerName, playerUUID);
 
         final Optional<JavaRepositoryPlayer> playerFound = javaPlayerService.getPlayer(playerName, playerUUID);
-        assertThat(playerFound).isPresent();
+        assertThat(playerFound)
+                .isPresent()
+                .contains(repositoryPlayer);
+    }
+
+    @Test
+    void getPlayer_by_id() {
+        final String playerName = this.generatePlayerName();
+        final UUID playerUUID = this.generatePlayerUUID();
+
+        // Insert player
+        final JavaRepositoryPlayer repositoryPlayer = javaPlayerService.getPlayerOrCreate(playerName, playerUUID);
+
+        final Optional<JavaRepositoryPlayer> playerFound = javaPlayerService.getPlayer(repositoryPlayer.getRepositoryId());
+        assertThat(playerFound)
+                .isPresent()
+                .contains(repositoryPlayer);
     }
 
     @Test

@@ -12,6 +12,7 @@ import java.util.Optional;
 @Service
 public class BedrockPlayerPostgresRepository implements BedrockPlayerRepository {
     private static final String SELECT_PLAYER = "SELECT id player_id, player_name player_name FROM bedrock.players WHERE player_name = :playerName LIMIT 1;";
+    private static final String SELECT_PLAYER_BY_ID = "SELECT id player_id, player_name player_name FROM bedrock.players WHERE id = :repositoryId LIMIT 1;";
     private static final String INSERT_PLAYER = "INSERT INTO bedrock.players(player_name) VALUES(:playerName) RETURNING id player_id, player_name player_name;";
 
     private final Jdbi database;
@@ -21,6 +22,16 @@ public class BedrockPlayerPostgresRepository implements BedrockPlayerRepository 
         this.database = database;
 
         database.registerRowMapper(new PlayerMapper());
+    }
+
+    @Override
+    public Optional<BedrockRepositoryPlayer> getPlayer(final int repositoryId) {
+        return this.database.withHandle(handle ->
+                handle.createQuery(SELECT_PLAYER_BY_ID)
+                        .bind("repositoryId", repositoryId)
+                        .mapTo(BedrockRepositoryPlayer.class)
+                        .findFirst()
+        );
     }
 
     @Override

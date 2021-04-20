@@ -45,6 +45,11 @@ public class BedrockPlayerService implements PlayerService<BedrockRepositoryPlay
     }
 
     @Override
+    public Optional<BedrockRepositoryPlayer> getPlayer(final int repositoryId) {
+        return this.bedrockPlayerRepository.getPlayer(repositoryId);
+    }
+
+    @Override
     public Optional<BedrockRepositoryPlayer> getPlayer(final String playerName) {
         // Cache check
         final Optional<BedrockRepositoryPlayer> playerCached = this.getPlayerFromCache(playerName);

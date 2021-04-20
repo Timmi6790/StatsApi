@@ -6,6 +6,8 @@ import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.Bed
 import java.util.Optional;
 
 public interface BedrockPlayerRepository {
+    Optional<BedrockRepositoryPlayer> getPlayer(int repositoryId);
+
     Optional<BedrockRepositoryPlayer> getPlayer(String playerName);
 
     BedrockRepositoryPlayer insertPlayer(String playerName);

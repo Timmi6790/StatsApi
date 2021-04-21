@@ -9,10 +9,10 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class Filter<PLAYER extends Player & RepositoryPlayer> {
+public class Filter<P extends Player & RepositoryPlayer> {
     @JsonIgnore
     private final int repositoryId;
-    private final PLAYER player;
+    private final P player;
     private final Leaderboard leaderboard;
     private final String filterReason;
     private final LocalDateTime filterStart;

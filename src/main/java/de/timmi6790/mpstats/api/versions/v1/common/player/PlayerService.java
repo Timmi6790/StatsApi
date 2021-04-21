@@ -5,10 +5,10 @@ import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlaye
 
 import java.util.Optional;
 
-public interface PlayerService<PLAYER extends Player & RepositoryPlayer> {
+public interface PlayerService<P extends Player & RepositoryPlayer> {
     boolean hasPlayer(final String playerName);
 
-    Optional<PLAYER> getPlayer(final int repositoryId);
+    Optional<P> getPlayer(final int repositoryId);
 
-    Optional<PLAYER> getPlayer(final String playerName);
+    Optional<P> getPlayer(final String playerName);
 }

@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 @Data
 @Log4j2
-public abstract class AbstractLeaderboardRequestService<PLAYER extends Player> {
+public abstract class AbstractLeaderboardRequestService<P extends Player> {
     private static final int TIMEOUT = (int) TimeUnit.SECONDS.toMillis(15);
     private static final String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36";
     private static final Pattern HTML_ROW_PARSER = Pattern.compile("<tr>|<tr >|<tr class=\"LeaderboardsOdd\">|<tr class=\"LeaderboardsHead\">[^<]*");
@@ -40,10 +40,10 @@ public abstract class AbstractLeaderboardRequestService<PLAYER extends Player> {
                 .connectTimeout(TIMEOUT);
     }
 
-    protected abstract Optional<WebLeaderboard<PLAYER>> parseRow(String row);
+    protected abstract Optional<WebLeaderboard<P>> parseRow(String row);
 
-    protected List<WebLeaderboard<PLAYER>> parseWebLeaderboard(final String response) {
-        final List<WebLeaderboard<PLAYER>> leaderboard = Lists.newArrayListWithExpectedSize(this.estimatedResultSize);
+    protected List<WebLeaderboard<P>> parseWebLeaderboard(final String response) {
+        final List<WebLeaderboard<P>> leaderboard = Lists.newArrayListWithExpectedSize(this.estimatedResultSize);
 
         final String[] rows = HTML_ROW_PARSER.split(response);
         for (final String row : rows) {
@@ -53,7 +53,7 @@ public abstract class AbstractLeaderboardRequestService<PLAYER extends Player> {
         return leaderboard;
     }
 
-    public Optional<List<WebLeaderboard<PLAYER>>> retrieveLeaderboard(final String game, final String stat, final String board) {
+    public Optional<List<WebLeaderboard<P>>> retrieveLeaderboard(final String game, final String stat, final String board) {
         final HttpResponse<String> response;
         try {
             response = this.unirest.get(this.leaderboardBaseUrl)
@@ -72,7 +72,7 @@ public abstract class AbstractLeaderboardRequestService<PLAYER extends Player> {
             return Optional.empty();
         }
 
-        final List<WebLeaderboard<PLAYER>> parsedResponse = this.parseWebLeaderboard(response.getBody());
+        final List<WebLeaderboard<P>> parsedResponse = this.parseWebLeaderboard(response.getBody());
         if (!parsedResponse.isEmpty()) {
             return Optional.of(parsedResponse);
         }

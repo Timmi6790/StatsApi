@@ -167,8 +167,8 @@ public abstract class AbstractFilterServiceTest<P extends Player & RepositoryPla
         assertThat(filter.getPlayer()).isEqualTo(player);
         assertThat(filter.getLeaderboard()).isEqualTo(leaderboard);
         assertThat(filter.getFilterReason()).isEqualTo(reason);
-        assertThat(filter.getFilterStart()).isEqualTo(filterStart);
-        assertThat(filter.getFilterEnd()).isEqualTo(filterEnd);
+        assertThat(filter.getFilterStart()).isEqualToIgnoringNanos(filterStart);
+        assertThat(filter.getFilterEnd()).isEqualToIgnoringNanos(filterEnd);
     }
 
     @Test

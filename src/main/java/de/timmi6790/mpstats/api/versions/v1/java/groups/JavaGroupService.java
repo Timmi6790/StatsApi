@@ -31,7 +31,7 @@ public class JavaGroupService {
         this.javaGroupRepository = javaGroupRepository;
 
         for (final Group group : javaGroupRepository.getGroups()) {
-            this.groupNames.add(group.getGroupName());
+            this.groupNames.add(group.groupName());
         }
     }
 
@@ -45,7 +45,7 @@ public class JavaGroupService {
 
     private void insertGroupIntoCache(final Group group) {
         log.debug("Add group to cache: {}", group);
-        this.groupCache.put(group.getGroupName().toLowerCase(), group);
+        this.groupCache.put(group.groupName().toLowerCase(), group);
     }
 
     private void invalidateGroupCache(final String groupName) {
@@ -68,7 +68,7 @@ public class JavaGroupService {
             log.info("Creating group {}", groupName);
             final Group group = this.javaGroupRepository.createGroup(groupName, cleanName);
             this.insertGroupIntoCache(group);
-            this.groupNames.add(group.getGroupName());
+            this.groupNames.add(group.groupName());
             return group;
         } finally {
             lock.unlock();
@@ -83,8 +83,8 @@ public class JavaGroupService {
             final Optional<Group> groupOpt = this.getGroup(groupName);
             if (groupOpt.isPresent()) {
                 log.info("Deleting group {}", groupOpt.get());
-                this.javaGroupRepository.deleteGroup(groupOpt.get().getRepositoryId());
-                this.groupNames.remove(groupOpt.get().getGroupName());
+                this.javaGroupRepository.deleteGroup(groupOpt.get().repositoryId());
+                this.groupNames.remove(groupOpt.get().groupName());
                 this.invalidateGroupCache(groupName);
             }
         } finally {

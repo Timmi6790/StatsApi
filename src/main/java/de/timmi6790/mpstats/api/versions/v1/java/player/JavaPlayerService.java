@@ -83,7 +83,7 @@ public class JavaPlayerService implements PlayerService<JavaRepositoryPlayer> {
         final Optional<MojangPlayer> mojangPlayerOpt = MojangApi.getPlayer(playerName);
         if (mojangPlayerOpt.isPresent()) {
             final MojangPlayer mojangPlayer = mojangPlayerOpt.get();
-            return this.getPlayer(mojangPlayer.getName(), mojangPlayer.getUuid());
+            return this.getPlayer(mojangPlayer.name(), mojangPlayer.uuid());
         }
 
         return Optional.empty();

@@ -58,7 +58,7 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
     public List<Leaderboard> getLeaderboards(final Game game) {
         return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getLeaderboardsByGameId)
-                        .bind(GAME_ID, game.getRepositoryId())
+                        .bind(GAME_ID, game.repositoryId())
                         .mapTo(Leaderboard.class)
                         .list()
         );
@@ -78,9 +78,9 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
     public Optional<Leaderboard> getLeaderboard(final Game game, final Stat stat, final Board board) {
         return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getLeaderboard)
-                        .bind(GAME_ID, game.getRepositoryId())
-                        .bind("statId", stat.getRepositoryId())
-                        .bind("boardId", board.getRepositoryId())
+                        .bind(GAME_ID, game.repositoryId())
+                        .bind("statId", stat.repositoryId())
+                        .bind("boardId", board.repositoryId())
                         .mapTo(Leaderboard.class)
                         .findFirst()
         );
@@ -90,9 +90,9 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
     public Leaderboard createdLeaderboard(final Game game, final Stat stat, final Board board, final boolean deprecated) {
         this.getDatabase().useHandle(handle ->
                 handle.createUpdate(this.insertLeaderboard)
-                        .bind(GAME_ID, game.getRepositoryId())
-                        .bind("statId", stat.getRepositoryId())
-                        .bind("boardId", board.getRepositoryId())
+                        .bind(GAME_ID, game.repositoryId())
+                        .bind("statId", stat.repositoryId())
+                        .bind("boardId", board.repositoryId())
                         .bind("deprecated", deprecated)
                         .execute()
         );

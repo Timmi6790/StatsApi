@@ -33,14 +33,14 @@ public class GameService {
         final List<GameCategory> existingCategories = this.gameRepository.geGameCategories();
         this.categories = new LinkedCaseInsensitiveMap<>(existingCategories.size());
         for (final GameCategory category : existingCategories) {
-            this.categories.put(category.getCategoryName(), category);
+            this.categories.put(category.categoryName(), category);
         }
 
         // Load existing games from repository
         final List<Game> existingGames = this.gameRepository.getGames();
         this.games = new LinkedCaseInsensitiveMap<>(existingGames.size());
         for (final Game game : existingGames) {
-            this.games.put(game.getGameName(), game);
+            this.games.put(game.gameName(), game);
         }
     }
 
@@ -73,7 +73,7 @@ public class GameService {
             }
 
             final GameCategory category = this.gameRepository.createGameCategory(categoryName);
-            this.categories.put(category.getCategoryName(), category);
+            this.categories.put(category.categoryName(), category);
             return category;
         } finally {
             lock.unlock();
@@ -104,8 +104,8 @@ public class GameService {
             }
 
             final GameCategory gameCategory = this.getCategoryOrCreate(categoryName);
-            final Game game = this.gameRepository.createGame(websiteName, gameName, cleanName, gameCategory.getRepositoryId());
-            this.games.put(game.getGameName(), game);
+            final Game game = this.gameRepository.createGame(websiteName, gameName, cleanName, gameCategory.repositoryId());
+            this.games.put(game.gameName(), game);
             return game;
         } finally {
             lock.unlock();
@@ -118,7 +118,7 @@ public class GameService {
         try {
             final Game game = this.games.remove(gameName);
             if (game != null) {
-                this.gameRepository.removeGame(game.getRepositoryId());
+                this.gameRepository.removeGame(game.repositoryId());
             }
         } finally {
             lock.unlock();

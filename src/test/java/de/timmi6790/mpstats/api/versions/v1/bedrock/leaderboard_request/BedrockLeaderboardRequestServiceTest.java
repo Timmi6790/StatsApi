@@ -21,8 +21,8 @@ class BedrockLeaderboardRequestServiceTest extends AbstractLeaderboardRequestSer
     private void validatePlayerData(final WebLeaderboard<Player> data,
                                     final String requiredName,
                                     final long requiredScore) {
-        assertThat(data.getPlayer().getPlayerName()).isEqualTo(requiredName);
-        assertThat(data.getScore()).isEqualTo(requiredScore);
+        assertThat(data.player().getPlayerName()).isEqualTo(requiredName);
+        assertThat(data.score()).isEqualTo(requiredScore);
     }
 
     @Test

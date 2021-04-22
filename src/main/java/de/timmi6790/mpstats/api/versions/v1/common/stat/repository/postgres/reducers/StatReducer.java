@@ -15,7 +15,7 @@ public class StatReducer implements LinkedHashMapRowReducer<Integer, Stat> {
         );
 
         if (rowView.getColumn("alias_name", String.class) != null) {
-            stat.getAliasNames().add(rowView.getColumn("alias_name", String.class));
+            stat.aliasNames().add(rowView.getColumn("alias_name", String.class));
         }
     }
 }

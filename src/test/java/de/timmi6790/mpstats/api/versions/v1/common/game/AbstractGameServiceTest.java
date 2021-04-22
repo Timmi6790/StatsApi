@@ -93,10 +93,10 @@ public abstract class AbstractGameServiceTest {
         assertThat(gameNotFound).isNotPresent();
 
         final Game createdGame = this.gameService.getOrCreateGame(websiteName, gameName, cleanName, categoryName);
-        assertThat(createdGame.getWebsiteName()).isEqualTo(websiteName);
-        assertThat(createdGame.getCleanName()).isEqualTo(cleanName);
-        assertThat(createdGame.getGameName()).isEqualTo(gameName);
-        assertThat(createdGame.getCategoryName()).isEqualTo(categoryName);
+        assertThat(createdGame.websiteName()).isEqualTo(websiteName);
+        assertThat(createdGame.cleanName()).isEqualTo(cleanName);
+        assertThat(createdGame.gameName()).isEqualTo(gameName);
+        assertThat(createdGame.categoryName()).isEqualTo(categoryName);
 
         final Optional<Game> gameFound = this.gameService.getGame(gameName);
         assertThat(gameFound)

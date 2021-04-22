@@ -23,9 +23,9 @@ class JavaLeaderboardRequestServiceTest extends AbstractLeaderboardRequestServic
                                     final String requiredName,
                                     final String requiredUUID,
                                     final long requiredScore) {
-        assertThat(data.getScore()).isEqualTo(requiredScore);
+        assertThat(data.score()).isEqualTo(requiredScore);
 
-        final JavaPlayer player = data.getPlayer();
+        final JavaPlayer player = data.player();
         assertThat(player.getPlayerName()).isEqualTo(requiredName);
         assertThat(player.getPlayerUUID()).isEqualTo(UUID.fromString(requiredUUID));
     }

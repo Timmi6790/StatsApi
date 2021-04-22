@@ -29,7 +29,7 @@ public class StatService {
         final List<Stat> existingStats = this.javaStatRepository.getStats();
         this.stats = new LinkedCaseInsensitiveMap<>(existingStats.size());
         for (final Stat stat : existingStats) {
-            this.stats.put(stat.getStatName(), stat);
+            this.stats.put(stat.statName(), stat);
         }
     }
 
@@ -61,7 +61,7 @@ public class StatService {
             }
 
             final Stat stat = this.javaStatRepository.createStat(websiteName, statName, cleanName, isAchievement);
-            this.stats.put(stat.getStatName(), stat);
+            this.stats.put(stat.statName(), stat);
             return stat;
         } finally {
             lock.unlock();
@@ -74,7 +74,7 @@ public class StatService {
         try {
             final Stat stat = this.stats.remove(statName);
             if (stat != null) {
-                this.javaStatRepository.removeStat(stat.getRepositoryId());
+                this.javaStatRepository.removeStat(stat.repositoryId());
             }
         } finally {
             lock.unlock();

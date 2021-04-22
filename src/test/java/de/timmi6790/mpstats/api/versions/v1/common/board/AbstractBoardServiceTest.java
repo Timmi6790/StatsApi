@@ -91,10 +91,10 @@ public abstract class AbstractBoardServiceTest {
         assertThat(boardNotFound).isNotPresent();
 
         final Board createdBoard = this.boardService.getBoardOrCreate(websiteName, boardName, cleanName, updateTime);
-        assertThat(createdBoard.getWebsiteName()).isEqualTo(websiteName);
-        assertThat(createdBoard.getCleanName()).isEqualTo(cleanName);
-        assertThat(createdBoard.getBoardName()).isEqualTo(boardName);
-        assertThat(createdBoard.getUpdateTime()).isEqualTo(updateTime);
+        assertThat(createdBoard.websiteName()).isEqualTo(websiteName);
+        assertThat(createdBoard.cleanName()).isEqualTo(cleanName);
+        assertThat(createdBoard.boardName()).isEqualTo(boardName);
+        assertThat(createdBoard.updateTime()).isEqualTo(updateTime);
 
         final Optional<Board> boardFound = this.boardService.getBoard(boardName);
         assertThat(boardFound)

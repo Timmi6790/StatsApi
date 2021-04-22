@@ -57,9 +57,9 @@ public class LeaderboardService {
     private String getUniqName(final Game game, final Stat stat, final Board board) {
         return String.format(
                 "%s-%s-%s",
-                game.getRepositoryId(),
-                stat.getRepositoryId(),
-                board.getRepositoryId()
+                game.repositoryId(),
+                stat.repositoryId(),
+                board.repositoryId()
         );
     }
 
@@ -74,7 +74,7 @@ public class LeaderboardService {
     }
 
     private void addLeaderboardToCache(final Leaderboard leaderboard) {
-        final String uniqName = this.getUniqName(leaderboard.getGame(), leaderboard.getStat(), leaderboard.getBoard());
+        final String uniqName = this.getUniqName(leaderboard.game(), leaderboard.stat(), leaderboard.board());
         this.leaderboardCache.put(uniqName, leaderboard);
     }
 

@@ -36,12 +36,12 @@ class JavaGroupServiceTest {
 
         // Insert group
         final Group groupCreate = javaGroupService.createGroup(groupName, groupName);
-        assertThat(groupCreate.getGroupName()).isEqualTo(groupName);
+        assertThat(groupCreate.groupName()).isEqualTo(groupName);
 
         // Verify cache
         final Optional<Group> groupCache = javaGroupService.getGroup(groupName);
         assertThat(groupCache).isPresent();
-        assertThat(groupCache.get().getGroupName()).isEqualTo(groupName);
+        assertThat(groupCache.get().groupName()).isEqualTo(groupName);
 
         // Verify none cache
         final Optional<Group> groupNoCache = javaGroupRepository.getGroup(groupName);
@@ -136,7 +136,7 @@ class JavaGroupServiceTest {
         // Assure that the groups does not exist
         final List<String> groupsNotContains = javaGroupService.getGroups()
                 .stream()
-                .map(Group::getGroupName)
+                .map(Group::groupName)
                 .collect(Collectors.toList());
         assertThat(groupsNotContains).doesNotContain(groupName1, groupName2);
 
@@ -146,7 +146,7 @@ class JavaGroupServiceTest {
 
         final List<String> groupsContains = javaGroupService.getGroups()
                 .stream()
-                .map(Group::getGroupName)
+                .map(Group::groupName)
                 .collect(Collectors.toList());
         assertThat(groupsContains).contains(groupName1, groupName2);
     }

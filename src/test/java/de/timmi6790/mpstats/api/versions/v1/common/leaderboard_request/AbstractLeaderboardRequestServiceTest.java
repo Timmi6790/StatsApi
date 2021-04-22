@@ -1,6 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request;
 
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.models.WebLeaderboard;
+import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import kong.unirest.HttpMethod;
 import kong.unirest.MockClient;
@@ -36,14 +36,14 @@ public abstract class AbstractLeaderboardRequestServiceTest<PLAYER extends Playe
         return MockClient.register(this.leaderboardRequest.getUnirest());
     }
 
-    protected Optional<List<WebLeaderboard<PLAYER>>> retrieveLeaderboard(final String responsePath) {
+    protected Optional<List<LeaderboardEntry<PLAYER>>> retrieveLeaderboard(final String responsePath) {
         final String content = this.getContentFromFile(responsePath);
         final MockClient mock = this.getMockClient();
 
         mock.expect(HttpMethod.GET, this.leaderboardRequest.getLeaderboardBaseUrl())
                 .thenReturn(content);
 
-        final Optional<List<WebLeaderboard<PLAYER>>> leaderboard = this.leaderboardRequest.retrieveLeaderboard("", "", "");
+        final Optional<List<LeaderboardEntry<PLAYER>>> leaderboard = this.leaderboardRequest.retrieveLeaderboard("", "", "");
 
         mock.verifyAll();
         return leaderboard;
@@ -56,7 +56,7 @@ public abstract class AbstractLeaderboardRequestServiceTest<PLAYER extends Playe
         mock.expect(HttpMethod.GET, this.leaderboardRequest.getLeaderboardBaseUrl())
                 .thenReturn("");
 
-        final Optional<List<WebLeaderboard<PLAYER>>> leaderboard = this.leaderboardRequest.retrieveLeaderboard("", "", "");
+        final Optional<List<LeaderboardEntry<PLAYER>>> leaderboard = this.leaderboardRequest.retrieveLeaderboard("", "", "");
 
         assertThat(leaderboard).isNotPresent();
     }

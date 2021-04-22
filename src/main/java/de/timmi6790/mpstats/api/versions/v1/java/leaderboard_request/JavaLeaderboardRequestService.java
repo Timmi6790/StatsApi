@@ -4,7 +4,7 @@ import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import de.timmi6790.mpstats.api.Config;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.AbstractLeaderboardRequestService;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.models.WebLeaderboard;
+import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,11 +22,11 @@ public class JavaLeaderboardRequestService extends AbstractLeaderboardRequestSer
     }
 
     @Override
-    protected Optional<WebLeaderboard<JavaPlayer>> parseRow(final String row) {
+    protected Optional<LeaderboardEntry<JavaPlayer>> parseRow(final String row) {
         final Matcher leaderboardMatcher = LEADERBOARD_PATTERN.matcher(row);
         if (leaderboardMatcher.find()) {
             return Optional.of(
-                    new WebLeaderboard<>(
+                    new LeaderboardEntry<>(
                             new JavaPlayer(
                                     leaderboardMatcher.group(2),
                                     UUID.fromString(leaderboardMatcher.group(1))

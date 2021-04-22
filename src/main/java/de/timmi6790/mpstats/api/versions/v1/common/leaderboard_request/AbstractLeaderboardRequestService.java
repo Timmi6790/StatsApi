@@ -2,7 +2,7 @@ package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request;
 
 import com.google.common.collect.Lists;
 import com.google.re2j.Pattern;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.models.WebLeaderboard;
+import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
@@ -40,10 +40,10 @@ public abstract class AbstractLeaderboardRequestService<P extends Player> {
                 .connectTimeout(TIMEOUT);
     }
 
-    protected abstract Optional<WebLeaderboard<P>> parseRow(String row);
+    protected abstract Optional<LeaderboardEntry<P>> parseRow(String row);
 
-    protected List<WebLeaderboard<P>> parseWebLeaderboard(final String response) {
-        final List<WebLeaderboard<P>> leaderboard = Lists.newArrayListWithExpectedSize(this.estimatedResultSize);
+    protected List<LeaderboardEntry<P>> parseLeaderboardEntry(final String response) {
+        final List<LeaderboardEntry<P>> leaderboard = Lists.newArrayListWithExpectedSize(this.estimatedResultSize);
 
         final String[] rows = HTML_ROW_PARSER.split(response);
         for (final String row : rows) {
@@ -53,7 +53,7 @@ public abstract class AbstractLeaderboardRequestService<P extends Player> {
         return leaderboard;
     }
 
-    public Optional<List<WebLeaderboard<P>>> retrieveLeaderboard(final String game, final String stat, final String board) {
+    public Optional<List<LeaderboardEntry<P>>> retrieveLeaderboard(final String game, final String stat, final String board) {
         final HttpResponse<String> response;
         try {
             response = this.unirest.get(this.leaderboardBaseUrl)
@@ -72,7 +72,7 @@ public abstract class AbstractLeaderboardRequestService<P extends Player> {
             return Optional.empty();
         }
 
-        final List<WebLeaderboard<P>> parsedResponse = this.parseWebLeaderboard(response.getBody());
+        final List<LeaderboardEntry<P>> parsedResponse = this.parseLeaderboardEntry(response.getBody());
         if (!parsedResponse.isEmpty()) {
             return Optional.of(parsedResponse);
         }

@@ -4,7 +4,7 @@ import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import de.timmi6790.mpstats.api.Config;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.AbstractLeaderboardRequestService;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.models.WebLeaderboard;
+import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,11 +21,11 @@ public class BedrockLeaderboardRequestService extends AbstractLeaderboardRequest
     }
 
     @Override
-    protected Optional<WebLeaderboard<Player>> parseRow(final String row) {
+    protected Optional<LeaderboardEntry<Player>> parseRow(final String row) {
         final Matcher leaderboardMatcher = LEADERBOARD_PATTERN.matcher(row);
         if (leaderboardMatcher.find()) {
             return Optional.of(
-                    new WebLeaderboard<>(
+                    new LeaderboardEntry<>(
                             new Player(leaderboardMatcher.group(1)),
                             Long.parseLong(leaderboardMatcher.group(2).replace(",", ""))
                     )

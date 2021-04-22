@@ -2,7 +2,7 @@ package de.timmi6790.mpstats.api.versions.v1.java.leaderboard_request;
 
 import de.timmi6790.mpstats.api.Config;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.AbstractLeaderboardRequestServiceTest;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.models.WebLeaderboard;
+import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
 import org.junit.jupiter.api.Test;
 
@@ -19,29 +19,29 @@ class JavaLeaderboardRequestServiceTest extends AbstractLeaderboardRequestServic
         super(new JavaLeaderboardRequestService(new Config()));
     }
 
-    private void validatePlayerData(final WebLeaderboard<JavaPlayer> data,
+    private void validatePlayerData(final LeaderboardEntry<JavaPlayer> data,
                                     final String requiredName,
                                     final String requiredUUID,
                                     final long requiredScore) {
-        assertThat(data.score()).isEqualTo(requiredScore);
+        assertThat(data.getScore()).isEqualTo(requiredScore);
 
-        final JavaPlayer player = data.player();
+        final JavaPlayer player = data.getPlayer();
         assertThat(player.getPlayerName()).isEqualTo(requiredName);
         assertThat(player.getPlayerUUID()).isEqualTo(UUID.fromString(requiredUUID));
     }
 
     @Test
     void retrieveLeaderboard_empty() {
-        final Optional<List<WebLeaderboard<JavaPlayer>>> parsedLeaderboardOpt = this.retrieveLeaderboard(BASE_PATH + "0_entries");
+        final Optional<List<LeaderboardEntry<JavaPlayer>>> parsedLeaderboardOpt = this.retrieveLeaderboard(BASE_PATH + "0_entries");
         assertThat(parsedLeaderboardOpt).isEmpty();
     }
 
     @Test
     void retrieveLeaderboard_small() {
-        final Optional<List<WebLeaderboard<JavaPlayer>>> parsedLeaderboardOpt = this.retrieveLeaderboard(BASE_PATH + "67_entries");
+        final Optional<List<LeaderboardEntry<JavaPlayer>>> parsedLeaderboardOpt = this.retrieveLeaderboard(BASE_PATH + "67_entries");
         assertThat(parsedLeaderboardOpt).isPresent();
 
-        final List<WebLeaderboard<JavaPlayer>> parsedLeaderboard = parsedLeaderboardOpt.get();
+        final List<LeaderboardEntry<JavaPlayer>> parsedLeaderboard = parsedLeaderboardOpt.get();
         assertThat(parsedLeaderboard)
                 .hasSize(67);
 
@@ -69,10 +69,10 @@ class JavaLeaderboardRequestServiceTest extends AbstractLeaderboardRequestServic
 
     @Test
     void retrieveLeaderboard_big() {
-        final Optional<List<WebLeaderboard<JavaPlayer>>> parsedLeaderboardOpt = this.retrieveLeaderboard(BASE_PATH + "1000_entries");
+        final Optional<List<LeaderboardEntry<JavaPlayer>>> parsedLeaderboardOpt = this.retrieveLeaderboard(BASE_PATH + "1000_entries");
         assertThat(parsedLeaderboardOpt).isPresent();
 
-        final List<WebLeaderboard<JavaPlayer>> parsedLeaderboard = parsedLeaderboardOpt.get();
+        final List<LeaderboardEntry<JavaPlayer>> parsedLeaderboard = parsedLeaderboardOpt.get();
         assertThat(parsedLeaderboard)
                 .hasSize(1_000);
 

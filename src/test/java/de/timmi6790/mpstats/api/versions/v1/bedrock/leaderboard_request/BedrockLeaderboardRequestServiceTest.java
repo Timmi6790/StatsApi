@@ -2,7 +2,7 @@ package de.timmi6790.mpstats.api.versions.v1.bedrock.leaderboard_request;
 
 import de.timmi6790.mpstats.api.Config;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.AbstractLeaderboardRequestServiceTest;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.models.WebLeaderboard;
+import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import org.junit.jupiter.api.Test;
 
@@ -18,25 +18,25 @@ class BedrockLeaderboardRequestServiceTest extends AbstractLeaderboardRequestSer
         super(new BedrockLeaderboardRequestService(new Config()));
     }
 
-    private void validatePlayerData(final WebLeaderboard<Player> data,
+    private void validatePlayerData(final LeaderboardEntry<Player> data,
                                     final String requiredName,
                                     final long requiredScore) {
-        assertThat(data.player().getPlayerName()).isEqualTo(requiredName);
-        assertThat(data.score()).isEqualTo(requiredScore);
+        assertThat(data.getPlayer().getPlayerName()).isEqualTo(requiredName);
+        assertThat(data.getScore()).isEqualTo(requiredScore);
     }
 
     @Test
     void retrieveLeaderboard_empty() {
-        final Optional<List<WebLeaderboard<Player>>> parsedLeaderboardOpt = this.retrieveLeaderboard(BASE_PATH + "0_entries");
+        final Optional<List<LeaderboardEntry<Player>>> parsedLeaderboardOpt = this.retrieveLeaderboard(BASE_PATH + "0_entries");
         assertThat(parsedLeaderboardOpt).isEmpty();
     }
 
     @Test
     void retrieveLeaderboard_big() {
-        final Optional<List<WebLeaderboard<Player>>> parsedLeaderboardOpt = this.retrieveLeaderboard(BASE_PATH + "100_entries");
+        final Optional<List<LeaderboardEntry<Player>>> parsedLeaderboardOpt = this.retrieveLeaderboard(BASE_PATH + "100_entries");
         assertThat(parsedLeaderboardOpt).isPresent();
 
-        final List<WebLeaderboard<Player>> parsedLeaderboard = parsedLeaderboardOpt.get();
+        final List<LeaderboardEntry<Player>> parsedLeaderboard = parsedLeaderboardOpt.get();
         assertThat(parsedLeaderboard)
                 .hasSize(100);
 

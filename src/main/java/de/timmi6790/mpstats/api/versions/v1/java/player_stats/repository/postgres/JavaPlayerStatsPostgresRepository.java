@@ -1,6 +1,5 @@
 package de.timmi6790.mpstats.api.versions.v1.java.player_stats.repository.postgres;
 
-import de.timmi6790.mpstats.api.versions.v1.java.groups.repository.postgres.mappers.GroupMapper;
 import de.timmi6790.mpstats.api.versions.v1.java.player_stats.repository.JavaPlayerStatsRepository;
 import de.timmi6790.mpstats.api.versions.v1.java.player_stats.repository.models.PlayerStatsDatabaseModel;
 import lombok.NonNull;
@@ -46,8 +45,6 @@ public class JavaPlayerStatsPostgresRepository implements JavaPlayerStatsReposit
     @Autowired
     public JavaPlayerStatsPostgresRepository(final Jdbi jdbi) {
         this.database = jdbi;
-
-        this.database.registerRowMapper(new GroupMapper());
     }
 
     @Override

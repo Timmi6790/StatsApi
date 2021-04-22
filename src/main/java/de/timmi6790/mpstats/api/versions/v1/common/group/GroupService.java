@@ -1,22 +1,24 @@
-package de.timmi6790.mpstats.api.versions.v1.java.groups;
+package de.timmi6790.mpstats.api.versions.v1.common.group;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.util.concurrent.Striped;
-import de.timmi6790.mpstats.api.versions.v1.java.groups.repository.JavaGroupRepository;
-import de.timmi6790.mpstats.api.versions.v1.java.groups.repository.models.Group;
+import de.timmi6790.mpstats.api.versions.v1.common.group.repository.GroupRepository;
+import de.timmi6790.mpstats.api.versions.v1.common.group.repository.models.Group;
+import de.timmi6790.mpstats.api.versions.v1.common.group.repository.postgres.GroupPostgresRepository;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.jdbi.v3.core.Jdbi;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
-@Service
 @Log4j2
-public class JavaGroupService {
-    private final JavaGroupRepository javaGroupRepository;
+public class GroupService {
+    @Getter(value = AccessLevel.PROTECTED)
+    private final GroupRepository groupRepository;
 
     private final Striped<Lock> groupLock = Striped.lock(32);
 
@@ -26,11 +28,10 @@ public class JavaGroupService {
             .expireAfterAccess(5, TimeUnit.SECONDS)
             .build();
 
-    @Autowired
-    public JavaGroupService(final JavaGroupRepository javaGroupRepository) {
-        this.javaGroupRepository = javaGroupRepository;
+    protected GroupService(final Jdbi database, final String schema) {
+        this.groupRepository = new GroupPostgresRepository(database, schema);
 
-        for (final Group group : javaGroupRepository.getGroups()) {
+        for (final Group group : this.groupRepository.getGroups()) {
             this.groupNames.add(group.groupName());
         }
     }
@@ -66,7 +67,7 @@ public class JavaGroupService {
             }
 
             log.info("Creating group {}", groupName);
-            final Group group = this.javaGroupRepository.createGroup(groupName, cleanName);
+            final Group group = this.groupRepository.createGroup(groupName, cleanName);
             this.insertGroupIntoCache(group);
             this.groupNames.add(group.groupName());
             return group;
@@ -83,7 +84,7 @@ public class JavaGroupService {
             final Optional<Group> groupOpt = this.getGroup(groupName);
             if (groupOpt.isPresent()) {
                 log.info("Deleting group {}", groupOpt.get());
-                this.javaGroupRepository.deleteGroup(groupOpt.get().repositoryId());
+                this.groupRepository.deleteGroup(groupOpt.get().repositoryId());
                 this.groupNames.remove(groupOpt.get().groupName());
                 this.invalidateGroupCache(groupName);
             }
@@ -100,7 +101,7 @@ public class JavaGroupService {
             return groupCached;
         }
 
-        final Optional<Group> groupOpt = this.javaGroupRepository.getGroup(groupName);
+        final Optional<Group> groupOpt = this.groupRepository.getGroup(groupName);
         log.debug("Get group from repository: {}", groupOpt);
         if (groupOpt.isPresent()) {
             this.insertGroupIntoCache(groupOpt.get());
@@ -111,6 +112,6 @@ public class JavaGroupService {
     }
 
     public List<Group> getGroups() {
-        return this.javaGroupRepository.getGroups();
+        return this.groupRepository.getGroups();
     }
 }

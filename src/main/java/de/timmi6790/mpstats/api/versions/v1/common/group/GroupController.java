@@ -1,8 +1,6 @@
-package de.timmi6790.mpstats.api.versions.v1.java.groups;
+package de.timmi6790.mpstats.api.versions.v1.common.group;
 
-import de.timmi6790.mpstats.api.versions.v1.java.groups.repository.models.Group;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import de.timmi6790.mpstats.api.versions.v1.common.group.repository.models.Group;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,15 +8,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/v1/java/group")
-@Tag(name = "Java - Group")
-public class JavaGroupController {
-    private final JavaGroupService javaGroupService;
+public class GroupController {
+    private final GroupService groupService;
 
-    @Autowired
-    public JavaGroupController(final JavaGroupService javaGroupService) {
-        this.javaGroupService = javaGroupService;
+    protected GroupController(final GroupService groupService) {
+        this.groupService = groupService;
     }
 
     @PutMapping(value = "/{groupName}")
@@ -28,7 +22,7 @@ public class JavaGroupController {
 
     @GetMapping(value = "/{groupName}")
     public Optional<Group> getGroup(@PathVariable final String groupName) {
-        return Optional.empty();
+        return this.groupService.getGroup(groupName);
     }
 
     @DeleteMapping(value = "/{groupName}")
@@ -38,7 +32,7 @@ public class JavaGroupController {
 
     @GetMapping
     public List<Group> getGroups() {
-        return this.javaGroupService.getGroups();
+        return this.groupService.getGroups();
     }
 
     @GetMapping(value = "/{groupName}/stat/leaderboard/{stat}/{board}")

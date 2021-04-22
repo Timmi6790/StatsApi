@@ -1,6 +1,6 @@
-package de.timmi6790.mpstats.api.versions.v1.java.groups.repository.postgres.mappers;
+package de.timmi6790.mpstats.api.versions.v1.common.group.repository.postgres.mappers;
 
-import de.timmi6790.mpstats.api.versions.v1.java.groups.repository.models.Group;
+import de.timmi6790.mpstats.api.versions.v1.common.group.repository.models.Group;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 

@@ -1,4 +1,4 @@
-package de.timmi6790.mpstats.api.versions.v1.java.groups.repository.models;
+package de.timmi6790.mpstats.api.versions.v1.common.group.repository.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.Game;

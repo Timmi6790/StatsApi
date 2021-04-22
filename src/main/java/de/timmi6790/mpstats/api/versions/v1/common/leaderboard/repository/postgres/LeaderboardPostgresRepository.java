@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class LeaderboardPostgresRepository extends PostgresRepository implements LeaderboardRepository {
+    private static final String GAME_ID = "gameId";
+
     private final String getLeaderboard;
     private final String getLeaderboards;
     private final String getLeaderboardByRepositoryId;
@@ -56,7 +58,7 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
     public List<Leaderboard> getLeaderboards(final Game game) {
         return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getLeaderboardsByGameId)
-                        .bind("gameId", game.getRepositoryId())
+                        .bind(GAME_ID, game.getRepositoryId())
                         .mapTo(Leaderboard.class)
                         .list()
         );
@@ -76,7 +78,7 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
     public Optional<Leaderboard> getLeaderboard(final Game game, final Stat stat, final Board board) {
         return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getLeaderboard)
-                        .bind("gameId", game.getRepositoryId())
+                        .bind(GAME_ID, game.getRepositoryId())
                         .bind("statId", stat.getRepositoryId())
                         .bind("boardId", board.getRepositoryId())
                         .mapTo(Leaderboard.class)
@@ -88,7 +90,7 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
     public Leaderboard createdLeaderboard(final Game game, final Stat stat, final Board board, final boolean deprecated) {
         this.getDatabase().useHandle(handle ->
                 handle.createUpdate(this.insertLeaderboard)
-                        .bind("gameId", game.getRepositoryId())
+                        .bind(GAME_ID, game.getRepositoryId())
                         .bind("statId", stat.getRepositoryId())
                         .bind("boardId", board.getRepositoryId())
                         .bind("deprecated", deprecated)

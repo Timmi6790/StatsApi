@@ -91,22 +91,22 @@ public class LeaderboardService {
     }
 
     public Optional<Leaderboard> getLeaderboard(final String gameName, final String statName, final String boardName) {
-        Optional<Game> gameOpt = gameService.getGame(gameName);
-        if (!gameOpt.isPresent()) {
+        final Optional<Game> gameOpt = this.gameService.getGame(gameName);
+        if (gameOpt.isEmpty()) {
             return Optional.empty();
         }
 
-        Optional<Stat> statOpt = statService.getStat(statName);
-        if (!statOpt.isPresent()) {
-            return Optional.empty();
-        }
-        
-        Optional<Board> boardOpt = boardService.getBoard(boardName);
-        if (!boardOpt.isPresent()) {
+        final Optional<Stat> statOpt = this.statService.getStat(statName);
+        if (statOpt.isEmpty()) {
             return Optional.empty();
         }
 
-        return getLeaderboard(gameOpt.get(), statOpt.get(), boardOpt.get());
+        final Optional<Board> boardOpt = this.boardService.getBoard(boardName);
+        if (boardOpt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return this.getLeaderboard(gameOpt.get(), statOpt.get(), boardOpt.get());
     }
 
 

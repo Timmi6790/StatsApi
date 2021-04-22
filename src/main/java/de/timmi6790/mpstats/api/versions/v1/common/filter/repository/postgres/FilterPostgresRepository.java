@@ -15,6 +15,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class FilterPostgresRepository<P extends Player & RepositoryPlayer> extends PostgresRepository implements FilterRepository<P> {
+    private static final String PLAYER_ID = "playerId";
+    private static final String LEADERBOARD_ID = "leaderboardId";
+
     private final String insertFilter;
     private final String removeFilter;
 
@@ -58,7 +61,7 @@ public class FilterPostgresRepository<P extends Player & RepositoryPlayer> exten
     public List<Filter<P>> getFilters(final P player) {
         return this.getDatabase().withHandle(handler ->
                 handler.createQuery(this.getFiltersByPlayerId)
-                        .bind("playerId", player.getRepositoryId())
+                        .bind(PLAYER_ID, player.getRepositoryId())
                         .map(this.filterMapper)
                         .list()
         );
@@ -68,7 +71,7 @@ public class FilterPostgresRepository<P extends Player & RepositoryPlayer> exten
     public List<Filter<P>> getFilters(final Leaderboard leaderboard) {
         return this.getDatabase().withHandle(handler ->
                 handler.createQuery(this.getFiltersByLeaderboardId)
-                        .bind("leaderboardId", leaderboard.getRepositoryId())
+                        .bind(LEADERBOARD_ID, leaderboard.getRepositoryId())
                         .map(this.filterMapper)
                         .list()
         );
@@ -78,8 +81,8 @@ public class FilterPostgresRepository<P extends Player & RepositoryPlayer> exten
     public List<Filter<P>> getFilters(final P player, final Leaderboard leaderboard) {
         return this.getDatabase().withHandle(handler ->
                 handler.createQuery(this.getFiltersByPlayerLeaderboard)
-                        .bind("playerId", player.getRepositoryId())
-                        .bind("leaderboardId", leaderboard.getRepositoryId())
+                        .bind(PLAYER_ID, player.getRepositoryId())
+                        .bind(LEADERBOARD_ID, leaderboard.getRepositoryId())
                         .map(this.filterMapper)
                         .list()
         );
@@ -91,8 +94,8 @@ public class FilterPostgresRepository<P extends Player & RepositoryPlayer> exten
                                       final LocalDateTime timestamp) {
         return this.getDatabase().withHandle(handler ->
                 handler.createQuery(this.getFiltersByPlayerLeaderboardTime)
-                        .bind("playerId", player.getRepositoryId())
-                        .bind("leaderboardId", leaderboard.getRepositoryId())
+                        .bind(PLAYER_ID, player.getRepositoryId())
+                        .bind(LEADERBOARD_ID, leaderboard.getRepositoryId())
                         .bind("timestamp", timestamp)
                         .map(this.filterMapper)
                         .list()
@@ -107,8 +110,8 @@ public class FilterPostgresRepository<P extends Player & RepositoryPlayer> exten
                                final LocalDateTime filterEnd) {
         return this.getDatabase().withHandle(handler ->
                 handler.createQuery(this.insertFilter)
-                        .bind("playerId", player.getRepositoryId())
-                        .bind("leaderboardId", leaderboard.getRepositoryId())
+                        .bind(PLAYER_ID, player.getRepositoryId())
+                        .bind(LEADERBOARD_ID, leaderboard.getRepositoryId())
                         .bind("filterReason", reason)
                         .bind("filterStart", filterStart)
                         .bind("filterEnd", filterEnd)

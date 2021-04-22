@@ -23,14 +23,14 @@ public class FilterMapper<P extends Player & RepositoryPlayer> implements RowMap
     public Filter<P> map(final ResultSet rs, final StatementContext ctx) throws SQLException {
         final int playerId = rs.getInt("player_id");
         final Optional<P> playerOpt = this.playerService.getPlayer(playerId);
-        if (!playerOpt.isPresent()) {
+        if (playerOpt.isEmpty()) {
             // TODO: Add warning
             return null;
         }
 
         final int leaderboardId = rs.getInt("leaderboard_id");
         final Optional<Leaderboard> leaderboardOpt = this.leaderboardService.getLeaderboard(leaderboardId);
-        if (!leaderboardOpt.isPresent()) {
+        if (leaderboardOpt.isEmpty()) {
             // TODO: Add warning
             return null;
         }

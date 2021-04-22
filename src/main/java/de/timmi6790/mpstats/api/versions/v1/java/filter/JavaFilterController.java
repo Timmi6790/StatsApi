@@ -35,12 +35,12 @@ public class JavaFilterController extends FilterController<JavaRepositoryPlayer,
         // TODO: Add spring security
 
         final Optional<Leaderboard> leaderboardOpt = this.getLeaderboardService().getLeaderboard(gameName, statName, boardName);
-        if (!leaderboardOpt.isPresent()) {
+        if (leaderboardOpt.isEmpty()) {
             return Optional.empty();
         }
 
         final Optional<JavaRepositoryPlayer> playerOpt = this.getPlayerService().getPlayer(playerUUID);
-        if (!playerOpt.isPresent()) {
+        if (playerOpt.isEmpty()) {
             return Optional.empty();
         }
 

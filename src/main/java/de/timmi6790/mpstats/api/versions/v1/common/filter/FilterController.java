@@ -47,12 +47,12 @@ public class FilterController<P extends Player & RepositoryPlayer, S extends Pla
         // TODO: Add spring security
 
         final Optional<Leaderboard> leaderboardOpt = this.getLeaderboardService().getLeaderboard(gameName, statName, boardName);
-        if (!leaderboardOpt.isPresent()) {
+        if (leaderboardOpt.isEmpty()) {
             return Optional.empty();
         }
 
         final Optional<P> playerOpt = this.getPlayerService().getPlayer(playerName);
-        if (!playerOpt.isPresent()) {
+        if (playerOpt.isEmpty()) {
             return Optional.empty();
         }
 

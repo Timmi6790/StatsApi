@@ -101,7 +101,7 @@ public class WebsiteParser {
 
     public Optional<WebsitePlayerModel> retrievePlayerStats(final String player) {
         final Optional<String> htmlOpt = this.getHtmlString(player);
-        if (!htmlOpt.isPresent()) {
+        if (htmlOpt.isEmpty()) {
             return Optional.empty();
         }
 
@@ -120,7 +120,7 @@ public class WebsiteParser {
 
         // PlayerUUID
         final Optional<UUID> playerUUIDOpt = this.getPlayerUUID(doc);
-        if (!playerUUIDOpt.isPresent()) {
+        if (playerUUIDOpt.isEmpty()) {
             return Optional.empty();
         }
 

@@ -95,9 +95,9 @@ public class JavaGroupService {
     public Optional<Group> getGroup(final String groupName) {
         // TODO: Check for group name and alias names. Add full alias support into the api
 
-        final Optional<Group> groupCache = this.getGroupFromCache(groupName);
-        if (groupCache.isPresent()) {
-            return groupCache;
+        final Optional<Group> groupCached = this.getGroupFromCache(groupName);
+        if (groupCached.isPresent()) {
+            return groupCached;
         }
 
         final Optional<Group> groupOpt = this.javaGroupRepository.getGroup(groupName);

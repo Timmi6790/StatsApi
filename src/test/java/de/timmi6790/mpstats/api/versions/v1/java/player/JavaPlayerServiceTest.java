@@ -1,9 +1,8 @@
 package de.timmi6790.mpstats.api.versions.v1.java.player;
 
-import de.timmi6790.mpstats.api.AbstractIntegrationTest;
+import de.timmi6790.mpstats.api.utilities.java.JavaServiceGenerator;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.JavaPlayerRepository;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaRepositoryPlayer;
-import de.timmi6790.mpstats.api.versions.v1.java.player.repository.postgres.JavaPlayerPostgresRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -20,8 +19,8 @@ class JavaPlayerServiceTest {
 
     @BeforeAll
     static void setUp() {
-        javaPlayerRepository = new JavaPlayerPostgresRepository(AbstractIntegrationTest.jdbi());
-        javaPlayerService = new JavaPlayerService(javaPlayerRepository);
+        javaPlayerService = JavaServiceGenerator.generatePlayerService();
+        javaPlayerRepository = javaPlayerService.getPlayerRepository();
     }
 
     @Test

@@ -8,6 +8,8 @@ import de.timmi6790.mpstats.api.mojang.models.MojangPlayer;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.JavaPlayerRepository;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaRepositoryPlayer;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +20,8 @@ import java.util.concurrent.locks.Lock;
 
 @Service
 public class JavaPlayerService implements PlayerService<JavaRepositoryPlayer> {
-    private final JavaPlayerRepository javaPlayerRepository;
+    @Getter(value = AccessLevel.PROTECTED)
+    private final JavaPlayerRepository playerRepository;
 
     private final Striped<Lock> playerLock = Striped.lock(128);
     private final Cache<UUID, JavaRepositoryPlayer> playerCache = Caffeine.newBuilder()
@@ -26,8 +29,8 @@ public class JavaPlayerService implements PlayerService<JavaRepositoryPlayer> {
             .build();
 
     @Autowired
-    public JavaPlayerService(final JavaPlayerRepository javaPlayerRepository) {
-        this.javaPlayerRepository = javaPlayerRepository;
+    public JavaPlayerService(final JavaPlayerRepository playerRepository) {
+        this.playerRepository = playerRepository;
     }
 
     private Lock getPlayerLock(final UUID playerUUID) {
@@ -45,7 +48,7 @@ public class JavaPlayerService implements PlayerService<JavaRepositoryPlayer> {
 
     @Override
     public Optional<JavaRepositoryPlayer> getPlayer(final int repositoryId) {
-        return this.javaPlayerRepository.getPlayer(repositoryId);
+        return this.playerRepository.getPlayer(repositoryId);
     }
 
     public Optional<JavaRepositoryPlayer> getPlayer(final UUID playerUUID) {
@@ -55,7 +58,7 @@ public class JavaPlayerService implements PlayerService<JavaRepositoryPlayer> {
             return Optional.of(playerCached);
         }
 
-        final Optional<JavaRepositoryPlayer> playerOpt = this.javaPlayerRepository.getPlayer(playerUUID);
+        final Optional<JavaRepositoryPlayer> playerOpt = this.playerRepository.getPlayer(playerUUID);
         playerOpt.ifPresent(player -> this.playerCache.put(playerUUID, player));
         return playerOpt;
     }
@@ -67,13 +70,13 @@ public class JavaPlayerService implements PlayerService<JavaRepositoryPlayer> {
             // Check if the player name changed while we had the cache
             if (!playerCached.getPlayerName().equals(playerName)) {
                 playerCached.setPlayerName(playerName);
-                this.javaPlayerRepository.changePlayerName(playerCached.getRepositoryId(), playerName);
+                this.playerRepository.changePlayerName(playerCached.getRepositoryId(), playerName);
             }
 
             return Optional.of(playerCached);
         }
 
-        final Optional<JavaRepositoryPlayer> playerOpt = this.javaPlayerRepository.getPlayer(playerName, playerUUID);
+        final Optional<JavaRepositoryPlayer> playerOpt = this.playerRepository.getPlayer(playerName, playerUUID);
         playerOpt.ifPresent(player -> this.playerCache.put(playerUUID, player));
         return playerOpt;
     }
@@ -98,7 +101,7 @@ public class JavaPlayerService implements PlayerService<JavaRepositoryPlayer> {
                 return playerOpt.get();
             }
 
-            final JavaRepositoryPlayer player = this.javaPlayerRepository.insertPlayer(playerName, playerUUID);
+            final JavaRepositoryPlayer player = this.playerRepository.insertPlayer(playerName, playerUUID);
             this.playerCache.put(player.getPlayerUUID(), player);
             return player;
         } finally {

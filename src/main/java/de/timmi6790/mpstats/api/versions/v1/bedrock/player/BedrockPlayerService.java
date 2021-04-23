@@ -6,6 +6,8 @@ import com.google.common.util.concurrent.Striped;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.BedrockPlayerRepository;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockRepositoryPlayer;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +17,8 @@ import java.util.concurrent.locks.Lock;
 
 @Service
 public class BedrockPlayerService implements PlayerService<BedrockRepositoryPlayer> {
-    private final BedrockPlayerRepository bedrockPlayerRepository;
+    @Getter(value = AccessLevel.PROTECTED)
+    private final BedrockPlayerRepository playerRepository;
 
     private final Striped<Lock> playerLock = Striped.lock(128);
     private final Cache<String, BedrockRepositoryPlayer> playerCache = Caffeine.newBuilder()
@@ -23,8 +26,8 @@ public class BedrockPlayerService implements PlayerService<BedrockRepositoryPlay
             .build();
 
     @Autowired
-    public BedrockPlayerService(final BedrockPlayerRepository bedrockPlayerRepository) {
-        this.bedrockPlayerRepository = bedrockPlayerRepository;
+    public BedrockPlayerService(final BedrockPlayerRepository playerRepository) {
+        this.playerRepository = playerRepository;
     }
 
     private Lock getPlayerLock(final String playerName) {
@@ -46,7 +49,7 @@ public class BedrockPlayerService implements PlayerService<BedrockRepositoryPlay
 
     @Override
     public Optional<BedrockRepositoryPlayer> getPlayer(final int repositoryId) {
-        return this.bedrockPlayerRepository.getPlayer(repositoryId);
+        return this.playerRepository.getPlayer(repositoryId);
     }
 
     @Override
@@ -57,7 +60,7 @@ public class BedrockPlayerService implements PlayerService<BedrockRepositoryPlay
             return playerCached;
         }
 
-        final Optional<BedrockRepositoryPlayer> playerOpt = this.bedrockPlayerRepository.getPlayer(playerName);
+        final Optional<BedrockRepositoryPlayer> playerOpt = this.playerRepository.getPlayer(playerName);
         playerOpt.ifPresent(this::addPlayerToCache);
         return playerOpt;
     }
@@ -71,7 +74,7 @@ public class BedrockPlayerService implements PlayerService<BedrockRepositoryPlay
                 return playerOpt.get();
             }
 
-            final BedrockRepositoryPlayer player = this.bedrockPlayerRepository.insertPlayer(playerName);
+            final BedrockRepositoryPlayer player = this.playerRepository.insertPlayer(playerName);
             this.addPlayerToCache(player);
             return player;
         } finally {

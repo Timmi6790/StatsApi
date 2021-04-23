@@ -1,9 +1,8 @@
 package de.timmi6790.mpstats.api.versions.v1.bedrock.player;
 
-import de.timmi6790.mpstats.api.AbstractIntegrationTest;
+import de.timmi6790.mpstats.api.utilities.bedrock.BedrockServiceGenerator;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.BedrockPlayerRepository;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockRepositoryPlayer;
-import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.postgres.BedrockPlayerPostgresRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -18,8 +17,8 @@ class BedrockPlayerServiceTest {
 
     @BeforeAll
     static void setUp() {
-        bedrockPlayerRepository = new BedrockPlayerPostgresRepository(AbstractIntegrationTest.jdbi());
-        bedrockPlayerService = new BedrockPlayerService(bedrockPlayerRepository);
+        bedrockPlayerService = BedrockServiceGenerator.generatePlayerService();
+        bedrockPlayerRepository = bedrockPlayerService.getPlayerRepository();
     }
 
     @Test

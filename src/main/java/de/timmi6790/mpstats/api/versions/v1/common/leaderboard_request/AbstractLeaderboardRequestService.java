@@ -3,6 +3,7 @@ package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request;
 import com.google.common.collect.Lists;
 import com.google.re2j.Pattern;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
+import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
@@ -12,6 +13,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +55,7 @@ public abstract class AbstractLeaderboardRequestService<P extends Player> {
         return leaderboard;
     }
 
-    public Optional<List<LeaderboardEntry<P>>> retrieveLeaderboard(final String game, final String stat, final String board) {
+    public Optional<LeaderboardSave<P>> retrieveLeaderboard(final String game, final String stat, final String board) {
         final HttpResponse<String> response;
         try {
             response = this.unirest.get(this.leaderboardBaseUrl)
@@ -74,7 +76,12 @@ public abstract class AbstractLeaderboardRequestService<P extends Player> {
 
         final List<LeaderboardEntry<P>> parsedResponse = this.parseLeaderboardEntry(response.getBody());
         if (!parsedResponse.isEmpty()) {
-            return Optional.of(parsedResponse);
+            return Optional.of(
+                    new LeaderboardSave<>(
+                            LocalDateTime.now(),
+                            parsedResponse
+                    )
+            );
         }
 
         return Optional.empty();

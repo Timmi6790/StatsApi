@@ -1,6 +1,7 @@
 package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request;
 
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
+import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import kong.unirest.HttpMethod;
 import kong.unirest.MockClient;
@@ -16,10 +17,10 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public abstract class AbstractLeaderboardRequestServiceTest<PLAYER extends Player> {
-    private final AbstractLeaderboardRequestService<PLAYER> leaderboardRequest;
+public abstract class AbstractLeaderboardRequestServiceTest<P extends Player> {
+    private final AbstractLeaderboardRequestService<P> leaderboardRequest;
 
-    protected AbstractLeaderboardRequestServiceTest(final AbstractLeaderboardRequestService<PLAYER> leaderboardRequest) {
+    protected AbstractLeaderboardRequestServiceTest(final AbstractLeaderboardRequestService<P> leaderboardRequest) {
         this.leaderboardRequest = leaderboardRequest;
     }
 
@@ -36,17 +37,17 @@ public abstract class AbstractLeaderboardRequestServiceTest<PLAYER extends Playe
         return MockClient.register(this.leaderboardRequest.getUnirest());
     }
 
-    protected Optional<List<LeaderboardEntry<PLAYER>>> retrieveLeaderboard(final String responsePath) {
+    protected Optional<List<LeaderboardEntry<P>>> retrieveLeaderboard(final String responsePath) {
         final String content = this.getContentFromFile(responsePath);
         final MockClient mock = this.getMockClient();
 
         mock.expect(HttpMethod.GET, this.leaderboardRequest.getLeaderboardBaseUrl())
                 .thenReturn(content);
 
-        final Optional<List<LeaderboardEntry<PLAYER>>> leaderboard = this.leaderboardRequest.retrieveLeaderboard("", "", "");
+        final Optional<LeaderboardSave<P>> leaderboard = this.leaderboardRequest.retrieveLeaderboard("", "", "");
 
         mock.verifyAll();
-        return leaderboard;
+        return leaderboard.map(LeaderboardSave::getEntries);
     }
 
     @Test
@@ -56,7 +57,7 @@ public abstract class AbstractLeaderboardRequestServiceTest<PLAYER extends Playe
         mock.expect(HttpMethod.GET, this.leaderboardRequest.getLeaderboardBaseUrl())
                 .thenReturn("");
 
-        final Optional<List<LeaderboardEntry<PLAYER>>> leaderboard = this.leaderboardRequest.retrieveLeaderboard("", "", "");
+        final Optional<LeaderboardSave<P>> leaderboard = this.leaderboardRequest.retrieveLeaderboard("", "", "");
 
         assertThat(leaderboard).isNotPresent();
     }

@@ -1,4 +1,4 @@
-package de.timmi6790.mpstats.api.versions.v1.bedrock.leaderboard_saves;
+package de.timmi6790.mpstats.api.versions.v1.bedrock.leaderboard_save;
 
 import de.timmi6790.mpstats.api.AbstractIntegrationTest;
 import de.timmi6790.mpstats.api.utilities.bedrock.BedrockServiceGenerator;
@@ -7,7 +7,7 @@ import de.timmi6790.mpstats.api.versions.v1.bedrock.game.BedrockGameService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.leaderboard.BedrockLeaderboardService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockRepositoryPlayer;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.stat.BedrockStatService;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.AbstractLeaderboardSaveServiceTest;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.AbstractLeaderboardSaveServiceTest;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,11 +1,11 @@
-package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.repository.postgres;
+package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.repository.postgres;
 
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.models.PlayerData;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.repository.LeaderboardSaveRepository;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.repository.postgres.mappers.LeaderboardEntryMapper;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.repository.postgres.mappers.LeaderboardSaveDataMapper;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.repository.postgres.models.LeaderboardSaveData;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.models.PlayerData;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.repository.LeaderboardSaveRepository;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.repository.postgres.mappers.LeaderboardEntryMapper;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.repository.postgres.mappers.LeaderboardSaveDataMapper;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.repository.postgres.models.LeaderboardSaveData;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;

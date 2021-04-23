@@ -1,4 +1,4 @@
-package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.repository.postgres.mappers;
+package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.repository.postgres.mappers;
 
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;

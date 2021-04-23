@@ -1,8 +1,8 @@
-package de.timmi6790.mpstats.api.versions.v1.java.leaderboard_saves;
+package de.timmi6790.mpstats.api.versions.v1.java.leaderboard_save;
 
 import de.timmi6790.mpstats.api.AbstractIntegrationTest;
 import de.timmi6790.mpstats.api.utilities.java.JavaServiceGenerator;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.AbstractLeaderboardSaveServiceTest;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.AbstractLeaderboardSaveServiceTest;
 import de.timmi6790.mpstats.api.versions.v1.java.board.JavaBoardService;
 import de.timmi6790.mpstats.api.versions.v1.java.game.JavaGameService;
 import de.timmi6790.mpstats.api.versions.v1.java.leaderboard.JavaLeaderboardService;

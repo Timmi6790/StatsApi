@@ -1,4 +1,4 @@
-package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.models;
+package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.models;
 
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlayer;
 

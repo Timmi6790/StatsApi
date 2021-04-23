@@ -1,10 +1,10 @@
-package de.timmi6790.mpstats.api.versions.v1.bedrock.leaderboard_saves;
+package de.timmi6790.mpstats.api.versions.v1.bedrock.leaderboard_save;
 
 import com.google.common.collect.Lists;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.BedrockPlayerService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockRepositoryPlayer;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.LeaderboardSaveService;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.models.PlayerData;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.LeaderboardSaveService;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.models.PlayerData;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import org.jdbi.v3.core.Jdbi;

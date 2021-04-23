@@ -1,8 +1,8 @@
-package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves;
+package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save;
 
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.models.PlayerData;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.repository.postgres.LeaderboardSavePostgresRepository;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.models.PlayerData;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.repository.postgres.LeaderboardSavePostgresRepository;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;

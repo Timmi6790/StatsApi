@@ -10,8 +10,6 @@ import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaRe
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.postgres.JavaPlayerPostgresRepository;
 import de.timmi6790.mpstats.api.versions.v1.java.stat.JavaStatService;
 
-import java.util.UUID;
-
 class JavaFilterServiceTest extends AbstractFilterServiceTest<JavaRepositoryPlayer, JavaPlayerService> {
     private static final JavaGameService GAME_SERVICE = new JavaGameService(AbstractIntegrationTest.jdbi());
     private static final JavaStatService STAT_SERVICE = new JavaStatService(AbstractIntegrationTest.jdbi());
@@ -35,17 +33,5 @@ class JavaFilterServiceTest extends AbstractFilterServiceTest<JavaRepositoryPlay
                 STAT_SERVICE,
                 BOARD_SERVICE
         );
-    }
-
-    private UUID generatePlayerUUID() {
-        return UUID.randomUUID();
-    }
-
-    @Override
-    protected JavaRepositoryPlayer generatePlayer() {
-        final String playerName = this.generatePlayerName();
-        final UUID playerUUID = this.generatePlayerUUID();
-
-        return this.getPlayerService().getPlayerOrCreate(playerName, playerUUID);
     }
 }

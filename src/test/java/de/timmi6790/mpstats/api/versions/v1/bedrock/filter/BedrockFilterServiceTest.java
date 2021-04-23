@@ -34,11 +34,4 @@ class BedrockFilterServiceTest extends AbstractFilterServiceTest<BedrockReposito
                 BOARD_SERVICE
         );
     }
-
-    @Override
-    protected BedrockRepositoryPlayer generatePlayer() {
-        final String playerName = this.generatePlayerName();
-
-        return this.getPlayerService().getPlayerOrCreate(playerName);
-    }
 }

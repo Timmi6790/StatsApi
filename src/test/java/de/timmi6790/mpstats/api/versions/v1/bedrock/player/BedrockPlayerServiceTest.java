@@ -8,15 +8,13 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
+import static de.timmi6790.mpstats.api.utilities.PlayerUtilities.generatePlayerName;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class BedrockPlayerServiceTest {
     private static BedrockPlayerRepository bedrockPlayerRepository;
     private static BedrockPlayerService bedrockPlayerService;
-
-    private static final AtomicInteger PLAYER_ID = new AtomicInteger(0);
 
     @BeforeAll
     static void setUp() {
@@ -24,13 +22,9 @@ class BedrockPlayerServiceTest {
         bedrockPlayerService = new BedrockPlayerService(bedrockPlayerRepository);
     }
 
-    private String generatePlayerName() {
-        return "PLAYER" + PLAYER_ID.incrementAndGet();
-    }
-
     @Test
     void hasPlayer() {
-        final String playerName = this.generatePlayerName();
+        final String playerName = generatePlayerName();
 
         final boolean playerNotFound = bedrockPlayerService.hasPlayer(playerName);
         assertThat(playerNotFound).isFalse();
@@ -44,7 +38,7 @@ class BedrockPlayerServiceTest {
 
     @Test
     void hasPlayer_ignore_case() {
-        final String playerName = this.generatePlayerName();
+        final String playerName = generatePlayerName();
 
         // Insert player
         bedrockPlayerService.getPlayerOrCreate(playerName);
@@ -60,7 +54,7 @@ class BedrockPlayerServiceTest {
 
     @Test
     void getPlayer() {
-        final String playerName = this.generatePlayerName();
+        final String playerName = generatePlayerName();
 
         final Optional<BedrockRepositoryPlayer> playerNotFound = bedrockPlayerService.getPlayer(playerName);
         assertThat(playerNotFound).isNotPresent();
@@ -74,7 +68,7 @@ class BedrockPlayerServiceTest {
 
     @Test
     void getPlayer_by_id() {
-        final String playerName = this.generatePlayerName();
+        final String playerName = generatePlayerName();
 
         // Insert player
         final BedrockRepositoryPlayer repositoryPlayer = bedrockPlayerService.getPlayerOrCreate(playerName);
@@ -87,7 +81,7 @@ class BedrockPlayerServiceTest {
 
     @Test
     void getPlayer_ignore_case() {
-        final String playerName = this.generatePlayerName();
+        final String playerName = generatePlayerName();
 
         // Insert player
         bedrockPlayerService.getPlayerOrCreate(playerName);
@@ -103,7 +97,7 @@ class BedrockPlayerServiceTest {
 
     @Test
     void getPlayerOrCreate() {
-        final String playerName = this.generatePlayerName();
+        final String playerName = generatePlayerName();
 
         final Optional<BedrockRepositoryPlayer> playerNotFound = bedrockPlayerService.getPlayer(playerName);
         assertThat(playerNotFound).isNotPresent();

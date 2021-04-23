@@ -32,10 +32,10 @@ public abstract class AbstractLeaderboardServiceTest {
     private final BoardService boardService;
     private final StatService statService;
 
-    public AbstractLeaderboardServiceTest(final Supplier<LeaderboardService> leaderboardServiceSupplier,
-                                          final GameService gameService,
-                                          final StatService statService,
-                                          final BoardService boardService) {
+    protected AbstractLeaderboardServiceTest(final Supplier<LeaderboardService> leaderboardServiceSupplier,
+                                             final GameService gameService,
+                                             final StatService statService,
+                                             final BoardService boardService) {
         this.leaderboardService = leaderboardServiceSupplier.get();
         this.leaderboardRepository = this.leaderboardService.getLeaderboardRepository();
 

@@ -1,6 +1,7 @@
 package de.timmi6790.mpstats.api.versions.v1.common.filter;
 
 import de.timmi6790.mpstats.api.utilities.LeaderboardUtilities;
+import de.timmi6790.mpstats.api.utilities.PlayerUtilities;
 import de.timmi6790.mpstats.api.versions.v1.common.board.BoardService;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.Filter;
 import de.timmi6790.mpstats.api.versions.v1.common.game.GameService;
@@ -16,15 +17,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 // TODO: Add more specific tests
 public abstract class AbstractFilterServiceTest<P extends Player & RepositoryPlayer, S extends PlayerService<P>> {
-    private static final AtomicInteger PLAYER_ID = new AtomicInteger(0);
-
     protected final FilterService<P, S> filterService;
     protected final GameService gameService;
     protected final StatService statService;
@@ -48,10 +46,8 @@ public abstract class AbstractFilterServiceTest<P extends Player & RepositoryPla
         return this.filterService.getLeaderboardService();
     }
 
-    protected abstract P generatePlayer();
-
-    protected String generatePlayerName() {
-        return "FilterPlayer" + PLAYER_ID.incrementAndGet();
+    protected P generatePlayer() {
+        return PlayerUtilities.generatePlayer(this.getPlayerService());
     }
 
     protected Leaderboard generateLeaderboard() {

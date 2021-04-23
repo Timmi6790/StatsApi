@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public abstract class AbstractLeaderboardRequestServiceTest<PLAYER extends Player> {
     private final AbstractLeaderboardRequestService<PLAYER> leaderboardRequest;
 
-    public AbstractLeaderboardRequestServiceTest(final AbstractLeaderboardRequestService<PLAYER> leaderboardRequest) {
+    protected AbstractLeaderboardRequestServiceTest(final AbstractLeaderboardRequestService<PLAYER> leaderboardRequest) {
         this.leaderboardRequest = leaderboardRequest;
     }
 

@@ -9,15 +9,14 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
+import static de.timmi6790.mpstats.api.utilities.PlayerUtilities.generatePlayerName;
+import static de.timmi6790.mpstats.api.utilities.PlayerUtilities.generatePlayerUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class JavaPlayerServiceTest {
     private static JavaPlayerRepository javaPlayerRepository;
     private static JavaPlayerService javaPlayerService;
-
-    private static final AtomicInteger PLAYER_ID = new AtomicInteger(0);
 
     @BeforeAll
     static void setUp() {
@@ -25,18 +24,10 @@ class JavaPlayerServiceTest {
         javaPlayerService = new JavaPlayerService(javaPlayerRepository);
     }
 
-    private String generatePlayerName() {
-        return "PLAYER" + PLAYER_ID.incrementAndGet();
-    }
-
-    private UUID generatePlayerUUID() {
-        return UUID.randomUUID();
-    }
-
     @Test
     void hasPlayer_with_uuid() {
-        final String playerName = this.generatePlayerName();
-        final UUID playerUUID = this.generatePlayerUUID();
+        final String playerName = generatePlayerName();
+        final UUID playerUUID = generatePlayerUUID();
 
         final boolean playerNotFound = javaPlayerService.hasPlayer(playerName, playerUUID);
         assertThat(playerNotFound).isFalse();
@@ -50,8 +41,8 @@ class JavaPlayerServiceTest {
 
     @Test
     void getPlayer_with_uuid() {
-        final String playerName = this.generatePlayerName();
-        final UUID playerUUID = this.generatePlayerUUID();
+        final String playerName = generatePlayerName();
+        final UUID playerUUID = generatePlayerUUID();
 
         final Optional<JavaRepositoryPlayer> playerNotFound = javaPlayerService.getPlayer(playerName, playerUUID);
         assertThat(playerNotFound).isNotPresent();
@@ -67,8 +58,8 @@ class JavaPlayerServiceTest {
 
     @Test
     void getPlayer_by_id() {
-        final String playerName = this.generatePlayerName();
-        final UUID playerUUID = this.generatePlayerUUID();
+        final String playerName = generatePlayerName();
+        final UUID playerUUID = generatePlayerUUID();
 
         // Insert player
         final JavaRepositoryPlayer repositoryPlayer = javaPlayerService.getPlayerOrCreate(playerName, playerUUID);
@@ -81,9 +72,9 @@ class JavaPlayerServiceTest {
 
     @Test
     void getPlayer_with_uuid_name_change() {
-        final String playerName = this.generatePlayerName();
-        final String newPlayerName = this.generatePlayerName();
-        final UUID playerUUID = this.generatePlayerUUID();
+        final String playerName = generatePlayerName();
+        final String newPlayerName = generatePlayerName();
+        final UUID playerUUID = generatePlayerUUID();
 
         // Insert player
         javaPlayerService.getPlayerOrCreate(playerName, playerUUID);
@@ -101,8 +92,8 @@ class JavaPlayerServiceTest {
 
     @Test
     void getPlayerOrCreate() {
-        final String playerName = this.generatePlayerName();
-        final UUID playerUUID = this.generatePlayerUUID();
+        final String playerName = generatePlayerName();
+        final UUID playerUUID = generatePlayerUUID();
 
         final Optional<JavaRepositoryPlayer> playerNotFound = javaPlayerService.getPlayer(playerName, playerUUID);
         assertThat(playerNotFound).isNotPresent();
@@ -124,9 +115,9 @@ class JavaPlayerServiceTest {
 
     @Test
     void getPlayerOrCreate_name_change() {
-        final String playerName = this.generatePlayerName();
-        final String newPlayerName = this.generatePlayerName();
-        final UUID playerUUID = this.generatePlayerUUID();
+        final String playerName = generatePlayerName();
+        final String newPlayerName = generatePlayerName();
+        final UUID playerUUID = generatePlayerUUID();
 
         // Insert with old name
         javaPlayerService.getPlayerOrCreate(playerName, playerUUID);
@@ -138,8 +129,8 @@ class JavaPlayerServiceTest {
 
     @Test
     void getPlayer() {
-        final String playerName = this.generatePlayerName();
-        final UUID playerUUID = this.generatePlayerUUID();
+        final String playerName = generatePlayerName();
+        final UUID playerUUID = generatePlayerUUID();
 
         final Optional<JavaRepositoryPlayer> playerNotFound = javaPlayerService.getPlayer(playerUUID);
         assertThat(playerNotFound).isNotPresent();

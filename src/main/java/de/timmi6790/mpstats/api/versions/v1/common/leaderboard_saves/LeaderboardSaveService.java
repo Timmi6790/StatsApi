@@ -4,6 +4,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.models.PlayerData;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.repository.postgres.LeaderboardSavePostgresRepository;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
+import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlayer;
@@ -42,8 +43,8 @@ public abstract class LeaderboardSaveService<P extends Player, R extends Player 
         }
     }
 
-    public Optional<List<LeaderboardEntry<R>>> getLeaderboardEntries(final Leaderboard leaderboard,
-                                                                     final LocalDateTime saveTime) {
+    public Optional<LeaderboardSave<R>> getLeaderboardSave(final Leaderboard leaderboard,
+                                                           final LocalDateTime saveTime) {
         return this.repository.getLeaderboardEntries(leaderboard, saveTime);
     }
 }

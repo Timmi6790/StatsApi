@@ -8,6 +8,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.LeaderboardServic
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.repository.postgres.LeaderboardSavePostgresRepository;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
+import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlayer;
@@ -84,6 +85,12 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player, R ext
         return Math.abs(unixSecondsFirst - unixSecondsSecond);
     }
 
+    protected Optional<List<LeaderboardEntry<R>>> getSavedLeaderboardEntries(final Leaderboard leaderboard,
+                                                                             final LocalDateTime saveTime) {
+        return this.saveService.getLeaderboardSave(leaderboard, saveTime)
+                .map(LeaderboardSave::getEntries);
+    }
+
     protected abstract void verifyPlayer(P insertedPlayer, R repositoryPlayer);
 
     @Test
@@ -112,10 +119,11 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player, R ext
         final LocalDateTime saveTime = LocalDateTime.now();
         this.saveService.saveLeaderboardEntries(leaderboard, entries, saveTime);
 
-        final Optional<List<LeaderboardEntry<R>>> foundEntries = this.saveService.getLeaderboardEntries(leaderboard, saveTime);
-        assertThat(foundEntries)
+        final Optional<LeaderboardSave<R>> foundSave = this.saveService.getLeaderboardSave(leaderboard, saveTime);
+        assertThat(foundSave)
                 .isPresent();
-        this.verifyLeaderboardEntries(entries, foundEntries.get());
+        assertThat(foundSave.get().getSaveTime()).isEqualToIgnoringNanos(saveTime);
+        this.verifyLeaderboardEntries(entries, foundSave.get().getEntries());
     }
 
     @Test
@@ -126,7 +134,7 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player, R ext
         // Try to save an empty list
         this.saveService.saveLeaderboardEntries(leaderboard, new ArrayList<>(), saveTime);
 
-        final Optional<List<LeaderboardEntry<R>>> notFound = this.saveService.getLeaderboardEntries(leaderboard, saveTime);
+        final Optional<LeaderboardSave<R>> notFound = this.saveService.getLeaderboardSave(leaderboard, saveTime);
         assertThat(notFound)
                 .isNotPresent();
 
@@ -157,30 +165,30 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player, R ext
         this.saveService.saveLeaderboardEntries(leaderboard, thirdEntries, thirdSaveTime);
 
         // Verify with the exact same time
-        final Optional<List<LeaderboardEntry<R>>> foundFirst = this.saveService.getLeaderboardEntries(leaderboard, firstSaveTime);
+        final Optional<List<LeaderboardEntry<R>>> foundFirst = this.getSavedLeaderboardEntries(leaderboard, firstSaveTime);
         assertThat(foundFirst).isPresent();
         this.verifyLeaderboardEntries(firstEntries, foundFirst.get());
 
-        final Optional<List<LeaderboardEntry<R>>> foundSecond = this.saveService.getLeaderboardEntries(leaderboard, secondSaveTime);
+        final Optional<List<LeaderboardEntry<R>>> foundSecond = this.getSavedLeaderboardEntries(leaderboard, secondSaveTime);
         assertThat(foundSecond).isPresent();
         this.verifyLeaderboardEntries(secondEntries, foundSecond.get());
 
-        final Optional<List<LeaderboardEntry<R>>> foundThird = this.saveService.getLeaderboardEntries(leaderboard, thirdSaveTime);
+        final Optional<List<LeaderboardEntry<R>>> foundThird = this.getSavedLeaderboardEntries(leaderboard, thirdSaveTime);
         assertThat(foundThird).isPresent();
         this.verifyLeaderboardEntries(thirdEntries, foundThird.get());
 
         // Verify above and below
-        final Optional<List<LeaderboardEntry<R>>> foundBelowFirst = this.saveService.getLeaderboardEntries(leaderboard, firstSaveTime.minusDays(1));
+        final Optional<List<LeaderboardEntry<R>>> foundBelowFirst = this.getSavedLeaderboardEntries(leaderboard, firstSaveTime.minusDays(1));
         assertThat(foundBelowFirst).isPresent();
         this.verifyLeaderboardEntries(firstEntries, foundBelowFirst.get());
 
-        final Optional<List<LeaderboardEntry<R>>> foundAboveThird = this.saveService.getLeaderboardEntries(leaderboard, thirdSaveTime.plusDays(1));
+        final Optional<List<LeaderboardEntry<R>>> foundAboveThird = this.getSavedLeaderboardEntries(leaderboard, thirdSaveTime.plusDays(1));
         assertThat(foundAboveThird).isPresent();
         this.verifyLeaderboardEntries(thirdEntries, foundAboveThird.get());
 
         // Verify between closets
         final double lowerDifference = this.getDateTimeDifferenceInSeconds(firstSaveTime, secondSaveTime) / 2D;
-        final Optional<List<LeaderboardEntry<R>>> foundLowerSecond = this.saveService.getLeaderboardEntries(
+        final Optional<List<LeaderboardEntry<R>>> foundLowerSecond = this.getSavedLeaderboardEntries(
                 leaderboard,
                 secondSaveTime.minus((long) (lowerDifference - 1), ChronoUnit.SECONDS)
         );
@@ -188,7 +196,7 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player, R ext
         this.verifyLeaderboardEntries(secondEntries, foundLowerSecond.get());
 
         final double upperDifference = this.getDateTimeDifferenceInSeconds(thirdSaveTime, secondSaveTime) / 2D;
-        final Optional<List<LeaderboardEntry<R>>> foundUpperSecond = this.saveService.getLeaderboardEntries(
+        final Optional<List<LeaderboardEntry<R>>> foundUpperSecond = this.getSavedLeaderboardEntries(
                 leaderboard,
                 secondSaveTime.plus((long) (upperDifference - 1), ChronoUnit.SECONDS)
         );

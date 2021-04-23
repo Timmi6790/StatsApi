@@ -3,8 +3,11 @@ package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.repository
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.models.PlayerData;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.repository.LeaderboardSaveRepository;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.repository.models.LeaderboardEntryMapper;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.repository.postgres.mappers.LeaderboardEntryMapper;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.repository.postgres.mappers.LeaderboardSaveDataMapper;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.repository.postgres.models.LeaderboardSaveData;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
+import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlayer;
@@ -22,7 +25,7 @@ public class LeaderboardSavePostgresRepository<R extends Player & RepositoryPlay
     private final String insertLeaderboardSaveId;
     private final String insertLeaderboardSave;
 
-    private final String getLeaderboardSaveIds;
+    private final String getLeaderboardSaveTimes;
     private final String getLeaderboardSaveId;
 
     private final String getLeaderboardEntries;
@@ -32,13 +35,15 @@ public class LeaderboardSavePostgresRepository<R extends Player & RepositoryPlay
                                              final PlayerService<R> playerService) {
         super(database, schema);
 
+        this.getDatabase().registerRowMapper(new LeaderboardSaveDataMapper());
+
         this.leaderboardEntryMapper = new LeaderboardEntryMapper<>(playerService);
 
         // Create queries
         this.insertLeaderboardSaveId = this.formatQuery(QueryTemplates.INSERT_LEADERBOARD_SAVE_ID);
         this.insertLeaderboardSave = this.formatQuery(QueryTemplates.INSERT_LEADERBOARD_SAVE);
 
-        this.getLeaderboardSaveIds = this.formatQuery(QueryTemplates.GET_LEADERBOARD_SAVE_IDS);
+        this.getLeaderboardSaveTimes = this.formatQuery(QueryTemplates.GET_LEADERBOARD_SAVE_TIMES);
         this.getLeaderboardSaveId = this.formatQuery(QueryTemplates.GET_LEADERBOARD_SAVE_ID);
 
         this.getLeaderboardEntries = this.formatQuery(QueryTemplates.GET_LEADERBOARD_ENTRIES);
@@ -54,12 +59,13 @@ public class LeaderboardSavePostgresRepository<R extends Player & RepositoryPlay
         );
     }
 
-    private Optional<Integer> getLeaderboardSaveId(final Leaderboard leaderboard, final LocalDateTime saveTime) {
+    private Optional<LeaderboardSaveData> getLeaderboardSaveId(final Leaderboard leaderboard,
+                                                               final LocalDateTime saveTime) {
         return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getLeaderboardSaveId)
                         .bind("leaderboardId", leaderboard.repositoryId())
                         .bind("requestedTime", saveTime)
-                        .mapTo(int.class)
+                        .mapTo(LeaderboardSaveData.class)
                         .findFirst()
         );
     }
@@ -85,7 +91,7 @@ public class LeaderboardSavePostgresRepository<R extends Player & RepositoryPlay
     @Override
     public List<LocalDateTime> getLeaderboardSaveTimes(final Leaderboard leaderboard) {
         return this.getDatabase().withHandle(handle ->
-                handle.createQuery(this.getLeaderboardSaveIds)
+                handle.createQuery(this.getLeaderboardSaveTimes)
                         .bind("leaderboardId", leaderboard.repositoryId())
                         .mapTo(LocalDateTime.class)
                         .list()
@@ -93,28 +99,34 @@ public class LeaderboardSavePostgresRepository<R extends Player & RepositoryPlay
     }
 
     @Override
-    public Optional<List<LeaderboardEntry<R>>> getLeaderboardEntries(final Leaderboard leaderboard,
-                                                                     final LocalDateTime saveTime) {
-        final Optional<Integer> saveId = this.getLeaderboardSaveId(leaderboard, saveTime);
-        if (saveId.isEmpty()) {
+    public Optional<LeaderboardSave<R>> getLeaderboardEntries(final Leaderboard leaderboard,
+                                                              final LocalDateTime saveTime) {
+        final Optional<LeaderboardSaveData> saveDataOpt = this.getLeaderboardSaveId(leaderboard, saveTime);
+        if (saveDataOpt.isEmpty()) {
             return Optional.empty();
         }
 
+        final LeaderboardSaveData saveData = saveDataOpt.get();
         final List<LeaderboardEntry<R>> leaderboardEntries = this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getLeaderboardEntries)
-                        .bind("saveId", saveId.get())
+                        .bind("saveId", saveData.saveId())
                         .map(this.leaderboardEntryMapper)
                         .list()
         );
 
-        return Optional.of(leaderboardEntries);
+        return Optional.of(
+                new LeaderboardSave<>(
+                        saveData.saveTime(),
+                        leaderboardEntries
+                )
+        );
     }
 
     private static class QueryTemplates {
         private static final String INSERT_LEADERBOARD_SAVE_ID = "INSERT INTO $schema$.leaderboard_save_ids(leaderboard_id, save_time) VALUES(:leaderboardId, :saveTime) RETURNING id;";
         private static final String INSERT_LEADERBOARD_SAVE = "INSERT INTO $schema$.leaderboard_saves(leaderboard_save_id, player_id, score) VALUES(:leaderboardSaveId, :playerId, :score);";
-        private static final String GET_LEADERBOARD_SAVE_IDS = "SELECT save_time FROM $schema$.leaderboard_save_ids WHERE leaderboard_id = :leaderboardId;";
-        private static final String GET_LEADERBOARD_SAVE_ID = "SELECT id " +
+        private static final String GET_LEADERBOARD_SAVE_TIMES = "SELECT save_time FROM $schema$.leaderboard_save_ids WHERE leaderboard_id = :leaderboardId;";
+        private static final String GET_LEADERBOARD_SAVE_ID = "SELECT id, save_time " +
                 "FROM $schema$.leaderboard_save_ids " +
                 "WHERE leaderboard_id = :leaderboardId " +
                 "ORDER BY ABS(EXTRACT(EPOCH FROM save_time) - EXTRACT(EPOCH FROM :requestedTime::timestamptz)) " +

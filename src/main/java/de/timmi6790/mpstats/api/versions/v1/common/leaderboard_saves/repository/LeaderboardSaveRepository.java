@@ -2,7 +2,7 @@ package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.repository
 
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_saves.models.PlayerData;
-import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
+import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlayer;
 
@@ -15,6 +15,6 @@ public interface LeaderboardSaveRepository<R extends Player & RepositoryPlayer> 
 
     List<LocalDateTime> getLeaderboardSaveTimes(Leaderboard leaderboard);
 
-    Optional<List<LeaderboardEntry<R>>> getLeaderboardEntries(Leaderboard leaderboard,
-                                                              LocalDateTime saveTime);
+    Optional<LeaderboardSave<R>> getLeaderboardEntries(Leaderboard leaderboard,
+                                                       LocalDateTime saveTime);
 }

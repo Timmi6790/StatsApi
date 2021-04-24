@@ -1,5 +1,6 @@
 package de.timmi6790.mpstats.api.configs;
 
+import de.timmi6790.mpstats.api.Config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
@@ -9,7 +10,14 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 @Configuration
 public class RedisConfiguration {
     @Bean
-    public LettuceConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory(new RedisStandaloneConfiguration("localhost", 6379));
+    public LettuceConnectionFactory redisConnectionFactory(final Config config) {
+        final Config.RedisConfig redisConfig = config.getRedis();
+
+        final RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(
+                redisConfig.getHost(),
+                redisConfig.getPort()
+        );
+        redisStandaloneConfiguration.setPassword(redisConfig.getPassword());
+        return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 }

@@ -3,11 +3,13 @@ package de.timmi6790.mpstats.api.versions.v1.common.models;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @EqualsAndHashCode(callSuper = true)
 @Getter
 @ToString(callSuper = true)
+@NoArgsConstructor(force = true)
 public class LeaderboardPositionEntry<P extends Player> extends LeaderboardEntry<P> {
     private final int position;
 

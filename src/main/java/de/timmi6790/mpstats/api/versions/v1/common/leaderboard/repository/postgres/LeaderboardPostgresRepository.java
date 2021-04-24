@@ -25,6 +25,8 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
 
     private final String insertLeaderboard;
 
+    private final LeaderboardMapper leaderboardMapper;
+
     public LeaderboardPostgresRepository(final Jdbi jdbi,
                                          final String schema,
                                          final GameService gameService,
@@ -32,10 +34,7 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
                                          final BoardService boardService) {
         super(jdbi, schema);
 
-        this.getDatabase()
-                .registerRowMapper(
-                        new LeaderboardMapper(gameService, statService, boardService)
-                );
+        this.leaderboardMapper = new LeaderboardMapper(gameService, statService, boardService);
 
         // Create queries
         this.getLeaderboard = this.formatQuery(QueryTemplates.GET_LEADERBOARD);
@@ -59,7 +58,7 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
         return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getLeaderboardsByGameId)
                         .bind(GAME_ID, game.repositoryId())
-                        .mapTo(Leaderboard.class)
+                        .map(this.leaderboardMapper)
                         .list()
         );
     }
@@ -69,7 +68,7 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
         return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getLeaderboardByRepositoryId)
                         .bind("repositoryId", repositoryId)
-                        .mapTo(Leaderboard.class)
+                        .map(this.leaderboardMapper)
                         .findFirst()
         );
     }
@@ -81,7 +80,7 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
                         .bind(GAME_ID, game.repositoryId())
                         .bind("statId", stat.repositoryId())
                         .bind("boardId", board.repositoryId())
-                        .mapTo(Leaderboard.class)
+                        .map(this.leaderboardMapper)
                         .findFirst()
         );
     }

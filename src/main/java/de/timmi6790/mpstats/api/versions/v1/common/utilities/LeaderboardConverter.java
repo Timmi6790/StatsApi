@@ -24,7 +24,7 @@ public class LeaderboardConverter {
         long lastScore = Long.MIN_VALUE;
         for (final LeaderboardEntry<P> entry : entries) {
             globalPosition++;
-            if (entry.getScore() > lastScore) {
+            if (entry.getScore() != lastScore) {
                 position = globalPosition;
             }
 

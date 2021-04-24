@@ -48,7 +48,7 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
     public List<Leaderboard> getLeaderboards() {
         return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getLeaderboards)
-                        .mapTo(Leaderboard.class)
+                        .map(this.leaderboardMapper)
                         .list()
         );
     }

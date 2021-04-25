@@ -12,6 +12,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlayer;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import org.jdbi.v3.core.Jdbi;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 
 @Getter(AccessLevel.PROTECTED)
+@Log4j2
 public class FilterService<P extends Player & RepositoryPlayer, S extends PlayerService<P>> {
     private final S playerService;
     private final LeaderboardService leaderboardService;
@@ -31,10 +33,13 @@ public class FilterService<P extends Player & RepositoryPlayer, S extends Player
     private final Striped<Lock> filterCacheLock = Striped.lock(64);
     private final Map<Integer, FilterCache> filterCache = new HashMap<>();
 
+    private final String schema;
+
     public FilterService(final S playerService,
                          final LeaderboardService leaderboardService,
                          final Jdbi jdbi,
                          final String schema) {
+        this.schema = schema;
         this.playerService = playerService;
         this.leaderboardService = leaderboardService;
 
@@ -42,9 +47,12 @@ public class FilterService<P extends Player & RepositoryPlayer, S extends Player
     }
 
     protected void loadRepositoryEntriesIntoCache() {
-        for (final Filter<P> filter : this.getFilters()) {
+        log.info("[{}] Load filters from repository", this.schema);
+        final List<Filter<P>> filters = this.getFilters();
+        for (final Filter<P> filter : filters) {
             this.addFilterToCache(filter);
         }
+        log.info("[{}] Loaded {} filters from repository", this.schema, filters.size());
     }
 
     protected Lock getFilterCacheLock(final int playerId) {
@@ -56,6 +64,7 @@ public class FilterService<P extends Player & RepositoryPlayer, S extends Player
         lock.lock();
 
         try {
+            log.debug("[{}] Add {} to cache", this.schema, filter);
             this.filterCache.computeIfAbsent(filter.player().getRepositoryId(), k -> new FilterCache())
                     .addFilter(filter);
         } finally {
@@ -73,6 +82,7 @@ public class FilterService<P extends Player & RepositoryPlayer, S extends Player
         lock.lock();
 
         try {
+            log.debug("[{}] Remove {} from cache", this.schema, filter);
             cacheEntry.removeFilter(filter);
             if (cacheEntry.size() <= 0) {
                 this.filterCache.remove(filter.player().getRepositoryId());
@@ -132,11 +142,13 @@ public class FilterService<P extends Player & RepositoryPlayer, S extends Player
                                final LocalDateTime filterEnd) {
         final Filter<P> filter = this.filterRepository.addFilter(player, leaderboard, reason, filterStart, filterEnd);
         this.addFilterToCache(filter);
+        log.info("[{}] Created new filter {}", this.schema, filter);
         return filter;
     }
 
     public void removeFilter(final Filter<P> filter) {
         this.filterRepository.removeFilter(filter);
         this.removeFilterFromCache(filter);
+        log.info("[{}] Removed filter {}", this.schema, filter);
     }
 }

@@ -6,6 +6,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.board.repository.models.Board
 import de.timmi6790.mpstats.api.versions.v1.common.board.repository.postgres.BoardPostgresRepository;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 
+@Log4j2
 public class BoardService {
     @Getter(AccessLevel.PROTECTED)
     private final BoardRepository boardRepository;
@@ -22,15 +24,20 @@ public class BoardService {
     private final Striped<Lock> boardLock = Striped.lock(32);
     private final Map<String, Board> boards;
 
+    private final String schema;
+
     public BoardService(final Jdbi jdbi, final String schema) {
+        this.schema = schema;
         this.boardRepository = new BoardPostgresRepository(jdbi, schema);
 
         // Load existing boards from repository
+        log.info("[{}] Load boards from repository", schema);
         final List<Board> existingBoards = this.boardRepository.getBoards();
         this.boards = new LinkedCaseInsensitiveMap<>(existingBoards.size());
         for (final Board board : existingBoards) {
             this.boards.put(board.boardName(), board);
         }
+        log.info("[{}] Loaded {} boards from repository", schema, this.boards.size());
     }
 
     private Lock getBoardLock(final String boardName) {
@@ -61,6 +68,7 @@ public class BoardService {
             }
 
             final Board board = this.boardRepository.createBoard(boardName, websiteName, cleanName, updateTime);
+            log.info("[{}] Created board {}", this.schema, board);
             this.boards.put(board.boardName(), board);
             return board;
         } finally {
@@ -75,6 +83,7 @@ public class BoardService {
             final Board board = this.boards.remove(boardName);
             if (board != null) {
                 this.boardRepository.removeBoard(board.repositoryId());
+                log.info("[{}] Deleted board {}", this.schema, board);
             }
         } finally {
             lock.unlock();

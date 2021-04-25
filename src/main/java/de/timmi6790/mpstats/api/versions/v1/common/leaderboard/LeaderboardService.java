@@ -36,11 +36,14 @@ public class LeaderboardService {
             .expireAfterAccess(10, TimeUnit.SECONDS)
             .build();
 
+    private final String schema;
+
     public LeaderboardService(final Jdbi jdbi,
                               final String schema,
                               final GameService gameService,
                               final StatService statService,
                               final BoardService boardService) {
+        this.schema = schema;
         this.leaderboardRepository = new LeaderboardPostgresRepository(
                 jdbi,
                 schema,
@@ -76,6 +79,7 @@ public class LeaderboardService {
     private void addLeaderboardToCache(final Leaderboard leaderboard) {
         final String uniqName = this.getUniqName(leaderboard.game(), leaderboard.stat(), leaderboard.board());
         this.leaderboardCache.put(uniqName, leaderboard);
+        log.debug("[{}] Add leaderboard to cache {}", this.schema, leaderboard);
     }
 
     public List<Leaderboard> getLeaderboards() {
@@ -136,6 +140,7 @@ public class LeaderboardService {
 
             final Leaderboard leaderboard = this.leaderboardRepository.createdLeaderboard(game, stat, board, deprecated);
             this.addLeaderboardToCache(leaderboard);
+            log.info("[{}] Created new leaderboard {}", this.schema, leaderboard);
             return leaderboard;
         } finally {
             lock.unlock();

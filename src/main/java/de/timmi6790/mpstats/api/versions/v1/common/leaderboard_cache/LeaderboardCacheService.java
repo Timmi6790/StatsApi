@@ -7,6 +7,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_cache.models.LeaderboardSaveCache;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardPositionEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Log4j2
 public class LeaderboardCacheService<P extends Player> {
     private final String schemaName;
 
@@ -42,6 +44,13 @@ public class LeaderboardCacheService<P extends Player> {
                                              final List<LeaderboardPositionEntry<P>> entries,
                                              final LocalDateTime saveTime,
                                              final boolean filter) {
+        log.debug(
+                "[{}] Add {}-{}-{} to cache",
+                this.schemaName,
+                leaderboard.game().gameName(),
+                leaderboard.board().boardName(),
+                leaderboard.stat().statName()
+        );
         this.hashOperations.set(
                 this.getSaveCacheId(leaderboard, filter),
                 new LeaderboardSaveCache<>(

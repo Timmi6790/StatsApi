@@ -6,6 +6,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.stat.repository.models.Stat;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.repository.postgres.StatPostgresRepository;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 
+@Log4j2
 public class StatService {
     @Getter(AccessLevel.PROTECTED)
     private final StatRepository javaStatRepository;
@@ -22,15 +24,20 @@ public class StatService {
     private final Striped<Lock> statLock = Striped.lock(32);
     private final Map<String, Stat> stats;
 
+    private final String schema;
+
     public StatService(final Jdbi jdbi, final String schema) {
+        this.schema = schema;
         this.javaStatRepository = new StatPostgresRepository(jdbi, schema);
 
         // Load existing stats from repository
+        log.info("[{}] Load stats from repository", schema);
         final List<Stat> existingStats = this.javaStatRepository.getStats();
         this.stats = new LinkedCaseInsensitiveMap<>(existingStats.size());
         for (final Stat stat : existingStats) {
             this.stats.put(stat.statName(), stat);
         }
+        log.info("[{}] Loaded {} stats from repository", schema, this.stats.size());
     }
 
     private Lock getStatLock(final String statName) {
@@ -62,6 +69,7 @@ public class StatService {
 
             final Stat stat = this.javaStatRepository.createStat(websiteName, statName, cleanName, isAchievement);
             this.stats.put(stat.statName(), stat);
+            log.info("[{}] Created new stat {}", this.schema, stat);
             return stat;
         } finally {
             lock.unlock();
@@ -75,6 +83,7 @@ public class StatService {
             final Stat stat = this.stats.remove(statName);
             if (stat != null) {
                 this.javaStatRepository.removeStat(stat.repositoryId());
+                log.info("[{}] Removed stat {}", this.schema, stat);
             }
         } finally {
             lock.unlock();

@@ -10,19 +10,24 @@ import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlayer;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import org.jdbi.v3.core.Jdbi;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Log4j2
 public abstract class LeaderboardSaveService<P extends Player, R extends Player & RepositoryPlayer> {
     @Getter(AccessLevel.PROTECTED)
     private final PlayerService<R> playerService;
     @Getter(AccessLevel.PROTECTED)
     private final LeaderboardSavePostgresRepository<R> repository;
 
+    private final String schemaName;
+
     protected LeaderboardSaveService(final PlayerService<R> playerService, final Jdbi database, final String schema) {
+        this.schemaName = schema;
         this.playerService = playerService;
 
         this.repository = new LeaderboardSavePostgresRepository<>(database, schema, playerService);
@@ -39,6 +44,13 @@ public abstract class LeaderboardSaveService<P extends Player, R extends Player 
                                        final LocalDateTime saveTime) {
         final List<PlayerData> parsedData = this.getPlayerData(leaderboardData);
         if (!parsedData.isEmpty()) {
+            log.debug(
+                    "[{}] Save {}-{}-{} into repository",
+                    this.schemaName,
+                    leaderboard.game().gameName(),
+                    leaderboard.board().boardName(),
+                    leaderboard.stat().statName()
+            );
             this.repository.saveLeaderboard(leaderboard, parsedData, saveTime);
         }
     }

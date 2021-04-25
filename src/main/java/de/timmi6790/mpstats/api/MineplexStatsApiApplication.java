@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@SpringBootApplication(exclude = {UserDetailsServiceAutoConfiguration.class})
+@SpringBootApplication(exclude = UserDetailsServiceAutoConfiguration.class)
 @Log4j2
 public class MineplexStatsApiApplication {
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings("DM_EXIT")

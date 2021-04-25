@@ -26,13 +26,13 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Getter(value = AccessLevel.PROTECTED)
+@Getter(AccessLevel.PROTECTED)
 public abstract class AbstractLeaderboardSaveServiceTest<P extends Player, R extends Player & RepositoryPlayer> {
-    private final LeaderboardSaveService<P, R> saveService;
-    private final LeaderboardService leaderboardService;
     protected final GameService gameService;
     protected final StatService statService;
     protected final BoardService boardService;
+    private final LeaderboardSaveService<P, R> saveService;
+    private final LeaderboardService leaderboardService;
 
     protected AbstractLeaderboardSaveServiceTest(final LeaderboardSaveService<P, R> saveService,
                                                  final LeaderboardService leaderboardService,

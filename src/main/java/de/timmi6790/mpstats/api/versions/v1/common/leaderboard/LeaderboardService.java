@@ -24,7 +24,7 @@ import java.util.concurrent.locks.Lock;
 
 @Log4j2
 public class LeaderboardService {
-    @Getter(value = AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
     private final LeaderboardRepository leaderboardRepository;
 
     private final GameService gameService;

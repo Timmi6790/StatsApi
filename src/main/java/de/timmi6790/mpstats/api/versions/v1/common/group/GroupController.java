@@ -15,17 +15,17 @@ public class GroupController {
         this.groupService = groupService;
     }
 
-    @PutMapping(value = "/{groupName}")
+    @PutMapping("/{groupName}")
     public Group createGroup(@PathVariable final String groupName, @RequestParam final String cleanName) {
         return null;
     }
 
-    @GetMapping(value = "/{groupName}")
+    @GetMapping("/{groupName}")
     public Optional<Group> getGroup(@PathVariable final String groupName) {
         return this.groupService.getGroup(groupName);
     }
 
-    @DeleteMapping(value = "/{groupName}")
+    @DeleteMapping("/{groupName}")
     public void deleteGroup(@PathVariable final String groupName) {
 
     }
@@ -35,7 +35,7 @@ public class GroupController {
         return this.groupService.getGroups();
     }
 
-    @GetMapping(value = "/{groupName}/stat/leaderboard/{stat}/{board}")
+    @GetMapping("/{groupName}/stat/leaderboard/{stat}/{board}")
     public void getLeaderboard(@PathVariable final String groupName,
                                @PathVariable final String stat,
                                @PathVariable final String board,
@@ -45,7 +45,7 @@ public class GroupController {
 
     }
 
-    @GetMapping(value = "/{groupName}/stat/player/{playerName}/{stat}/{board}")
+    @GetMapping("/{groupName}/stat/player/{playerName}/{stat}/{board}")
     public void getPlayerStats(
             @PathVariable final String groupName,
             @PathVariable final String playerName,

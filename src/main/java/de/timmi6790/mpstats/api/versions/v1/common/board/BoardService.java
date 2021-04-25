@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 
 public class BoardService {
-    @Getter(value = AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
     private final BoardRepository boardRepository;
 
     private final Striped<Lock> boardLock = Striped.lock(32);

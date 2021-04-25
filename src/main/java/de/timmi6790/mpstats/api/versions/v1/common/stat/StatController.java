@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public abstract class StatController {
-    @Getter(value = AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
     private final StatService statService;
 
     protected StatController(final StatService statService) {
@@ -26,13 +26,13 @@ public abstract class StatController {
         return this.statService.getStats();
     }
 
-    @GetMapping(value = "/{statName}")
+    @GetMapping("/{statName}")
     @Operation(summary = "Find stat by name")
     public Optional<Stat> getStat(@PathVariable final String statName) {
         return this.statService.getStat(statName);
     }
 
-    @PostMapping(value = "/{statName}")
+    @PostMapping("/{statName}")
     @Operation(summary = "Create a new stat")
     public Stat createStat(@PathVariable final String statName,
                            @RequestParam final String websiteName,

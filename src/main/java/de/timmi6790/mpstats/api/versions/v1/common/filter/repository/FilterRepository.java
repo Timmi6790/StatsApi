@@ -16,7 +16,7 @@ public interface FilterRepository<P extends Player & RepositoryPlayer> {
     List<Filter<P>> getFilters(Leaderboard leaderboard);
 
     List<Filter<P>> getFilters(P player, Leaderboard leaderboard);
-    
+
     List<Filter<P>> getFilters(P player, Leaderboard leaderboard, LocalDateTime timestamp);
 
     Filter<P> addFilter(P player, Leaderboard leaderboard, String reason, LocalDateTime filterStart, LocalDateTime filterEnd);

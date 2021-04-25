@@ -17,7 +17,7 @@ import java.util.concurrent.locks.Lock;
 
 @Service
 public class BedrockPlayerService implements PlayerService<BedrockRepositoryPlayer> {
-    @Getter(value = AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
     private final BedrockPlayerRepository playerRepository;
 
     private final Striped<Lock> playerLock = Striped.lock(128);

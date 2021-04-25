@@ -23,7 +23,7 @@ public class JavaFilterController extends FilterController<JavaRepositoryPlayer,
         super(filterService);
     }
 
-    @PostMapping(value = "/{gameName}/{statName}/{boardName}/{playerUUID}")
+    @PostMapping("/{gameName}/{statName}/{boardName}/{playerUUID}")
     @Operation(summary = "Create a new filter")
     public Optional<Filter<JavaRepositoryPlayer>> createFilter(@PathVariable final String gameName,
                                                                @PathVariable final String statName,

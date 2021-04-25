@@ -8,7 +8,7 @@ import org.jdbi.v3.core.Jdbi;
 import java.util.regex.Pattern;
 
 @AllArgsConstructor
-@Getter(value = AccessLevel.PROTECTED)
+@Getter(AccessLevel.PROTECTED)
 public class PostgresRepository {
     private static final Pattern SCHEMA_PATTERN = Pattern.compile("\\$schema\\$");
 

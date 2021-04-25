@@ -36,21 +36,21 @@ public class WebsiteController {
         throw new InvalidPlayerNameException(playerName);
     }
 
-    @GetMapping(value = "{player}")
+    @GetMapping("{player}")
     public WebsitePlayerModel getPlayer(
             @PathVariable("player") @ValidJavaPlayerName final String player
     ) {
         return this.getWebsitePlayerModel(player);
     }
 
-    @GetMapping(value = "{player}/stats")
+    @GetMapping("{player}/stats")
     public Map<String, Map<String, Long>> getPlayerStats(
             @PathVariable("player") @ValidJavaPlayerName final String player
     ) {
         return this.getWebsitePlayerModel(player).stats();
     }
 
-    @GetMapping(value = "{player}/stats/{game}")
+    @GetMapping("{player}/stats/{game}")
     public Map<String, Long> getPlayerStatsGame(
             @PathVariable("player") @ValidJavaPlayerName final String player,
             @PathVariable("game") final String game

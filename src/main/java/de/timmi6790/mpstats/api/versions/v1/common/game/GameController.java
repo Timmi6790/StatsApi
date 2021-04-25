@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 public abstract class GameController {
-    @Getter(value = AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
     private final GameService gameService;
 
     protected GameController(final GameService gameService) {
@@ -27,13 +27,13 @@ public abstract class GameController {
         return this.gameService.getGames();
     }
 
-    @GetMapping(value = "/{gameName}")
+    @GetMapping("/{gameName}")
     @Operation(summary = "Find game by name")
     public Optional<Game> getGame(@PathVariable final String gameName) {
         return this.gameService.getGame(gameName);
     }
 
-    @PostMapping(value = "/{gameName}")
+    @PostMapping("/{gameName}")
     @Operation(summary = "Create a new game")
     public Game createGame(@PathVariable final String gameName,
                            @RequestParam final String websiteName,
@@ -43,13 +43,13 @@ public abstract class GameController {
         return this.gameService.getOrCreateGame(websiteName, gameName, cleanName, categoryName);
     }
 
-    @GetMapping(value = "/category")
+    @GetMapping("/category")
     @Operation(summary = "Find all available game categories")
     public List<GameCategory> getCategories() {
         return this.gameService.getCategories();
     }
 
-    @GetMapping(value = "/category/{categoryName}")
+    @GetMapping("/category/{categoryName}")
     @Operation(summary = "Find game category by name")
     public Optional<GameCategory> getCategory(@PathVariable final String categoryName) {
         return this.gameService.getCategory(categoryName);

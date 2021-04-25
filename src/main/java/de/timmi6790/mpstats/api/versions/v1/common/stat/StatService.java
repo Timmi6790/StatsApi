@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 
 public class StatService {
-    @Getter(value = AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
     private final StatRepository javaStatRepository;
 
     private final Striped<Lock> statLock = Striped.lock(32);

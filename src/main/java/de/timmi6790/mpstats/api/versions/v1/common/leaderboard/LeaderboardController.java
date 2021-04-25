@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 import java.util.Optional;
 
-@Getter(value = AccessLevel.PROTECTED)
+@Getter(AccessLevel.PROTECTED)
 public abstract class LeaderboardController {
     private final GameService gameService;
     private final StatService statService;
@@ -41,7 +41,7 @@ public abstract class LeaderboardController {
         return this.leaderboardService.getLeaderboards();
     }
 
-    @GetMapping(value = "/{gameName}/{statName}/{boardName}")
+    @GetMapping("/{gameName}/{statName}/{boardName}")
     @Operation(summary = "Find leaderboard by name")
     public Optional<Leaderboard> getLeaderboard(@PathVariable final String gameName,
                                                 @PathVariable final String statName,
@@ -56,7 +56,7 @@ public abstract class LeaderboardController {
         return Optional.empty();
     }
 
-    @PostMapping(value = "/{gameName}/{statName}/{boardName}")
+    @PostMapping("/{gameName}/{statName}/{boardName}")
     @Operation(summary = "Create a new leaderboard")
     public Optional<Leaderboard> createdLeaderboard(@PathVariable final String gameName,
                                                     @PathVariable final String statName,

@@ -14,7 +14,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 @ActiveProfiles("test")
 @SpringBootTest(
         classes = {AbstractSpringBootTest.TestApplication.class, AbstractSpringBootTest.TestConfig.class},
-        properties = {"spring.main.allow-bean-definition-overriding=true"},
+        properties = "spring.main.allow-bean-definition-overriding=true",
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @AutoConfigureMockMvc

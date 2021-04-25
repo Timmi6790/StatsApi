@@ -17,7 +17,7 @@ import java.util.concurrent.locks.Lock;
 
 @Log4j2
 public class GroupService {
-    @Getter(value = AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
     private final GroupRepository groupRepository;
 
     private final Striped<Lock> groupLock = Striped.lock(32);

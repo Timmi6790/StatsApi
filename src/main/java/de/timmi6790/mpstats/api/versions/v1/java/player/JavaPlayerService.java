@@ -20,7 +20,7 @@ import java.util.concurrent.locks.Lock;
 
 @Service
 public class JavaPlayerService implements PlayerService<JavaRepositoryPlayer> {
-    @Getter(value = AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
     private final JavaPlayerRepository playerRepository;
 
     private final Striped<Lock> playerLock = Striped.lock(128);

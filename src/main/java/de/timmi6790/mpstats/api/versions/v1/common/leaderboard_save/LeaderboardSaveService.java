@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.Optional;
 
 public abstract class LeaderboardSaveService<P extends Player, R extends Player & RepositoryPlayer> {
-    @Getter(value = AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
     private final PlayerService<R> playerService;
-    @Getter(value = AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
     private final LeaderboardSavePostgresRepository<R> repository;
 
     protected LeaderboardSaveService(final PlayerService<R> playerService, final Jdbi database, final String schema) {

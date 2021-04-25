@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 
 public class GameService {
-    @Getter(value = AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
     private final GameRepository gameRepository;
 
     private final Striped<Lock> categoryLock = Striped.lock(16);

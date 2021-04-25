@@ -25,11 +25,11 @@ public abstract class AbstractLeaderboardRequestService<P extends Player> {
     private static final String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36";
     private static final Pattern HTML_ROW_PARSER = Pattern.compile("<tr>|<tr >|<tr class=\"LeaderboardsOdd\">|<tr class=\"LeaderboardsHead\">[^<]*");
 
-    @Getter(value = AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
     private final String leaderboardBaseUrl;
     private final int estimatedResultSize;
 
-    @Getter(value = AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
     private final UnirestInstance unirest;
 
     protected AbstractLeaderboardRequestService(final String leaderboardBaseUrl, final int estimatedResultSize) {

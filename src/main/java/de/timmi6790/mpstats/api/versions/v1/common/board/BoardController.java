@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 public abstract class BoardController {
-    @Getter(value = AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
     private final BoardService boardService;
 
     protected BoardController(final BoardService boardService) {
@@ -27,13 +27,13 @@ public abstract class BoardController {
         return this.boardService.getBoards();
     }
 
-    @GetMapping(value = "/{boardName}")
+    @GetMapping("/{boardName}")
     @Operation(summary = "Find board by name")
     public Optional<Board> getBoard(@PathVariable final String boardName) {
         return this.boardService.getBoard(boardName);
     }
 
-    @PostMapping(value = "/{boardName}")
+    @PostMapping("/{boardName}")
     @Operation(summary = "Create a new board")
     public Board createBoard(@PathVariable final String boardName,
                              @RequestParam final String websiteName,

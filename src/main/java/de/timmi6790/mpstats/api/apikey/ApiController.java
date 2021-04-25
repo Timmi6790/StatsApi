@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/apiKey/")
 @Tag(name = "Internal")
 public class ApiController {
-    @GetMapping(value = "create")
+    @GetMapping("create")
     public void creatNewApiKey(
     ) {
 

@@ -52,12 +52,12 @@ public class BedrockFilterService extends FilterService<BedrockRepositoryPlayer,
     public boolean isFiltered(final String playerName, final Leaderboard leaderboard, final LocalDateTime timestamp) {
         return this.getFilterCache(playerName)
                 .map(cache -> cache.isFiltered(leaderboard, timestamp))
-                .orElse(false);
+                .orElse(Boolean.FALSE);
     }
 
     public boolean isFiltered(final String playerName, final Leaderboard leaderboard) {
         return this.getFilterCache(playerName)
                 .map(cache -> cache.isFiltered(leaderboard))
-                .orElse(false);
+                .orElse(Boolean.FALSE);
     }
 }

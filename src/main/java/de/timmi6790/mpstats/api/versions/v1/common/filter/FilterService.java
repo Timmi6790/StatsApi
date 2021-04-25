@@ -116,13 +116,13 @@ public class FilterService<P extends Player & RepositoryPlayer, S extends Player
     public boolean isFiltered(final P player, final Leaderboard leaderboard, final LocalDateTime timestamp) {
         return this.getFilterCache(player.getRepositoryId())
                 .map(cache -> cache.isFiltered(leaderboard, timestamp))
-                .orElse(false);
+                .orElse(Boolean.FALSE);
     }
 
     public boolean isFiltered(final P player, final Leaderboard leaderboard) {
         return this.getFilterCache(player.getRepositoryId())
                 .map(cache -> cache.isFiltered(leaderboard))
-                .orElse(false);
+                .orElse(Boolean.FALSE);
     }
 
     public Filter<P> addFilter(final P player,

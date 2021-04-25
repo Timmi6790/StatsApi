@@ -53,12 +53,12 @@ public class JavaFilterService extends FilterService<JavaRepositoryPlayer, JavaP
     public boolean isFiltered(final UUID playerUUID, final Leaderboard leaderboard, final LocalDateTime timestamp) {
         return this.getFilterCache(playerUUID)
                 .map(cache -> cache.isFiltered(leaderboard, timestamp))
-                .orElse(false);
+                .orElse(Boolean.FALSE);
     }
 
     public boolean isFiltered(final UUID playerUUID, final Leaderboard leaderboard) {
         return this.getFilterCache(playerUUID)
                 .map(cache -> cache.isFiltered(leaderboard))
-                .orElse(false);
+                .orElse(Boolean.FALSE);
     }
 }

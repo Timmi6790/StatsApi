@@ -22,16 +22,18 @@ import java.util.function.Supplier;
 import static org.assertj.core.api.Assertions.assertThat;
 
 // TODO: Add more specific tests
-public abstract class AbstractFilterServiceTest<P extends Player & RepositoryPlayer, S extends PlayerService<P>> {
-    protected final FilterService<P, S> filterService;
+public abstract class AbstractFilterServiceTest<P extends Player & RepositoryPlayer, S extends PlayerService<P>, F extends FilterService<P, S>> {
+    protected final Supplier<F> filterServiceSupplier;
+    protected final F filterService;
     protected final GameService gameService;
     protected final StatService statService;
     protected final BoardService boardService;
 
-    protected AbstractFilterServiceTest(final Supplier<FilterService<P, S>> filterServiceSupplier,
+    protected AbstractFilterServiceTest(final Supplier<F> filterServiceSupplier,
                                         final GameService gameService,
                                         final StatService statService,
                                         final BoardService boardService) {
+        this.filterServiceSupplier = filterServiceSupplier;
         this.filterService = filterServiceSupplier.get();
         this.gameService = gameService;
         this.statService = statService;
@@ -122,7 +124,7 @@ public abstract class AbstractFilterServiceTest<P extends Player & RepositoryPla
     }
 
     @Test
-    void isFiltered_player_leaderboard_time() {
+    void isFiltered_player_leaderboard_time_equals_filter_start() {
         final Filter<P> filter = this.generateFilter();
 
         final boolean found = this.filterService.isFiltered(
@@ -134,6 +136,19 @@ public abstract class AbstractFilterServiceTest<P extends Player & RepositoryPla
     }
 
     @Test
+    void isFiltered_player_leaderboard_time_equals_filter_end() {
+        final Filter<P> filter = this.generateFilter();
+
+        final boolean found = this.filterService.isFiltered(
+                filter.player(),
+                filter.leaderboard(),
+                filter.filterEnd()
+        );
+        assertThat(found).isTrue();
+    }
+
+
+    @Test
     void isFiltered_player_leaderboard() {
         final Filter<P> filter = this.generateFilter();
 
@@ -142,6 +157,18 @@ public abstract class AbstractFilterServiceTest<P extends Player & RepositoryPla
                 filter.leaderboard()
         );
         assertThat(found).isTrue();
+    }
+
+    @Test
+    void isFiltered_player_leaderboard_not_found() {
+        final Leaderboard leaderboard = this.generateLeaderboard();
+        final P player = this.generatePlayer();
+
+        final boolean notFound = this.filterService.isFiltered(
+                player,
+                leaderboard
+        );
+        assertThat(notFound).isFalse();
     }
 
     @Test
@@ -177,5 +204,16 @@ public abstract class AbstractFilterServiceTest<P extends Player & RepositoryPla
         // All filter objects have uniq player and leaderboard instances
         final boolean notFound = this.filterService.isFiltered(filter.player(), filter.leaderboard());
         assertThat(notFound).isFalse();
+    }
+
+    @Test
+    void newInstance() {
+        final Filter<P> filter = this.generateFilter();
+
+        final F newFilterService = this.filterServiceSupplier.get();
+
+        // Check that filter is loaded correctly from the repository
+        final boolean filterFound = newFilterService.isFiltered(filter.player(), filter.leaderboard(), filter.filterStart());
+        assertThat(filterFound).isTrue();
     }
 }

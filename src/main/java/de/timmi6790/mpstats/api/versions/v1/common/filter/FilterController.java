@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
-@Getter(value = AccessLevel.PROTECTED)
+@Getter(AccessLevel.PROTECTED)
 public class FilterController<P extends Player & RepositoryPlayer, S extends PlayerService<P>> {
     private final FilterService<P, S> filterService;
 
@@ -35,7 +35,7 @@ public class FilterController<P extends Player & RepositoryPlayer, S extends Pla
         return this.filterService.getFilters();
     }
 
-    @PostMapping(value = "/{gameName}/{statName}/{boardName}/{playerName}")
+    @PostMapping("/{gameName}/{statName}/{boardName}/{playerName}")
     @Operation(summary = "Create a new filter")
     public Optional<Filter<P>> createFilter(@PathVariable final String gameName,
                                             @PathVariable final String statName,
@@ -60,7 +60,7 @@ public class FilterController<P extends Player & RepositoryPlayer, S extends Pla
         return Optional.of(filter);
     }
 
-    @DeleteMapping(value = "/{gameName}/{statName}/{boardName}/{playerName}")
+    @DeleteMapping("/{gameName}/{statName}/{boardName}/{playerName}")
     @Operation(summary = "Remove a filter")
     public void removeFilter(@PathVariable final String gameName,
                              @PathVariable final String statName,

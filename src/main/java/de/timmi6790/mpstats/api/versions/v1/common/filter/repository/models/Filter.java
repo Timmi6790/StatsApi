@@ -7,7 +7,8 @@ import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlaye
 
 import java.time.LocalDateTime;
 
-public record Filter<P extends Player & RepositoryPlayer>(@JsonIgnore int repositoryId, P player,
+public record Filter<P extends Player & RepositoryPlayer>(@JsonIgnore int repositoryId,
+                                                          P player,
                                                           Leaderboard leaderboard,
                                                           String filterReason,
                                                           LocalDateTime filterStart,

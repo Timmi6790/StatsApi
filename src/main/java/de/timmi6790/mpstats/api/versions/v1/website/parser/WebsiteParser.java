@@ -1,8 +1,9 @@
 package de.timmi6790.mpstats.api.versions.v1.website.parser;
 
 import de.timmi6790.mpstats.api.versions.v1.website.models.WebsitePlayerModel;
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -11,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,10 +38,24 @@ public class WebsiteParser {
     private final WebsiteConverter websiteConverter;
     private final WebsiteFilter websiteFilter;
 
+    private final OkHttpClient httpClient;
+
+
     @Autowired
     public WebsiteParser(final WebsiteConverter websiteConverter, final WebsiteFilter websiteFilter) {
         this.websiteConverter = websiteConverter;
         this.websiteFilter = websiteFilter;
+
+        this.httpClient = new OkHttpClient.Builder()
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .addInterceptor(chain -> {
+                    final Request originalRequest = chain.request();
+                    final Request requestWithUserAgent = originalRequest.newBuilder()
+                            .header("User-Agent", USER_AGENT)
+                            .build();
+                    return chain.proceed(requestWithUserAgent);
+                })
+                .build();
     }
 
     private void addToStatsList(final String game,
@@ -69,21 +86,19 @@ public class WebsiteParser {
     }
 
     protected Optional<String> getHtmlString(final String playerName) {
-        try {
-            final HttpResponse<String> response = Unirest.get("https://www.mineplex.com/players/{player}")
-                    .routeParam("player", playerName)
-                    .header("User-Agent", USER_AGENT)
-                    .connectTimeout(15_000)
-                    .asString();
+        final Request request = new Request.Builder()
+                .url("https://www.mineplex.com/players/" + playerName)
+                .build();
 
-            if (response.isSuccess()) {
-                return Optional.of(response.getBody());
+        try (final Response response = this.httpClient.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                final String body = response.body().string();
+                return Optional.of(body);
             }
-
-        } catch (final Exception ignore) {
+            return Optional.empty();
+        } catch (final IOException e) {
+            return Optional.empty();
         }
-
-        return Optional.empty();
     }
 
     private Optional<UUID> getPlayerUUID(final Document doc) {

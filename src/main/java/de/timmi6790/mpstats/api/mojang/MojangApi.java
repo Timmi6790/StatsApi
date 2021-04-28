@@ -8,11 +8,12 @@ import de.timmi6790.mpstats.api.mojang.models.MojangPlayer;
 import de.timmi6790.mpstats.api.mojang.models.NameHistory;
 import de.timmi6790.mpstats.api.mojang.models.deserializers.MojangUserDeserializer;
 import de.timmi6790.mpstats.api.mojang.models.deserializers.NameHistoryDeserializer;
-import kong.unirest.GetRequest;
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
 import lombok.experimental.UtilityClass;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -26,27 +27,33 @@ public class MojangApi {
 
     private final LoadingCache<String, Optional<MojangPlayer>> playerCache = Caffeine.newBuilder()
             .expireAfterAccess(5, TimeUnit.MINUTES)
-            .build(playerName ->
-                    parseJsonResponse(
-                            Unirest.get("https://api.mojang.com/users/profiles/minecraft/{player}")
-                                    .routeParam("player", playerName),
-                            MojangPlayer.class
-                    )
+            .build(playerName -> {
+                        final Request request = new Request.Builder()
+                                .url("https://api.mojang.com/users/profiles/minecraft/" + playerName)
+                                .build();
+
+                        try (final Response response = new OkHttpClient().newCall(request).execute()) {
+                            return parseJsonResponse(
+                                    response,
+                                    MojangPlayer.class
+                            );
+                        } catch (final IOException e) {
+                            return Optional.empty();
+                        }
+                    }
             );
 
-    private <T> Optional<T> parseJsonResponse(final GetRequest getRequest, final Class<T> clazz) {
-        final HttpResponse<String> response;
-        try {
-            response = getRequest.asString();
-        } catch (final Exception e) {
-            return Optional.empty();
+    private <T> Optional<T> parseJsonResponse(final Response response, final Class<T> clazz) {
+        if (response.isSuccessful()) {
+            final String body;
+            try {
+                body = response.body().string();
+            } catch (final IOException e) {
+                return Optional.empty();
+            }
+            return Optional.ofNullable(gson.fromJson(body, clazz));
         }
-
-        if (!response.isSuccess() || response.getBody().isEmpty()) {
-            return Optional.empty();
-        }
-
-        return Optional.of(gson.fromJson(response.getBody(), clazz));
+        return Optional.empty();
     }
 
     public Optional<MojangPlayer> getPlayer(final String playerName) {
@@ -54,10 +61,22 @@ public class MojangApi {
     }
 
     public Optional<NameHistory> getPlayerNames(final UUID uuid) {
-        return parseJsonResponse(
-                Unirest.get("https://api.mojang.com/user/profiles/{uuid}/names")
-                        .routeParam("uuid", uuid.toString().replace("-", "")),
-                NameHistory.class
-        );
+        final Request request = new Request.Builder()
+                .url(
+                        String.format(
+                                "https://api.mojang.com/user/profiles/%s/names",
+                                uuid.toString().replace("-", "")
+                        )
+                )
+                .build();
+
+        try (final Response response = new OkHttpClient().newCall(request).execute()) {
+            return parseJsonResponse(
+                    response,
+                    NameHistory.class
+            );
+        } catch (final IOException e) {
+            return Optional.empty();
+        }
     }
 }

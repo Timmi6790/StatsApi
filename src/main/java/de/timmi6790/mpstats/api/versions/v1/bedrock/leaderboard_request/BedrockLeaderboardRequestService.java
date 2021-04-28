@@ -3,7 +3,7 @@ package de.timmi6790.mpstats.api.versions.v1.bedrock.leaderboard_request;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import de.timmi6790.mpstats.api.Config;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.AbstractLeaderboardRequestService;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.LeaderboardRequestService;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class BedrockLeaderboardRequestService extends AbstractLeaderboardRequestService<Player> {
+public class BedrockLeaderboardRequestService extends LeaderboardRequestService<Player> {
     private static final Pattern LEADERBOARD_PATTERN = Pattern.compile("^<td>\\d*<\\/td><td>(.{1,33})<\\/td><td> ([\\d,]*)<\\/td>");
 
     @Autowired

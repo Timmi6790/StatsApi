@@ -1,31 +1,35 @@
 package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request;
 
+import de.timmi6790.mpstats.api.Config;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
-import kong.unirest.HttpMethod;
-import kong.unirest.MockClient;
 import lombok.SneakyThrows;
+import okhttp3.HttpUrl;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractLeaderboardRequestServiceTest<P extends Player> {
-    private final AbstractLeaderboardRequestService<P> leaderboardRequest;
+    private final Function<Config, LeaderboardRequestService<P>> leaderboardRequestFunction;
 
-    protected AbstractLeaderboardRequestServiceTest(final AbstractLeaderboardRequestService<P> leaderboardRequest) {
-        this.leaderboardRequest = leaderboardRequest;
+    protected AbstractLeaderboardRequestServiceTest(final Function<Config, LeaderboardRequestService<P>> leaderboardRequestFunction) {
+        this.leaderboardRequestFunction = leaderboardRequestFunction;
     }
 
     @SneakyThrows
-    private String getContentFromFile(final String path) {
+    protected String getContentFromFile(final String path) {
         final ClassLoader classLoader = AbstractLeaderboardRequestServiceTest.class.getClassLoader();
 
         final URI uri = classLoader.getResource(path).toURI();
@@ -33,32 +37,54 @@ public abstract class AbstractLeaderboardRequestServiceTest<P extends Player> {
         return new String(encoded, StandardCharsets.UTF_8);
     }
 
-    private MockClient getMockClient() {
-        return MockClient.register(this.leaderboardRequest.getUnirest());
+    protected LeaderboardRequestService<P> getLeaderboardRequestService(final String url) {
+        final Config config = new Config();
+        final Config.MineplexLeaderboardConfig leaderboardConfig = config.getLeaderboard();
+        leaderboardConfig.setBedrockUrl(url);
+        leaderboardConfig.setJavaUrl(url);
+
+        return this.leaderboardRequestFunction.apply(config);
     }
 
     protected Optional<List<LeaderboardEntry<P>>> retrieveLeaderboard(final String responsePath) {
         final String content = this.getContentFromFile(responsePath);
-        final MockClient mock = this.getMockClient();
 
-        mock.expect(HttpMethod.GET, this.leaderboardRequest.getLeaderboardBaseUrl())
-                .thenReturn(content);
+        try (final MockWebServer server = new MockWebServer()) {
+            server.enqueue(new MockResponse().setBody(content));
 
-        final Optional<LeaderboardSave<P>> leaderboard = this.leaderboardRequest.retrieveLeaderboard("", "", "");
+            final HttpUrl url = server.url("");
+            final LeaderboardRequestService<P> leaderboardRequest = this.getLeaderboardRequestService(url.toString());
 
-        mock.verifyAll();
-        return leaderboard.map(LeaderboardSave::getEntries);
+            final Optional<LeaderboardSave<P>> leaderboard = leaderboardRequest.retrieveLeaderboard(
+                    "",
+                    "",
+                    ""
+            );
+
+            return leaderboard.map(LeaderboardSave::getEntries);
+        } catch (final IOException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
     }
 
     @Test
     void emptyResponse() {
-        final MockClient mock = this.getMockClient();
+        try (final MockWebServer server = new MockWebServer()) {
+            server.enqueue(new MockResponse().setBody(""));
 
-        mock.expect(HttpMethod.GET, this.leaderboardRequest.getLeaderboardBaseUrl())
-                .thenReturn("");
+            final HttpUrl url = server.url("");
+            final LeaderboardRequestService<P> leaderboardRequest = this.getLeaderboardRequestService(url.toString());
 
-        final Optional<LeaderboardSave<P>> leaderboard = this.leaderboardRequest.retrieveLeaderboard("", "", "");
+            final Optional<LeaderboardSave<P>> leaderboard = leaderboardRequest.retrieveLeaderboard(
+                    "",
+                    "",
+                    ""
+            );
 
-        assertThat(leaderboard).isNotPresent();
+            assertThat(leaderboard).isNotPresent();
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
     }
 }

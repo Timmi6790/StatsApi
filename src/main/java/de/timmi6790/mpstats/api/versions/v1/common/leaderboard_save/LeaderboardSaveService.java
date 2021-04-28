@@ -42,7 +42,9 @@ public abstract class LeaderboardSaveService<P extends Player, R extends Player 
     public void saveLeaderboardEntries(final Leaderboard leaderboard,
                                        final List<LeaderboardEntry<P>> leaderboardData,
                                        final LocalDateTime saveTime) {
+        System.out.println("Start");
         final List<PlayerData> parsedData = this.getPlayerData(leaderboardData);
+        System.out.println("Parsed");
         if (!parsedData.isEmpty()) {
             log.debug(
                     "[{}] Save {}-{}-{} into repository",
@@ -55,8 +57,8 @@ public abstract class LeaderboardSaveService<P extends Player, R extends Player 
         }
     }
 
-    public Optional<LeaderboardSave<R>> getLeaderboardSave(final Leaderboard leaderboard,
-                                                           final LocalDateTime saveTime) {
+    public Optional<LeaderboardSave<R>> retrieveLeaderboardSave(final Leaderboard leaderboard,
+                                                                final LocalDateTime saveTime) {
         return this.repository.getLeaderboardEntries(leaderboard, saveTime);
     }
 }

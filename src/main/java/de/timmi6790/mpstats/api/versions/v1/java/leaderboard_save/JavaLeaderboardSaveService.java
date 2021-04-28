@@ -27,7 +27,10 @@ public class JavaLeaderboardSaveService extends LeaderboardSaveService<JavaPlaye
         final List<PlayerData> data = Lists.newArrayListWithCapacity(leaderboardDataList.size());
         for (final LeaderboardEntry<JavaPlayer> leaderboardData : leaderboardDataList) {
             final JavaPlayer player = leaderboardData.getPlayer();
-            final JavaRepositoryPlayer repositoryPlayer = playerService.getPlayerOrCreate(player.getPlayerName(), player.getPlayerUUID());
+            final JavaRepositoryPlayer repositoryPlayer = playerService.getPlayerOrCreate(
+                    player.getPlayerName(),
+                    player.getPlayerUUID()
+            );
 
             data.add(
                     new PlayerData(

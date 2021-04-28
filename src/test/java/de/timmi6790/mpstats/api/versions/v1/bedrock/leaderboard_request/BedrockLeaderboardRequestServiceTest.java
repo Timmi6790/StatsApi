@@ -1,6 +1,5 @@
 package de.timmi6790.mpstats.api.versions.v1.bedrock.leaderboard_request;
 
-import de.timmi6790.mpstats.api.Config;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.AbstractLeaderboardRequestServiceTest;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
@@ -15,7 +14,7 @@ class BedrockLeaderboardRequestServiceTest extends AbstractLeaderboardRequestSer
     private static final String BASE_PATH = "leaderboard_request/bedrock/";
 
     public BedrockLeaderboardRequestServiceTest() {
-        super(new BedrockLeaderboardRequestService(new Config()));
+        super(BedrockLeaderboardRequestService::new);
     }
 
     private void validatePlayerData(final LeaderboardEntry<Player> data,

@@ -87,7 +87,7 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player, R ext
 
     protected Optional<List<LeaderboardEntry<R>>> getSavedLeaderboardEntries(final Leaderboard leaderboard,
                                                                              final LocalDateTime saveTime) {
-        return this.saveService.getLeaderboardSave(leaderboard, saveTime)
+        return this.saveService.retrieveLeaderboardSave(leaderboard, saveTime)
                 .map(LeaderboardSave::getEntries);
     }
 
@@ -119,7 +119,7 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player, R ext
         final LocalDateTime saveTime = LocalDateTime.now();
         this.saveService.saveLeaderboardEntries(leaderboard, entries, saveTime);
 
-        final Optional<LeaderboardSave<R>> foundSave = this.saveService.getLeaderboardSave(leaderboard, saveTime);
+        final Optional<LeaderboardSave<R>> foundSave = this.saveService.retrieveLeaderboardSave(leaderboard, saveTime);
         assertThat(foundSave)
                 .isPresent();
         assertThat(foundSave.get().getSaveTime()).isEqualToIgnoringNanos(saveTime);
@@ -134,7 +134,7 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player, R ext
         // Try to save an empty list
         this.saveService.saveLeaderboardEntries(leaderboard, new ArrayList<>(), saveTime);
 
-        final Optional<LeaderboardSave<R>> notFound = this.saveService.getLeaderboardSave(leaderboard, saveTime);
+        final Optional<LeaderboardSave<R>> notFound = this.saveService.retrieveLeaderboardSave(leaderboard, saveTime);
         assertThat(notFound)
                 .isNotPresent();
 

@@ -1,5 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.common.filter.repository.postgres.mappers;
 
+import de.timmi6790.mpstats.api.versions.v1.common.filter.Reason;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.Filter;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.LeaderboardService;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
@@ -39,7 +40,7 @@ public class FilterMapper<P extends Player & RepositoryPlayer> implements RowMap
                 rs.getInt("id"),
                 playerOpt.get(),
                 leaderboardOpt.get(),
-                rs.getString("filter_reason"),
+                Reason.valueOf(rs.getString("reason")),
                 rs.getTimestamp("filter_start").toLocalDateTime(),
                 rs.getTimestamp("filter_end").toLocalDateTime()
         );

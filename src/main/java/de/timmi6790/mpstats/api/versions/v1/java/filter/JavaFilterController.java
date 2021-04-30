@@ -1,6 +1,7 @@
 package de.timmi6790.mpstats.api.versions.v1.java.filter;
 
 import de.timmi6790.mpstats.api.versions.v1.common.filter.FilterController;
+import de.timmi6790.mpstats.api.versions.v1.common.filter.Reason;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.Filter;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.java.player.JavaPlayerService;
@@ -29,7 +30,7 @@ public class JavaFilterController extends FilterController<JavaRepositoryPlayer,
                                                                @PathVariable final String statName,
                                                                @PathVariable final String boardName,
                                                                @PathVariable final UUID playerUUID,
-                                                               @RequestParam final String reason,
+                                                               @RequestParam final Reason reason,
                                                                @RequestParam final LocalDateTime filterStart,
                                                                @RequestParam final LocalDateTime filterEnd) {
         // TODO: Add spring security

@@ -41,7 +41,7 @@ public class FilterController<P extends Player & RepositoryPlayer, S extends Pla
                                             @PathVariable final String statName,
                                             @PathVariable final String boardName,
                                             @PathVariable final String playerName,
-                                            @RequestParam final String reason,
+                                            @RequestParam final Reason reason,
                                             @RequestParam final LocalDateTime filterStart,
                                             @RequestParam final LocalDateTime filterEnd) {
         // TODO: Add spring security

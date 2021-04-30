@@ -48,7 +48,7 @@ class BedrockFilterServiceTest extends AbstractFilterServiceTest<BedrockReposito
         final boolean found = this.filterService.isFiltered(
                 filter.player().getPlayerName(),
                 filter.leaderboard(),
-                filter.filterStart()
+                filter.start()
         );
         assertThat(found).isTrue();
     }
@@ -60,7 +60,7 @@ class BedrockFilterServiceTest extends AbstractFilterServiceTest<BedrockReposito
         final boolean found = this.filterService.isFiltered(
                 filter.player().getPlayerName(),
                 filter.leaderboard(),
-                filter.filterEnd()
+                filter.end()
         );
         assertThat(found).isTrue();
     }

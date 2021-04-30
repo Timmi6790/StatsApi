@@ -1,5 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.common.filter;
 
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Striped;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.models.FilterCache;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.FilterRepository;
@@ -16,10 +17,7 @@ import lombok.extern.log4j.Log4j2;
 import org.jdbi.v3.core.Jdbi;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 
 @Getter(AccessLevel.PROTECTED)
@@ -44,6 +42,12 @@ public class FilterService<P extends Player & RepositoryPlayer, S extends Player
         this.leaderboardService = leaderboardService;
 
         this.filterRepository = new FilterPostgresRepository<>(playerService, leaderboardService, jdbi, schema);
+
+        final List<String> reasons = Lists.newArrayListWithCapacity(Reason.values().length);
+        for (final Reason reason : Reason.values()) {
+            reasons.add(reason.name());
+        }
+        this.filterRepository.addFilterReasons(reasons);
     }
 
     protected void loadRepositoryEntriesIntoCache() {
@@ -129,6 +133,15 @@ public class FilterService<P extends Player & RepositoryPlayer, S extends Player
                 .orElse(Boolean.FALSE);
     }
 
+    public boolean isFiltered(final P player,
+                              final Leaderboard leaderboard,
+                              final LocalDateTime timestamp,
+                              final Collection<Reason> allowedReasons) {
+        return this.getFilterCache(player.getRepositoryId())
+                .map(cache -> cache.isFiltered(leaderboard, timestamp, allowedReasons))
+                .orElse(Boolean.FALSE);
+    }
+
     public boolean isFiltered(final P player, final Leaderboard leaderboard) {
         return this.getFilterCache(player.getRepositoryId())
                 .map(cache -> cache.isFiltered(leaderboard))
@@ -137,7 +150,7 @@ public class FilterService<P extends Player & RepositoryPlayer, S extends Player
 
     public Filter<P> addFilter(final P player,
                                final Leaderboard leaderboard,
-                               final String reason,
+                               final Reason reason,
                                final LocalDateTime filterStart,
                                final LocalDateTime filterEnd) {
         final Filter<P> filter = this.filterRepository.addFilter(player, leaderboard, reason, filterStart, filterEnd);

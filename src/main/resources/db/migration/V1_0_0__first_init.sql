@@ -16,19 +16,27 @@ CREATE TABLE "bedrock"."boards"
     "board_name"   varchar(255) NOT NULL,
     "clean_name"   varchar(255) NOT NULL,
     "update_time"  int4         NOT NULL,
-    PRIMARY KEY ("id"),
+    CONSTRAINT "1" PRIMARY KEY ("id"),
     CONSTRAINT "boards-board_name" UNIQUE ("board_name")
 );
 CREATE UNIQUE INDEX "boards-board_name_lower" ON "bedrock"."boards" USING btree (
                                                                                  LOWER(board_name)
     );
 
+CREATE TABLE "bedrock"."filter_reasons"
+(
+    "id"     serial4,
+    "reason" text NOT NULL,
+    PRIMARY KEY ("id"),
+    CONSTRAINT "filter_reasons-reason" UNIQUE ("reason")
+);
+
 CREATE TABLE "bedrock"."filters"
 (
     "id"             serial4,
     "player_id"      int4        NOT NULL,
     "leaderboard_id" int4        NOT NULL,
-    "filter_reason"  text        NOT NULL,
+    "reason_id"      int4        NOT NULL,
     "filter_start"   timestamptz NOT NULL,
     "filter_end"     timestamptz NOT NULL,
     PRIMARY KEY ("id")
@@ -144,12 +152,20 @@ CREATE UNIQUE INDEX "boards-board_name_lower" ON "java"."boards" USING btree (
                                                                               LOWER(board_name)
     );
 
+CREATE TABLE "java"."filter_reasons"
+(
+    "id"     serial4,
+    "reason" text NOT NULL,
+    PRIMARY KEY ("id"),
+    CONSTRAINT "filter_reasons-reason" UNIQUE ("reason")
+);
+
 CREATE TABLE "java"."filters"
 (
     "id"             serial4,
     "player_id"      int4        NOT NULL,
     "leaderboard_id" int4        NOT NULL,
-    "filter_reason"  text,
+    "reason_id"      int4        NOT NULL,
     "filter_start"   timestamptz NOT NULL,
     "filter_end"     timestamptz NOT NULL,
     PRIMARY KEY ("id")
@@ -284,6 +300,8 @@ ALTER TABLE "bedrock"."filters"
     ADD CONSTRAINT "filters-player_id-players-id" FOREIGN KEY ("player_id") REFERENCES "bedrock"."players" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 ALTER TABLE "bedrock"."filters"
     ADD CONSTRAINT "filters-leaderboard_id-leaderboards-id" FOREIGN KEY ("leaderboard_id") REFERENCES "bedrock"."leaderboards" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "bedrock"."filters"
+    ADD CONSTRAINT "filters_reason_id-filter_reasons-id" FOREIGN KEY ("reason_id") REFERENCES "bedrock"."filter_reasons" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 ALTER TABLE "bedrock"."game_alias"
     ADD CONSTRAINT "game_alias-alias_name-games-game_name" FOREIGN KEY ("game_id") REFERENCES "bedrock"."games" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 ALTER TABLE "bedrock"."games"
@@ -325,6 +343,8 @@ ALTER TABLE "java"."filters"
     ADD CONSTRAINT "filters_player_id-players_id" FOREIGN KEY ("player_id") REFERENCES "java"."players" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 ALTER TABLE "java"."filters"
     ADD CONSTRAINT "filters_leaderboard_id-leaderboards_id" FOREIGN KEY ("leaderboard_id") REFERENCES "java"."leaderboards" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "java"."filters"
+    ADD CONSTRAINT "filters_reason_id-filter_reasons-id" FOREIGN KEY ("reason_id") REFERENCES "java"."filter_reasons" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 ALTER TABLE "java"."game_alias"
     ADD CONSTRAINT "game_alias_game_id-games_id" FOREIGN KEY ("game_id") REFERENCES "java"."games" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 DROP INDEX "java"."games-game_name_lower";

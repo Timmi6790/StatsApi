@@ -12,10 +12,11 @@ import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlayer;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.StatService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
@@ -65,11 +66,17 @@ public abstract class AbstractFilterServiceTest<P extends Player & RepositoryPla
         final P player = this.generatePlayer();
         final Leaderboard leaderboard = this.generateLeaderboard();
 
-        return this.generateFilter(player, leaderboard);
+        return this.generateFilter(player, leaderboard, Reason.GIVEN);
     }
 
-    protected Filter<P> generateFilter(final P player, final Leaderboard leaderboard) {
-        final String reason = "Test reason";
+    protected Filter<P> generateFilter(final Reason reason) {
+        final P player = this.generatePlayer();
+        final Leaderboard leaderboard = this.generateLeaderboard();
+
+        return this.generateFilter(player, leaderboard, reason);
+    }
+
+    protected Filter<P> generateFilter(final P player, final Leaderboard leaderboard, final Reason reason) {
         final LocalDateTime filterStart = LocalDateTime.now();
         final LocalDateTime filterEnd = LocalDateTime.now().plusMinutes(ThreadLocalRandom.current().nextInt(5_000));
 
@@ -118,7 +125,7 @@ public abstract class AbstractFilterServiceTest<P extends Player & RepositoryPla
         final List<Filter<P>> foundFilters = this.filterService.getFilters(
                 filter.player(),
                 filter.leaderboard(),
-                filter.filterStart()
+                filter.start()
         );
         assertThat(foundFilters).containsOnly(filter);
     }
@@ -130,7 +137,7 @@ public abstract class AbstractFilterServiceTest<P extends Player & RepositoryPla
         final boolean found = this.filterService.isFiltered(
                 filter.player(),
                 filter.leaderboard(),
-                filter.filterStart()
+                filter.start()
         );
         assertThat(found).isTrue();
     }
@@ -142,11 +149,40 @@ public abstract class AbstractFilterServiceTest<P extends Player & RepositoryPla
         final boolean found = this.filterService.isFiltered(
                 filter.player(),
                 filter.leaderboard(),
-                filter.filterEnd()
+                filter.end()
         );
         assertThat(found).isTrue();
     }
 
+    @ParameterizedTest
+    @EnumSource(Reason.class)
+    void isFiltered_player_leaderboard_time_reason(final Reason reason) {
+        final Filter<P> filter = this.generateFilter(reason);
+
+        final boolean found = this.filterService.isFiltered(
+                filter.player(),
+                filter.leaderboard(),
+                filter.end(),
+                Collections.singleton(reason)
+        );
+        assertThat(found).isTrue();
+    }
+
+    @ParameterizedTest
+    @EnumSource(Reason.class)
+    void isFiltered_player_leaderboard_time_reason_not_found(final Reason reason) {
+        final Filter<P> filter = this.generateFilter(reason);
+
+        final Set<Reason> reasons = EnumSet.allOf(Reason.class);
+        reasons.remove(reason);
+        final boolean notFound = this.filterService.isFiltered(
+                filter.player(),
+                filter.leaderboard(),
+                filter.end(),
+                reasons
+        );
+        assertThat(notFound).isFalse();
+    }
 
     @Test
     void isFiltered_player_leaderboard() {
@@ -175,7 +211,7 @@ public abstract class AbstractFilterServiceTest<P extends Player & RepositoryPla
     void addFilter() {
         final P player = this.generatePlayer();
         final Leaderboard leaderboard = this.generateLeaderboard();
-        final String reason = "Test reason";
+        final Reason reason = Reason.SUSPECTED_HACKED;
         final LocalDateTime filterStart = LocalDateTime.now();
         final LocalDateTime filterEnd = LocalDateTime.now().plusMinutes(ThreadLocalRandom.current().nextInt(5_000));
 
@@ -189,9 +225,9 @@ public abstract class AbstractFilterServiceTest<P extends Player & RepositoryPla
         // Verify that the content is the same
         assertThat(filter.player()).isEqualTo(player);
         assertThat(filter.leaderboard()).isEqualTo(leaderboard);
-        assertThat(filter.filterReason()).isEqualTo(reason);
-        assertThat(filter.filterStart()).isEqualToIgnoringNanos(filterStart);
-        assertThat(filter.filterEnd()).isEqualToIgnoringNanos(filterEnd);
+        assertThat(filter.reason()).isEqualTo(reason);
+        assertThat(filter.start()).isEqualToIgnoringNanos(filterStart);
+        assertThat(filter.end()).isEqualToIgnoringNanos(filterEnd);
     }
 
     @Test
@@ -213,7 +249,7 @@ public abstract class AbstractFilterServiceTest<P extends Player & RepositoryPla
         final F newFilterService = this.filterServiceSupplier.get();
 
         // Check that filter is loaded correctly from the repository
-        final boolean filterFound = newFilterService.isFiltered(filter.player(), filter.leaderboard(), filter.filterStart());
+        final boolean filterFound = newFilterService.isFiltered(filter.player(), filter.leaderboard(), filter.start());
         assertThat(filterFound).isTrue();
     }
 }

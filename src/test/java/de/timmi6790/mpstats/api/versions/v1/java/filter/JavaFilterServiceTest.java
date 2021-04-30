@@ -50,7 +50,7 @@ class JavaFilterServiceTest extends AbstractFilterServiceTest<JavaRepositoryPlay
         final boolean found = this.filterService.isFiltered(
                 filter.player().getPlayerUUID(),
                 filter.leaderboard(),
-                filter.filterStart()
+                filter.start()
         );
         assertThat(found).isTrue();
     }
@@ -62,7 +62,7 @@ class JavaFilterServiceTest extends AbstractFilterServiceTest<JavaRepositoryPlay
         final boolean found = this.filterService.isFiltered(
                 filter.player().getPlayerUUID(),
                 filter.leaderboard(),
-                filter.filterEnd()
+                filter.end()
         );
         assertThat(found).isTrue();
     }

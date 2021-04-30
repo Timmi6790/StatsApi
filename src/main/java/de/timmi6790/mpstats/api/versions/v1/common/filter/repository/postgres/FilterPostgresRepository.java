@@ -1,5 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.common.filter.repository.postgres;
 
+import de.timmi6790.mpstats.api.versions.v1.common.filter.Reason;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.FilterRepository;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.Filter;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.postgres.mappers.FilterMapper;
@@ -10,13 +11,17 @@ import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlayer;
 import de.timmi6790.mpstats.api.versions.v1.common.utilities.PostgresRepository;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.PreparedBatch;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 public class FilterPostgresRepository<P extends Player & RepositoryPlayer> extends PostgresRepository implements FilterRepository<P> {
     private static final String PLAYER_ID = "playerId";
     private static final String LEADERBOARD_ID = "leaderboardId";
+
+    private final String addFilterReason;
 
     private final String insertFilter;
     private final String removeFilter;
@@ -38,6 +43,8 @@ public class FilterPostgresRepository<P extends Player & RepositoryPlayer> exten
         this.filterMapper = new FilterMapper<>(playerService, leaderboardService);
 
         // Create queries
+        this.addFilterReason = this.formatQuery(QueryTemplates.ADD_FILTER_REASON);
+
         this.insertFilter = this.formatQuery(QueryTemplates.INSERT_FILTER);
         this.removeFilter = this.formatQuery(QueryTemplates.REMOVE_FILTER);
 
@@ -46,6 +53,18 @@ public class FilterPostgresRepository<P extends Player & RepositoryPlayer> exten
         this.getFiltersByLeaderboardId = this.formatQuery(QueryTemplates.GET_FILTERS_BY_LEADERBOARD_ID);
         this.getFiltersByPlayerLeaderboardTime = this.formatQuery(QueryTemplates.GET_FILTERS_BY_PLAYER_LEADERBOARD_TIME);
         this.getFiltersByPlayerLeaderboard = this.formatQuery(QueryTemplates.GET_FILTERS_BY_PLAYER_LEADERBOARD);
+    }
+
+    @Override
+    public void addFilterReasons(final Collection<String> filterReasons) {
+        this.getDatabase().useHandle(handle -> {
+            final PreparedBatch batch = handle.prepareBatch(this.addFilterReason);
+            for (final String reason : filterReasons) {
+                batch.bind("reason", reason);
+                batch.add();
+            }
+            batch.execute();
+        });
     }
 
     @Override
@@ -105,7 +124,7 @@ public class FilterPostgresRepository<P extends Player & RepositoryPlayer> exten
     @Override
     public Filter<P> addFilter(final P player,
                                final Leaderboard leaderboard,
-                               final String reason,
+                               final Reason reason,
                                final LocalDateTime filterStart,
                                final LocalDateTime filterEnd) {
         return this.getDatabase().withHandle(handler ->
@@ -130,10 +149,22 @@ public class FilterPostgresRepository<P extends Player & RepositoryPlayer> exten
     }
 
     private static class QueryTemplates {
-        private static final String INSERT_FILTER = "INSERT INTO $schema$.filters(player_id, leaderboard_id, filter_reason, filter_start, filter_end) VALUES(:playerId, :leaderboardId, :filterReason, :filterStart, :filterEnd) RETURNING id, player_id, leaderboard_id, filter_reason, filter_start, filter_end";
+        private static final String ADD_FILTER_REASON = "INSERT INTO $schema$.filter_reasons(reason) " +
+                "SELECT :reason " +
+                "WHERE " +
+                "    NOT EXISTS ( " +
+                "        SELECT id FROM $schema$.filter_reasons WHERE reason = :reason " +
+                "    );";
+
+        private static final String INSERT_FILTER = "INSERT INTO $schema$.filters(player_id, leaderboard_id, reason_id, filter_start, filter_end) " +
+                "VALUES(:playerId, :leaderboardId, (SELECT id FROM $schema$.filter_reasons WHERE reason = :filterReason), :filterStart, :filterEnd) " +
+                "RETURNING id, player_id, leaderboard_id, :filterReason reason, filter_start, filter_end";
         private static final String REMOVE_FILTER = "DELETE FROM $schema$.filters WHERE id = :repositoryId;";
 
-        private static final String GET_FILTER_BASE = "SELECT id, player_id, leaderboard_id, filter_reason, filter_start, filter_end FROM $schema$.filters %s;";
+        private static final String GET_FILTER_BASE = "SELECT filters.id, player_id, leaderboard_id, reason.reason, filter_start, filter_end " +
+                "FROM $schema$.filters " +
+                "INNER JOIN $schema$.filter_reasons reason ON reason.id = filters.reason_id " +
+                "%s;";
         private static final String GET_FILTERS = String.format(GET_FILTER_BASE, "");
         private static final String GET_FILTERS_BY_PLAYER_ID = String.format(GET_FILTER_BASE, "WHERE player_id = :playerId");
         private static final String GET_FILTERS_BY_PLAYER_LEADERBOARD = String.format(GET_FILTER_BASE, "WHERE leaderboard_id = :leaderboardId AND player_id = :playerId;");

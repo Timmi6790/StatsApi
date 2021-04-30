@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import de.timmi6790.mpstats.api.redis.ByteRedisTemplate;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_cache.models.LeaderboardSaveCache;
-import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardPositionEntry;
+import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -36,14 +36,13 @@ public class LeaderboardCacheService<P extends Player> {
         this.hashOperations = this.redisTemplate.opsForValue();
     }
 
-    protected String getSaveCacheId(final Leaderboard leaderboard, final boolean filter) {
-        return this.schemaName + (filter ? "F" : "") + leaderboard.repositoryId();
+    protected String getSaveCacheId(final Leaderboard leaderboard) {
+        return "SAVE-" + this.schemaName + "-" + leaderboard.repositoryId();
     }
 
     public void saveLeaderboardEntryPosition(final Leaderboard leaderboard,
-                                             final List<LeaderboardPositionEntry<P>> entries,
-                                             final LocalDateTime saveTime,
-                                             final boolean filter) {
+                                             final List<LeaderboardEntry<P>> entries,
+                                             final LocalDateTime saveTime) {
         log.debug(
                 "[{}] Add {}-{}-{} to cache",
                 this.schemaName,
@@ -52,20 +51,18 @@ public class LeaderboardCacheService<P extends Player> {
                 leaderboard.stat().statName()
         );
         this.hashOperations.set(
-                this.getSaveCacheId(leaderboard, filter),
+                this.getSaveCacheId(leaderboard),
                 new LeaderboardSaveCache<>(
-                        this.getSaveCacheId(leaderboard, filter),
                         saveTime,
                         entries
                 )
         );
     }
 
-    public Optional<LeaderboardSaveCache<P>> retrieveLeaderboardEntryPosition(final Leaderboard leaderboard,
-                                                                              final boolean filter) {
+    public Optional<LeaderboardSaveCache<P>> retrieveLeaderboardEntryPosition(final Leaderboard leaderboard) {
         return Optional.ofNullable(
                 this.hashOperations.get(
-                        this.getSaveCacheId(leaderboard, filter)
+                        this.getSaveCacheId(leaderboard)
                 )
         );
     }

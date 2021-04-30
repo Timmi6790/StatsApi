@@ -1,6 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_cache.models;
 
-import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardPositionEntry;
+import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
 public class LeaderboardSaveCache<P extends Player> {
-    private final String id;
     private final LocalDateTime saveTime;
-    private final List<LeaderboardPositionEntry<P>> entries;
+    private final List<LeaderboardEntry<P>> entries;
 }

@@ -8,7 +8,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.game.GameService;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.LeaderboardService;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_cache.models.LeaderboardSaveCache;
-import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardPositionEntry;
+import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.StatService;
 import org.junit.jupiter.api.Test;
@@ -42,15 +42,14 @@ public abstract class AbstractLeaderboardCacheServiceTest<P extends Player> exte
         );
     }
 
-    protected List<LeaderboardPositionEntry<P>> generateEntries(final int count) {
-        final List<LeaderboardPositionEntry<P>> entries = Lists.newArrayListWithCapacity(count);
+    protected List<LeaderboardEntry<P>> generateEntries(final int count) {
+        final List<LeaderboardEntry<P>> entries = Lists.newArrayListWithCapacity(count);
 
         for (int index = 0; count > index; index++) {
             entries.add(
-                    new LeaderboardPositionEntry<>(
+                    new LeaderboardEntry<>(
                             this.generatePlayer(),
-                            ThreadLocalRandom.current().nextLong(),
-                            ThreadLocalRandom.current().nextInt()
+                            ThreadLocalRandom.current().nextLong()
                     )
             );
         }
@@ -62,13 +61,12 @@ public abstract class AbstractLeaderboardCacheServiceTest<P extends Player> exte
     void saveLeaderboardEntryPosition() {
         final Leaderboard leaderboard = this.generateLeaderboard();
         final LocalDateTime saveTime = LocalDateTime.now();
-        final List<LeaderboardPositionEntry<P>> entries = this.generateEntries(100);
-        final boolean filter = true;
+        final List<LeaderboardEntry<P>> entries = this.generateEntries(100);
 
         // Insert
-        this.getLeaderboardCacheService().saveLeaderboardEntryPosition(leaderboard, entries, saveTime, filter);
+        this.getLeaderboardCacheService().saveLeaderboardEntryPosition(leaderboard, entries, saveTime);
 
-        final Optional<LeaderboardSaveCache<P>> cacheFound = this.getLeaderboardCacheService().retrieveLeaderboardEntryPosition(leaderboard, filter);
+        final Optional<LeaderboardSaveCache<P>> cacheFound = this.getLeaderboardCacheService().retrieveLeaderboardEntryPosition(leaderboard);
         assertThat(cacheFound).isPresent();
 
         final LeaderboardSaveCache<P> cache = cacheFound.get();

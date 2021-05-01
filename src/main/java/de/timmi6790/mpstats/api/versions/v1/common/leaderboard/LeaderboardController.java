@@ -1,5 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.common.leaderboard;
 
+import de.timmi6790.mpstats.api.security.annontations.RequireAdminPerms;
 import de.timmi6790.mpstats.api.versions.v1.common.board.BoardService;
 import de.timmi6790.mpstats.api.versions.v1.common.board.repository.models.Board;
 import de.timmi6790.mpstats.api.versions.v1.common.game.GameService;
@@ -12,7 +13,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -56,14 +57,13 @@ public abstract class LeaderboardController {
         return Optional.empty();
     }
 
-    @PostMapping("/{gameName}/{statName}/{boardName}")
+    @PutMapping("/{gameName}/{statName}/{boardName}")
     @Operation(summary = "Create a new leaderboard")
+    @RequireAdminPerms
     public Optional<Leaderboard> createdLeaderboard(@PathVariable final String gameName,
                                                     @PathVariable final String statName,
                                                     @PathVariable final String boardName,
                                                     @RequestParam final boolean deprecated) {
-        // TODO: Add spring security
-
         final Optional<Game> gameOpt = this.gameService.getGame(gameName);
         final Optional<Stat> statOpt = this.statService.getStat(statName);
         final Optional<Board> boardOpt = this.boardService.getBoard(boardName);

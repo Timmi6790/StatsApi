@@ -1,5 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.java.filter;
 
+import de.timmi6790.mpstats.api.security.annontations.RequireAdminPerms;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.FilterController;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.Reason;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.Filter;
@@ -26,6 +27,7 @@ public class JavaFilterController extends FilterController<JavaRepositoryPlayer,
 
     @PostMapping("/{gameName}/{statName}/{boardName}/{playerUUID}")
     @Operation(summary = "Create a new filter")
+    @RequireAdminPerms
     public Optional<Filter<JavaRepositoryPlayer>> createFilter(@PathVariable final String gameName,
                                                                @PathVariable final String statName,
                                                                @PathVariable final String boardName,
@@ -33,8 +35,6 @@ public class JavaFilterController extends FilterController<JavaRepositoryPlayer,
                                                                @RequestParam final Reason reason,
                                                                @RequestParam final LocalDateTime filterStart,
                                                                @RequestParam final LocalDateTime filterEnd) {
-        // TODO: Add spring security
-
         final Optional<Leaderboard> leaderboardOpt = this.getLeaderboardService().getLeaderboard(gameName, statName, boardName);
         if (leaderboardOpt.isEmpty()) {
             return Optional.empty();

@@ -1,5 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.common.group;
 
+import de.timmi6790.mpstats.api.security.annontations.RequireAdminPerms;
 import de.timmi6790.mpstats.api.versions.v1.common.group.repository.models.Group;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ public class GroupController {
     }
 
     @PutMapping("/{groupName}")
+    @RequireAdminPerms
     public Group createGroup(@PathVariable final String groupName, @RequestParam final String cleanName) {
         return null;
     }
@@ -26,6 +28,7 @@ public class GroupController {
     }
 
     @DeleteMapping("/{groupName}")
+    @RequireAdminPerms
     public void deleteGroup(@PathVariable final String groupName) {
 
     }

@@ -1,5 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.common.game;
 
+import de.timmi6790.mpstats.api.security.annontations.RequireAdminPerms;
 import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.Game;
 import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.GameCategory;
 import io.swagger.v3.oas.annotations.Operation;
@@ -7,7 +8,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -33,13 +34,13 @@ public abstract class GameController {
         return this.gameService.getGame(gameName);
     }
 
-    @PostMapping("/{gameName}")
+    @PutMapping("/{gameName}")
     @Operation(summary = "Create a new game")
+    @RequireAdminPerms
     public Game createGame(@PathVariable final String gameName,
                            @RequestParam final String websiteName,
                            @RequestParam final String cleanName,
                            @RequestParam final String categoryName) {
-        // TODO: Add spring security
         return this.gameService.getOrCreateGame(websiteName, gameName, cleanName, categoryName);
     }
 

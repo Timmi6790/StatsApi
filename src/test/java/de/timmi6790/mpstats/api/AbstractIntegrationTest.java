@@ -12,7 +12,6 @@ import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers
 public abstract class AbstractIntegrationTest {
-    // TODO: Add redis
     @Container
     private static final PostgreSQLContainer<?> POSTGRES_SQL_CONTAINER = new PostgreSQLContainer<>(
             DockerImageName

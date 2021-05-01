@@ -10,6 +10,14 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 public class ApiKey {
+    public static ApiKey of(final int dailyRateLimit, final int minuteRateLimit) {
+        return new ApiKey(
+                UUID.randomUUID(),
+                new RateLimit(dailyRateLimit, minuteRateLimit),
+                new ArrayList<>()
+        );
+    }
+
     private final UUID key;
     private final RateLimit rateLimit;
     private final List<String> authorities;

@@ -69,8 +69,10 @@ public class ApiKeyService {
     }
 
     public void addApiKey(final ApiKey apiKey) {
-        this.apiKeys.put(apiKey.getKey(), apiKey);
-        this.saveToFile(new ApiKeyStorage(this.apiKeys.values()));
+        if (!this.apiKeys.containsKey(apiKey.getKey())) {
+            this.apiKeys.put(apiKey.getKey(), apiKey);
+            this.saveToFile(new ApiKeyStorage(this.apiKeys.values()));
+        }
     }
 
     public Optional<ApiKey> getApiKey(final String apiKey) {

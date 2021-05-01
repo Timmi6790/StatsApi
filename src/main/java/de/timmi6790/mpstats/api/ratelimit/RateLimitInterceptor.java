@@ -2,6 +2,7 @@ package de.timmi6790.mpstats.api.ratelimit;
 
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.ConsumptionProbe;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,9 +23,9 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(final HttpServletRequest request,
-                             final HttpServletResponse response,
-                             final Object handler) throws Exception {
-        final String apiKey = request.getHeader("X-api-key");
+                             @NotNull final HttpServletResponse response,
+                             @NotNull final Object handler) throws Exception {
+        final String apiKey = request.getHeader("X-Api-Key");
         final Bucket tokenBucket = this.rateLimitService.resolveBucket(apiKey, request.getRemoteAddr());
         final ConsumptionProbe probe = tokenBucket.tryConsumeAndReturnRemaining(1);
         if (probe.isConsumed()) {

@@ -1,12 +1,18 @@
 package de.timmi6790.mpstats.api.apikey;
 
 import de.timmi6790.commons.utilities.GsonUtilities;
+import de.timmi6790.mpstats.api.apikey.models.ApiKey;
+import de.timmi6790.mpstats.api.apikey.models.ApiKeyStorage;
+import de.timmi6790.mpstats.api.apikey.models.RateLimit;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Log
@@ -16,55 +22,59 @@ public class ApiKeyService {
     private final Path apiKeyPath;
 
     public ApiKeyService() {
-        final Path basePath = Paths.get(".").toAbsolutePath().normalize();
-        this.apiKeyPath = Paths.get(basePath + "/apiKeys.json");
+        this.apiKeyPath = Paths.get("./apiKeys.json");
 
         this.setUpStorage();
         this.loadKeysFromStorage();
     }
 
+    private void saveToFile(final ApiKeyStorage apiKeyStorage) {
+        GsonUtilities.saveToJson(this.apiKeyPath, apiKeyStorage);
+    }
+
     private void setUpStorage() {
         if (!this.apiKeyPath.toFile().exists()) {
-            log.info("Created new master api key");
-            GsonUtilities.saveToJson(
-                    this.apiKeyPath,
-                    new ApiKeyStorage(Collections.singletonList(
+            log.info("Create new master api key");
+            this.saveToFile(
+                    new ApiKeyStorage(
                             new ApiKey(
                                     UUID.randomUUID(),
-                                    1_000_000,
-                                    1_000_000,
-                                    new ArrayList<>()
+                                    new RateLimit(1_000_000, 1_000_000),
+                                    Collections.singletonList("SUPERADMIN")
                             )
-                    ))
+                    )
             );
         }
     }
 
     private void loadKeysFromStorage() {
-        final ApiKeyStorage save = GsonUtilities.readJsonFile(this.apiKeyPath, ApiKeyStorage.class);
-        for (final ApiKey apiKey : save.getApiKeys()) {
+        final ApiKeyStorage storage = GsonUtilities.readJsonFile(this.apiKeyPath, ApiKeyStorage.class);
+        // Save the changes
+        this.saveToFile(storage);
+        for (final ApiKey apiKey : storage.getApiKeys()) {
             this.apiKeys.put(apiKey.getKey(), apiKey);
         }
     }
 
-    private boolean isValidUUID(final String input) {
+    private Optional<UUID> getUUID(final String input) {
+        if (input == null || input.isEmpty()) {
+            return Optional.empty();
+        }
+
         try {
-            UUID.fromString(input);
-            return true;
+            return Optional.of(UUID.fromString(input));
         } catch (final IllegalArgumentException ignore) {
-            return false;
+            return Optional.empty();
         }
     }
 
     public void addApiKey(final ApiKey apiKey) {
         this.apiKeys.put(apiKey.getKey(), apiKey);
-        GsonUtilities.saveToJson(this.apiKeyPath, new ApiKeyStorage(new ArrayList<>(this.apiKeys.values())));
+        this.saveToFile(new ApiKeyStorage(this.apiKeys.values()));
     }
 
     public Optional<ApiKey> getApiKey(final String apiKey) {
-        if (this.isValidUUID(apiKey)) {
-            return Optional.ofNullable(this.apiKeys.get(UUID.fromString(apiKey)));
-        }
-        return Optional.empty();
+        return this.getUUID(apiKey)
+                .map(this.apiKeys::get);
     }
 }

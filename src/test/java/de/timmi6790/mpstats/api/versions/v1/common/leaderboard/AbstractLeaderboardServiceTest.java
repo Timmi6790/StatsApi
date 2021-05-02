@@ -150,7 +150,7 @@ public abstract class AbstractLeaderboardServiceTest {
         final Leaderboard leaderboard = this.leaderboardService.getLeaderboardOrCreate(game, stat, board, deprecated);
 
         final Optional<Leaderboard> leaderboardFound = this.leaderboardService.getLeaderboard(
-                game.gameName(),
+                game.getGameName(),
                 stat.statName(),
                 board.getBoardName()
         );
@@ -191,7 +191,7 @@ public abstract class AbstractLeaderboardServiceTest {
 
         final String uniqStatName = generateStatName();
         final Optional<Leaderboard> leaderboardNotFound = this.leaderboardService.getLeaderboard(
-                game.gameName(),
+                game.getGameName(),
                 uniqStatName,
                 board.getBoardName()
         );
@@ -211,7 +211,7 @@ public abstract class AbstractLeaderboardServiceTest {
 
         final String uniqBoardName = generateBoardName();
         final Optional<Leaderboard> leaderboardNotFound = this.leaderboardService.getLeaderboard(
-                game.gameName(),
+                game.getGameName(),
                 stat.statName(),
                 uniqBoardName
         );

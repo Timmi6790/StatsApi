@@ -49,7 +49,7 @@ public abstract class LeaderboardSaveService<P extends Player, R extends Player 
             log.debug(
                     "[{}] Save {}-{}-{} into repository",
                     this.schemaName,
-                    leaderboard.game().gameName(),
+                    leaderboard.game().getGameName(),
                     leaderboard.board().getBoardName(),
                     leaderboard.stat().statName()
             );

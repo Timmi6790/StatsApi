@@ -39,7 +39,7 @@ public class GameService {
         final List<GameCategory> existingCategories = this.gameRepository.geGameCategories();
         this.categories = new LinkedCaseInsensitiveMap<>(existingCategories.size());
         for (final GameCategory category : existingCategories) {
-            this.categories.put(category.categoryName(), category);
+            this.categories.put(category.getCategoryName(), category);
         }
         log.info("[{}] Loaded {} game categories from repository", schema, this.categories.size());
 
@@ -48,7 +48,7 @@ public class GameService {
         final List<Game> existingGames = this.gameRepository.getGames();
         this.games = new LinkedCaseInsensitiveMap<>(existingGames.size());
         for (final Game game : existingGames) {
-            this.games.put(game.gameName(), game);
+            this.games.put(game.getGameName(), game);
         }
         log.info("[{}] Loaded {} games from repository", schema, this.games.size());
     }
@@ -82,7 +82,7 @@ public class GameService {
             }
 
             final GameCategory category = this.gameRepository.createGameCategory(categoryName);
-            this.categories.put(category.categoryName(), category);
+            this.categories.put(category.getCategoryName(), category);
             log.info("[{}] Created new game category {}", this.schema, category);
             return category;
         } finally {
@@ -114,8 +114,8 @@ public class GameService {
             }
 
             final GameCategory gameCategory = this.getCategoryOrCreate(categoryName);
-            final Game game = this.gameRepository.createGame(websiteName, gameName, cleanName, gameCategory.repositoryId());
-            this.games.put(game.gameName(), game);
+            final Game game = this.gameRepository.createGame(websiteName, gameName, cleanName, gameCategory.getRepositoryId());
+            this.games.put(game.getGameName(), game);
             log.info("[{}] Created new game {}", this.schema, game);
             return game;
         } finally {
@@ -129,7 +129,7 @@ public class GameService {
         try {
             final Game game = this.games.remove(gameName);
             if (game != null) {
-                this.gameRepository.removeGame(game.repositoryId());
+                this.gameRepository.removeGame(game.getRepositoryId());
                 log.info("[{}] Removed game {}", this.schema, game);
             }
         } finally {

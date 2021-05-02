@@ -60,7 +60,7 @@ public class LeaderboardService {
     private String getUniqName(final Game game, final Stat stat, final Board board) {
         return String.format(
                 "%s-%s-%s",
-                game.repositoryId(),
+                game.getRepositoryId(),
                 stat.repositoryId(),
                 board.getRepositoryId()
         );

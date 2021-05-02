@@ -46,7 +46,7 @@ public class LeaderboardCacheService<P extends Player> {
         log.debug(
                 "[{}] Add {}-{}-{} to cache",
                 this.schemaName,
-                leaderboard.game().gameName(),
+                leaderboard.game().getGameName(),
                 leaderboard.board().getBoardName(),
                 leaderboard.stat().statName()
         );

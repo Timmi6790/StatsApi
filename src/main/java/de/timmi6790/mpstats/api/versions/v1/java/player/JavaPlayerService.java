@@ -3,8 +3,7 @@ package de.timmi6790.mpstats.api.versions.v1.java.player;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.util.concurrent.Striped;
-import de.timmi6790.mpstats.api.mojang.MojangApi;
-import de.timmi6790.mpstats.api.mojang.models.MojangPlayer;
+import de.timmi6790.api.mojang.MojangApiClient;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.JavaPlayerRepository;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaRepositoryPlayer;
@@ -83,13 +82,8 @@ public class JavaPlayerService implements PlayerService<JavaRepositoryPlayer> {
 
     @Override
     public Optional<JavaRepositoryPlayer> getPlayer(final String playerName) {
-        final Optional<MojangPlayer> mojangPlayerOpt = MojangApi.getPlayer(playerName);
-        if (mojangPlayerOpt.isPresent()) {
-            final MojangPlayer mojangPlayer = mojangPlayerOpt.get();
-            return this.getPlayer(mojangPlayer.name(), mojangPlayer.uuid());
-        }
-
-        return Optional.empty();
+        return MojangApiClient.getInstance().getPlayerInfo(playerName)
+                .flatMap(playerInfo -> this.getPlayer(playerInfo.getName(), playerInfo.getUuid()));
     }
 
     public JavaRepositoryPlayer getPlayerOrCreate(final String playerName, final UUID playerUUID) {

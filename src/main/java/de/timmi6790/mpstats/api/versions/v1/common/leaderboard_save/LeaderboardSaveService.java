@@ -51,7 +51,7 @@ public abstract class LeaderboardSaveService<P extends Player, R extends Player 
                     this.schemaName,
                     leaderboard.game().getGameName(),
                     leaderboard.board().getBoardName(),
-                    leaderboard.stat().statName()
+                    leaderboard.stat().getStatName()
             );
             this.repository.saveLeaderboard(leaderboard, parsedData, saveTime);
         }

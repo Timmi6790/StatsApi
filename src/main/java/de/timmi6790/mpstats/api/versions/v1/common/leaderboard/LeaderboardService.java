@@ -61,7 +61,7 @@ public class LeaderboardService {
         return String.format(
                 "%s-%s-%s",
                 game.getRepositoryId(),
-                stat.repositoryId(),
+                stat.getRepositoryId(),
                 board.getRepositoryId()
         );
     }

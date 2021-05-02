@@ -87,10 +87,10 @@ public abstract class AbstractStatServiceTest {
         assertThat(boardNotFound).isNotPresent();
 
         final Stat createdStat = this.statService.getStatOrCreate(websiteName, boardName, cleanName, isAchievement);
-        assertThat(createdStat.websiteName()).isEqualTo(websiteName);
-        assertThat(createdStat.cleanName()).isEqualTo(cleanName);
-        assertThat(createdStat.statName()).isEqualTo(boardName);
-        assertThat(createdStat.achievement()).isEqualTo(isAchievement);
+        assertThat(createdStat.getWebsiteName()).isEqualTo(websiteName);
+        assertThat(createdStat.getCleanName()).isEqualTo(cleanName);
+        assertThat(createdStat.getStatName()).isEqualTo(boardName);
+        assertThat(createdStat.isAchievement()).isEqualTo(isAchievement);
 
         final Optional<Stat> boardFound = this.statService.getStat(boardName);
         assertThat(boardFound)

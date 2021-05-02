@@ -35,7 +35,7 @@ public class StatService {
         final List<Stat> existingStats = this.javaStatRepository.getStats();
         this.stats = new LinkedCaseInsensitiveMap<>(existingStats.size());
         for (final Stat stat : existingStats) {
-            this.stats.put(stat.statName(), stat);
+            this.stats.put(stat.getStatName(), stat);
         }
         log.info("[{}] Loaded {} stats from repository", schema, this.stats.size());
     }
@@ -68,7 +68,7 @@ public class StatService {
             }
 
             final Stat stat = this.javaStatRepository.createStat(websiteName, statName, cleanName, isAchievement);
-            this.stats.put(stat.statName(), stat);
+            this.stats.put(stat.getStatName(), stat);
             log.info("[{}] Created new stat {}", this.schema, stat);
             return stat;
         } finally {
@@ -82,7 +82,7 @@ public class StatService {
         try {
             final Stat stat = this.stats.remove(statName);
             if (stat != null) {
-                this.javaStatRepository.removeStat(stat.repositoryId());
+                this.javaStatRepository.removeStat(stat.getRepositoryId());
                 log.info("[{}] Removed stat {}", this.schema, stat);
             }
         } finally {

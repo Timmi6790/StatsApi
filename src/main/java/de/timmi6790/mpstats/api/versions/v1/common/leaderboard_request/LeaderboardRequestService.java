@@ -104,7 +104,7 @@ public abstract class LeaderboardRequestService<P extends Player> {
         for (final Leaderboard leaderboard : leaderboards) {
             this.retrieveLeaderboard(
                     leaderboard.game().getWebsiteName(),
-                    leaderboard.stat().websiteName(),
+                    leaderboard.stat().getWebsiteName(),
                     leaderboard.board().getWebsiteName()
             );
         }

@@ -48,7 +48,7 @@ public class LeaderboardCacheService<P extends Player> {
                 this.schemaName,
                 leaderboard.game().getGameName(),
                 leaderboard.board().getBoardName(),
-                leaderboard.stat().statName()
+                leaderboard.stat().getStatName()
         );
         this.hashOperations.set(
                 this.getSaveCacheId(leaderboard),

@@ -151,7 +151,7 @@ public abstract class AbstractLeaderboardServiceTest {
 
         final Optional<Leaderboard> leaderboardFound = this.leaderboardService.getLeaderboard(
                 game.getGameName(),
-                stat.statName(),
+                stat.getStatName(),
                 board.getBoardName()
         );
         assertThat(leaderboardFound)
@@ -172,7 +172,7 @@ public abstract class AbstractLeaderboardServiceTest {
         final String uniqGameName = generateGameName();
         final Optional<Leaderboard> leaderboardNotFound = this.leaderboardService.getLeaderboard(
                 uniqGameName,
-                stat.statName(),
+                stat.getStatName(),
                 board.getBoardName()
         );
         assertThat(leaderboardNotFound)
@@ -212,7 +212,7 @@ public abstract class AbstractLeaderboardServiceTest {
         final String uniqBoardName = generateBoardName();
         final Optional<Leaderboard> leaderboardNotFound = this.leaderboardService.getLeaderboard(
                 game.getGameName(),
-                stat.statName(),
+                stat.getStatName(),
                 uniqBoardName
         );
         assertThat(leaderboardNotFound)

@@ -149,7 +149,11 @@ public abstract class AbstractLeaderboardServiceTest {
         // Create leaderboard
         final Leaderboard leaderboard = this.leaderboardService.getLeaderboardOrCreate(game, stat, board, deprecated);
 
-        final Optional<Leaderboard> leaderboardFound = this.leaderboardService.getLeaderboard(game.gameName(), stat.statName(), board.boardName());
+        final Optional<Leaderboard> leaderboardFound = this.leaderboardService.getLeaderboard(
+                game.gameName(),
+                stat.statName(),
+                board.getBoardName()
+        );
         assertThat(leaderboardFound)
                 .isPresent()
                 .contains(leaderboard);
@@ -169,7 +173,7 @@ public abstract class AbstractLeaderboardServiceTest {
         final Optional<Leaderboard> leaderboardNotFound = this.leaderboardService.getLeaderboard(
                 uniqGameName,
                 stat.statName(),
-                board.boardName()
+                board.getBoardName()
         );
         assertThat(leaderboardNotFound)
                 .isNotPresent();
@@ -189,7 +193,7 @@ public abstract class AbstractLeaderboardServiceTest {
         final Optional<Leaderboard> leaderboardNotFound = this.leaderboardService.getLeaderboard(
                 game.gameName(),
                 uniqStatName,
-                board.boardName()
+                board.getBoardName()
         );
         assertThat(leaderboardNotFound)
                 .isNotPresent();

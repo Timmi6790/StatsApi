@@ -39,7 +39,7 @@ public abstract class LeaderboardRequestService<P extends Player> {
         this.estimatedResultSize = estimatedResultSize;
 
         this.httpClient = new OkHttpClient.Builder()
-                .connectTimeout(15, TimeUnit.SECONDS)
+                .connectTimeout(45, TimeUnit.SECONDS)
                 .addInterceptor(chain -> {
                     final Request originalRequest = chain.request();
                     final Request requestWithUserAgent = originalRequest.newBuilder()
@@ -105,7 +105,7 @@ public abstract class LeaderboardRequestService<P extends Player> {
             this.retrieveLeaderboard(
                     leaderboard.game().websiteName(),
                     leaderboard.stat().websiteName(),
-                    leaderboard.board().websiteName()
+                    leaderboard.board().getWebsiteName()
             );
         }
     }

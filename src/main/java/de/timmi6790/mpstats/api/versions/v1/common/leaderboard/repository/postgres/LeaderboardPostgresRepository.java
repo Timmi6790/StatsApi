@@ -79,7 +79,7 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
                 handle.createQuery(this.getLeaderboard)
                         .bind(GAME_ID, game.repositoryId())
                         .bind("statId", stat.repositoryId())
-                        .bind("boardId", board.repositoryId())
+                        .bind("boardId", board.getRepositoryId())
                         .map(this.leaderboardMapper)
                         .findFirst()
         );
@@ -91,7 +91,7 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
                 handle.createUpdate(this.insertLeaderboard)
                         .bind(GAME_ID, game.repositoryId())
                         .bind("statId", stat.repositoryId())
-                        .bind("boardId", board.repositoryId())
+                        .bind("boardId", board.getRepositoryId())
                         .bind("deprecated", deprecated)
                         .execute()
         );

@@ -47,7 +47,7 @@ public class LeaderboardCacheService<P extends Player> {
                 "[{}] Add {}-{}-{} to cache",
                 this.schemaName,
                 leaderboard.game().gameName(),
-                leaderboard.board().boardName(),
+                leaderboard.board().getBoardName(),
                 leaderboard.stat().statName()
         );
         this.hashOperations.set(

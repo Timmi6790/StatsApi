@@ -15,7 +15,7 @@ public class BoardReducer implements LinkedHashMapRowReducer<Integer, Board> {
         );
 
         if (rowView.getColumn("alias_name", String.class) != null) {
-            board.aliasNames().add(rowView.getColumn("alias_name", String.class));
+            board.getAliasNames().add(rowView.getColumn("alias_name", String.class));
         }
     }
 }

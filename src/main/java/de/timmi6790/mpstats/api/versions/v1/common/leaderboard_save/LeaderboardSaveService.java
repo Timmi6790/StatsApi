@@ -50,7 +50,7 @@ public abstract class LeaderboardSaveService<P extends Player, R extends Player 
                     "[{}] Save {}-{}-{} into repository",
                     this.schemaName,
                     leaderboard.game().gameName(),
-                    leaderboard.board().boardName(),
+                    leaderboard.board().getBoardName(),
                     leaderboard.stat().statName()
             );
             this.repository.saveLeaderboard(leaderboard, parsedData, saveTime);

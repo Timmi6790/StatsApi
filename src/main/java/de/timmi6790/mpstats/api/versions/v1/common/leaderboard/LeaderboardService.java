@@ -62,7 +62,7 @@ public class LeaderboardService {
                 "%s-%s-%s",
                 game.repositoryId(),
                 stat.repositoryId(),
-                board.repositoryId()
+                board.getRepositoryId()
         );
     }
 

@@ -35,7 +35,7 @@ public class BoardService {
         final List<Board> existingBoards = this.boardRepository.getBoards();
         this.boards = new LinkedCaseInsensitiveMap<>(existingBoards.size());
         for (final Board board : existingBoards) {
-            this.boards.put(board.boardName(), board);
+            this.boards.put(board.getBoardName(), board);
         }
         log.info("[{}] Loaded {} boards from repository", schema, this.boards.size());
     }
@@ -69,7 +69,7 @@ public class BoardService {
 
             final Board board = this.boardRepository.createBoard(boardName, websiteName, cleanName, updateTime);
             log.info("[{}] Created board {}", this.schema, board);
-            this.boards.put(board.boardName(), board);
+            this.boards.put(board.getBoardName(), board);
             return board;
         } finally {
             lock.unlock();
@@ -82,7 +82,7 @@ public class BoardService {
         try {
             final Board board = this.boards.remove(boardName);
             if (board != null) {
-                this.boardRepository.removeBoard(board.repositoryId());
+                this.boardRepository.removeBoard(board.getRepositoryId());
                 log.info("[{}] Deleted board {}", this.schema, board);
             }
         } finally {

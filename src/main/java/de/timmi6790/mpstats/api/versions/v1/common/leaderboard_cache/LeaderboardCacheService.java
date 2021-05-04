@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import de.timmi6790.mpstats.api.redis.ByteRedisTemplate;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_cache.models.LeaderboardSaveCache;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
+import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -21,8 +21,8 @@ import java.util.concurrent.TimeUnit;
 public class LeaderboardCacheService<P extends Player> {
     private final String schemaName;
 
-    private final RedisTemplate<String, LeaderboardSaveCache<P>> redisTemplate;
-    private final ValueOperations<String, LeaderboardSaveCache<P>> hashOperations;
+    private final RedisTemplate<String, LeaderboardSave<P>> redisTemplate;
+    private final ValueOperations<String, LeaderboardSave<P>> hashOperations;
 
     protected LeaderboardCacheService(final LettuceConnectionFactory redisConnectionFactory,
                                       final String schemaName,
@@ -30,7 +30,7 @@ public class LeaderboardCacheService<P extends Player> {
         this.schemaName = schemaName;
 
         final JavaType typeParameter = TypeFactory.defaultInstance().constructParametricType(
-                LeaderboardSaveCache.class,
+                LeaderboardSave.class,
                 TypeFactory.defaultInstance().constructType(playerClass)
         );
         this.redisTemplate = new ByteRedisTemplate<>(redisConnectionFactory, typeParameter);
@@ -54,7 +54,7 @@ public class LeaderboardCacheService<P extends Player> {
         // Let them expire after a long time to prevent zombie data
         this.hashOperations.set(
                 this.getSaveCacheId(leaderboard),
-                new LeaderboardSaveCache<>(
+                new LeaderboardSave<>(
                         saveTime,
                         entries
                 ),
@@ -62,7 +62,7 @@ public class LeaderboardCacheService<P extends Player> {
         );
     }
 
-    public Optional<LeaderboardSaveCache<P>> retrieveLeaderboardEntryPosition(final Leaderboard leaderboard) {
+    public Optional<LeaderboardSave<P>> retrieveLeaderboardEntryPosition(final Leaderboard leaderboard) {
         return Optional.ofNullable(
                 this.hashOperations.get(
                         this.getSaveCacheId(leaderboard)

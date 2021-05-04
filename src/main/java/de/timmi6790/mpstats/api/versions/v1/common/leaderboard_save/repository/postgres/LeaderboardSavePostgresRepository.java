@@ -52,7 +52,7 @@ public class LeaderboardSavePostgresRepository<R extends Player & RepositoryPlay
     private int insertSaveId(final Leaderboard leaderboard, final LocalDateTime saveTime) {
         return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.insertLeaderboardSaveId)
-                        .bind("leaderboardId", leaderboard.repositoryId())
+                        .bind("leaderboardId", leaderboard.getRepositoryId())
                         .bind("saveTime", saveTime)
                         .mapTo(int.class)
                         .first()
@@ -63,7 +63,7 @@ public class LeaderboardSavePostgresRepository<R extends Player & RepositoryPlay
                                                                final LocalDateTime saveTime) {
         return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getLeaderboardSaveId)
-                        .bind("leaderboardId", leaderboard.repositoryId())
+                        .bind("leaderboardId", leaderboard.getRepositoryId())
                         .bind("requestedTime", saveTime)
                         .mapTo(LeaderboardSaveData.class)
                         .findFirst()
@@ -92,7 +92,7 @@ public class LeaderboardSavePostgresRepository<R extends Player & RepositoryPlay
     public List<LocalDateTime> getLeaderboardSaveTimes(final Leaderboard leaderboard) {
         return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getLeaderboardSaveTimes)
-                        .bind("leaderboardId", leaderboard.repositoryId())
+                        .bind("leaderboardId", leaderboard.getRepositoryId())
                         .mapTo(LocalDateTime.class)
                         .list()
         );

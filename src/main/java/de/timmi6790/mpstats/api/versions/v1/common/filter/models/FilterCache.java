@@ -13,7 +13,7 @@ public class FilterCache {
     private final Map<Integer, List<Data>> filters = new ConcurrentHashMap<>();
 
     public void addFilter(final Filter<?> filter) {
-        this.filters.computeIfAbsent(filter.leaderboard().repositoryId(), k -> Collections.synchronizedList(new ArrayList<>()))
+        this.filters.computeIfAbsent(filter.leaderboard().getRepositoryId(), k -> Collections.synchronizedList(new ArrayList<>()))
                 .add(
                         new Data(
                                 filter.repositoryId(),
@@ -25,7 +25,7 @@ public class FilterCache {
     }
 
     private List<Data> getFilterDataList(final Leaderboard leaderboard) {
-        return this.filters.get(leaderboard.repositoryId());
+        return this.filters.get(leaderboard.getRepositoryId());
     }
 
     private Optional<Data> getFilterData(final Leaderboard leaderboard, final LocalDateTime timestamp) {
@@ -44,7 +44,7 @@ public class FilterCache {
     }
 
     public void removeFilter(final Filter<?> filter) {
-        final int leaderBoardId = filter.leaderboard().repositoryId();
+        final int leaderBoardId = filter.leaderboard().getRepositoryId();
         final List<Data> foundFilters = this.filters.get(leaderBoardId);
         if (foundFilters != null) {
             foundFilters.removeIf(f -> f.filterId() == filter.repositoryId());
@@ -67,7 +67,7 @@ public class FilterCache {
     }
 
     public boolean isFiltered(final Leaderboard leaderboard) {
-        return this.filters.containsKey(leaderboard.repositoryId());
+        return this.filters.containsKey(leaderboard.getRepositoryId());
     }
 
     public int size() {

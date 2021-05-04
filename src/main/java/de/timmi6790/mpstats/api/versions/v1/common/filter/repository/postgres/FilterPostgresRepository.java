@@ -90,7 +90,7 @@ public class FilterPostgresRepository<P extends Player & RepositoryPlayer> exten
     public List<Filter<P>> getFilters(final Leaderboard leaderboard) {
         return this.getDatabase().withHandle(handler ->
                 handler.createQuery(this.getFiltersByLeaderboardId)
-                        .bind(LEADERBOARD_ID, leaderboard.repositoryId())
+                        .bind(LEADERBOARD_ID, leaderboard.getRepositoryId())
                         .map(this.filterMapper)
                         .list()
         );
@@ -101,7 +101,7 @@ public class FilterPostgresRepository<P extends Player & RepositoryPlayer> exten
         return this.getDatabase().withHandle(handler ->
                 handler.createQuery(this.getFiltersByPlayerLeaderboard)
                         .bind(PLAYER_ID, player.getRepositoryId())
-                        .bind(LEADERBOARD_ID, leaderboard.repositoryId())
+                        .bind(LEADERBOARD_ID, leaderboard.getRepositoryId())
                         .map(this.filterMapper)
                         .list()
         );
@@ -114,7 +114,7 @@ public class FilterPostgresRepository<P extends Player & RepositoryPlayer> exten
         return this.getDatabase().withHandle(handler ->
                 handler.createQuery(this.getFiltersByPlayerLeaderboardTime)
                         .bind(PLAYER_ID, player.getRepositoryId())
-                        .bind(LEADERBOARD_ID, leaderboard.repositoryId())
+                        .bind(LEADERBOARD_ID, leaderboard.getRepositoryId())
                         .bind("timestamp", timestamp)
                         .map(this.filterMapper)
                         .list()
@@ -130,7 +130,7 @@ public class FilterPostgresRepository<P extends Player & RepositoryPlayer> exten
         return this.getDatabase().withHandle(handler ->
                 handler.createQuery(this.insertFilter)
                         .bind(PLAYER_ID, player.getRepositoryId())
-                        .bind(LEADERBOARD_ID, leaderboard.repositoryId())
+                        .bind(LEADERBOARD_ID, leaderboard.getRepositoryId())
                         .bind("filterReason", reason)
                         .bind("filterStart", filterStart)
                         .bind("filterEnd", filterEnd)

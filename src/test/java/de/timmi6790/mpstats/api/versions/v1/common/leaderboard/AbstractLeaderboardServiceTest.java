@@ -133,7 +133,7 @@ public abstract class AbstractLeaderboardServiceTest {
         // Create leaderboard
         final Leaderboard leaderboard = this.leaderboardService.getLeaderboardOrCreate(game, stat, board, deprecated);
 
-        final Optional<Leaderboard> leaderboardFound = this.leaderboardService.getLeaderboard(leaderboard.repositoryId());
+        final Optional<Leaderboard> leaderboardFound = this.leaderboardService.getLeaderboard(leaderboard.getRepositoryId());
         assertThat(leaderboardFound)
                 .isPresent()
                 .contains(leaderboard);
@@ -230,10 +230,10 @@ public abstract class AbstractLeaderboardServiceTest {
         final Leaderboard leaderboard = this.leaderboardService.getLeaderboardOrCreate(game, stat, board, deprecated);
 
         // Verify content
-        assertThat(leaderboard.game()).isEqualTo(game);
-        assertThat(leaderboard.stat()).isEqualTo(stat);
-        assertThat(leaderboard.board()).isEqualTo(board);
-        assertThat(leaderboard.deprecated()).isEqualTo(deprecated);
+        assertThat(leaderboard.getGame()).isEqualTo(game);
+        assertThat(leaderboard.getStat()).isEqualTo(stat);
+        assertThat(leaderboard.getBoard()).isEqualTo(board);
+        assertThat(leaderboard.isDeprecated()).isEqualTo(deprecated);
 
         // Verify repository
         final Optional<Leaderboard> leaderboardRepositoryOpt = this.leaderboardRepository.getLeaderboard(game, stat, board);

@@ -26,6 +26,15 @@ public class LeaderboardUtilities {
         final Board board = BoardUtilities.generateBoard(boardService);
         final boolean deprecated = true;
 
+        return generateLeaderboard(leaderboardService, game, stat, board);
+    }
+
+    public static Leaderboard generateLeaderboard(final LeaderboardService leaderboardService,
+                                                  final Game game,
+                                                  final Stat stat,
+                                                  final Board board) {
+        final boolean deprecated = true;
+
         return leaderboardService.getLeaderboardOrCreate(game, stat, board, deprecated);
     }
 }

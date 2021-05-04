@@ -77,7 +77,7 @@ public class LeaderboardService {
     }
 
     private void addLeaderboardToCache(final Leaderboard leaderboard) {
-        final String uniqName = this.getUniqName(leaderboard.game(), leaderboard.stat(), leaderboard.board());
+        final String uniqName = this.getUniqName(leaderboard.getGame(), leaderboard.getStat(), leaderboard.getBoard());
         this.leaderboardCache.put(uniqName, leaderboard);
         log.debug("[{}] Add leaderboard to cache {}", this.schema, leaderboard);
     }

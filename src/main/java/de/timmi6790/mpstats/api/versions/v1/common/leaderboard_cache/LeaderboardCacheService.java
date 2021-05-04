@@ -37,7 +37,7 @@ public class LeaderboardCacheService<P extends Player> {
     }
 
     protected String getSaveCacheId(final Leaderboard leaderboard) {
-        return "SAVE-" + this.schemaName + "-" + leaderboard.repositoryId();
+        return "SAVE-" + this.schemaName + "-" + leaderboard.getRepositoryId();
     }
 
     public void saveLeaderboardEntryPosition(final Leaderboard leaderboard,
@@ -46,9 +46,9 @@ public class LeaderboardCacheService<P extends Player> {
         log.debug(
                 "[{}] Add {}-{}-{} to cache",
                 this.schemaName,
-                leaderboard.game().getGameName(),
-                leaderboard.board().getBoardName(),
-                leaderboard.stat().getStatName()
+                leaderboard.getGame().getGameName(),
+                leaderboard.getBoard().getBoardName(),
+                leaderboard.getStat().getStatName()
         );
         this.hashOperations.set(
                 this.getSaveCacheId(leaderboard),

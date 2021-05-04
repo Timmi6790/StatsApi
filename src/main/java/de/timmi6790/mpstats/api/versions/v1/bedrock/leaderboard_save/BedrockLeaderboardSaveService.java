@@ -1,6 +1,5 @@
 package de.timmi6790.mpstats.api.versions.v1.bedrock.leaderboard_save;
 
-import com.google.common.collect.Lists;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.BedrockPlayerService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockRepositoryPlayer;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.LeaderboardSaveService;
@@ -11,7 +10,9 @@ import org.jdbi.v3.core.Jdbi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BedrockLeaderboardSaveService extends LeaderboardSaveService<Player, BedrockRepositoryPlayer> {
@@ -24,18 +25,17 @@ public class BedrockLeaderboardSaveService extends LeaderboardSaveService<Player
     protected List<PlayerData> getPlayerData(final List<LeaderboardEntry<Player>> leaderboardDataList) {
         final BedrockPlayerService playerService = (BedrockPlayerService) this.getPlayerService();
 
-        final List<PlayerData> data = Lists.newArrayListWithCapacity(leaderboardDataList.size());
-        for (final LeaderboardEntry<Player> leaderboardData : leaderboardDataList) {
-            final Player player = leaderboardData.getPlayer();
-            final BedrockRepositoryPlayer repositoryPlayer = playerService.getPlayerOrCreate(player.getPlayerName());
+        return leaderboardDataList.parallelStream().map(leaderboardData -> {
+                    final Player player = leaderboardData.getPlayer();
+                    final BedrockRepositoryPlayer repositoryPlayer = playerService.getPlayerOrCreate(player.getPlayerName());
 
-            data.add(
-                    new PlayerData(
+                    return new PlayerData(
                             repositoryPlayer.getRepositoryId(),
                             leaderboardData.getScore()
-                    )
-            );
-        }
-        return data;
+                    );
+                }
+        )
+                .sorted(Comparator.comparing(PlayerData::score, Comparator.reverseOrder()))
+                .collect(Collectors.toList());
     }
 }

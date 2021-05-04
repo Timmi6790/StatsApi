@@ -42,9 +42,7 @@ public abstract class LeaderboardSaveService<P extends Player, R extends Player 
     public void saveLeaderboardEntries(final Leaderboard leaderboard,
                                        final List<LeaderboardEntry<P>> leaderboardData,
                                        final LocalDateTime saveTime) {
-        System.out.println("Start");
         final List<PlayerData> parsedData = this.getPlayerData(leaderboardData);
-        System.out.println("Parsed");
         if (!parsedData.isEmpty()) {
             log.debug(
                     "[{}] Save {}-{}-{} into repository",

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import de.timmi6790.mpstats.api.apikey.ApiKeyService;
+import de.timmi6790.mpstats.api.ratelimit.RateLimitService;
 import de.timmi6790.mpstats.api.utilities.ApiKeyUtilities;
 import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
@@ -28,6 +29,9 @@ public abstract class AbstractRestTest extends AbstractSpringBootTest {
 
     @Autowired
     protected ApiKeyService apiKeyService;
+
+    @Autowired
+    protected RateLimitService rateLimitService;
 
     protected MockMvcRequestSpecification getWithSuperAdminPrivileges() {
         return this.getWithApiKey(ApiKeyUtilities.getSuperAdminApiKey(this.apiKeyService));
@@ -79,5 +83,6 @@ public abstract class AbstractRestTest extends AbstractSpringBootTest {
     @BeforeEach
     public void setUp() {
         RestAssuredMockMvc.mockMvc(this.mockMvc);
+        this.rateLimitService.invalidateCache();
     }
 }

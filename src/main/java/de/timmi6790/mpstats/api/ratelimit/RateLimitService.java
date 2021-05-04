@@ -45,6 +45,10 @@ public class RateLimitService {
         return this.apiKeyService.getApiKey(apiKey);
     }
 
+    public void invalidateCache() {
+        this.cache.invalidateAll();
+    }
+
     /**
      * Gets the current cooldown bucket for the input. If the api key exists and is valid it will return a bucket based
      * on the apiKey. Otherwise, the bucket is based on the ip.

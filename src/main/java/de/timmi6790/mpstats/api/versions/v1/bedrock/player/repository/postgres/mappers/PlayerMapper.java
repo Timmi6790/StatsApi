@@ -11,8 +11,8 @@ public class PlayerMapper implements RowMapper<BedrockRepositoryPlayer> {
     @Override
     public BedrockRepositoryPlayer map(final ResultSet rs, final StatementContext ctx) throws SQLException {
         return new BedrockRepositoryPlayer(
-                rs.getString("player_name"),
-                rs.getInt("player_id")
+                rs.getInt("player_id"),
+                rs.getString("player_name")
         );
     }
 }

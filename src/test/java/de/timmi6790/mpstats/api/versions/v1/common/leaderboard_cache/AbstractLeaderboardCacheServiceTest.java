@@ -7,8 +7,8 @@ import de.timmi6790.mpstats.api.versions.v1.common.board.BoardService;
 import de.timmi6790.mpstats.api.versions.v1.common.game.GameService;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.LeaderboardService;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_cache.models.LeaderboardSaveCache;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
+import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.StatService;
 import org.junit.jupiter.api.Test;
@@ -66,10 +66,10 @@ public abstract class AbstractLeaderboardCacheServiceTest<P extends Player> exte
         // Insert
         this.getLeaderboardCacheService().saveLeaderboardEntryPosition(leaderboard, entries, saveTime);
 
-        final Optional<LeaderboardSaveCache<P>> cacheFound = this.getLeaderboardCacheService().retrieveLeaderboardEntryPosition(leaderboard);
+        final Optional<LeaderboardSave<P>> cacheFound = this.getLeaderboardCacheService().retrieveLeaderboardEntryPosition(leaderboard);
         assertThat(cacheFound).isPresent();
 
-        final LeaderboardSaveCache<P> cache = cacheFound.get();
+        final LeaderboardSave<P> cache = cacheFound.get();
         assertThat(cache.getEntries()).isEqualTo(entries);
         assertThat(cache.getSaveTime()).isEqualTo(saveTime);
     }

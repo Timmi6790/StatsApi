@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Log4j2
-public abstract class LeaderboardSaveService<P extends Player, R extends Player & RepositoryPlayer> {
+public abstract class LeaderboardSaveService<P extends Player, R extends RepositoryPlayer> {
     @Getter(AccessLevel.PROTECTED)
     private final PlayerService<R> playerService;
     @Getter(AccessLevel.PROTECTED)

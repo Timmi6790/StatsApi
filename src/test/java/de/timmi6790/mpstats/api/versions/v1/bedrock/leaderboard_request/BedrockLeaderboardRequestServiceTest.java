@@ -1,8 +1,8 @@
 package de.timmi6790.mpstats.api.versions.v1.bedrock.leaderboard_request;
 
+import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockPlayer;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.AbstractLeaderboardRequestServiceTest;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
-import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -10,14 +10,14 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class BedrockLeaderboardRequestServiceTest extends AbstractLeaderboardRequestServiceTest<Player> {
+class BedrockLeaderboardRequestServiceTest extends AbstractLeaderboardRequestServiceTest<BedrockPlayer> {
     private static final String BASE_PATH = "leaderboard_request/bedrock/";
 
     public BedrockLeaderboardRequestServiceTest() {
         super(BedrockLeaderboardRequestService::new);
     }
 
-    private void validatePlayerData(final LeaderboardEntry<Player> data,
+    private void validatePlayerData(final LeaderboardEntry<BedrockPlayer> data,
                                     final String requiredName,
                                     final long requiredScore) {
         assertThat(data.getPlayer().getPlayerName()).isEqualTo(requiredName);
@@ -26,16 +26,16 @@ class BedrockLeaderboardRequestServiceTest extends AbstractLeaderboardRequestSer
 
     @Test
     void retrieveLeaderboard_empty() {
-        final Optional<List<LeaderboardEntry<Player>>> parsedLeaderboardOpt = this.retrieveLeaderboard(BASE_PATH + "0_entries");
+        final Optional<List<LeaderboardEntry<BedrockPlayer>>> parsedLeaderboardOpt = this.retrieveLeaderboard(BASE_PATH + "0_entries");
         assertThat(parsedLeaderboardOpt).isEmpty();
     }
 
     @Test
     void retrieveLeaderboard_big() {
-        final Optional<List<LeaderboardEntry<Player>>> parsedLeaderboardOpt = this.retrieveLeaderboard(BASE_PATH + "100_entries");
+        final Optional<List<LeaderboardEntry<BedrockPlayer>>> parsedLeaderboardOpt = this.retrieveLeaderboard(BASE_PATH + "100_entries");
         assertThat(parsedLeaderboardOpt).isPresent();
 
-        final List<LeaderboardEntry<Player>> parsedLeaderboard = parsedLeaderboardOpt.get();
+        final List<LeaderboardEntry<BedrockPlayer>> parsedLeaderboard = parsedLeaderboardOpt.get();
         assertThat(parsedLeaderboard)
                 .hasSize(100);
 

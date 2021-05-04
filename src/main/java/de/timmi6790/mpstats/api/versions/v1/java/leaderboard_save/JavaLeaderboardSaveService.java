@@ -33,6 +33,7 @@ public class JavaLeaderboardSaveService extends LeaderboardSaveService<JavaPlaye
 
                     return new PlayerData(
                             repositoryPlayer.getRepositoryId(),
+                            player.getPlayerName(),
                             leaderboardData.getScore()
                     );
                 }

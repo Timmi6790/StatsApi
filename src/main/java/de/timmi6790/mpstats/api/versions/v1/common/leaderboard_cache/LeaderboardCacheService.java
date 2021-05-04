@@ -15,6 +15,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
 public class LeaderboardCacheService<P extends Player> {
@@ -50,12 +51,14 @@ public class LeaderboardCacheService<P extends Player> {
                 leaderboard.getBoard().getBoardName(),
                 leaderboard.getStat().getStatName()
         );
+        // Let them expire after a long time to prevent zombie data
         this.hashOperations.set(
                 this.getSaveCacheId(leaderboard),
                 new LeaderboardSaveCache<>(
                         saveTime,
                         entries
-                )
+                ),
+                10, TimeUnit.DAYS
         );
     }
 

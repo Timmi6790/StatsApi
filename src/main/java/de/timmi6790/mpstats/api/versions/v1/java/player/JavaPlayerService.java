@@ -22,7 +22,7 @@ public class JavaPlayerService implements PlayerService<JavaRepositoryPlayer> {
     @Getter(AccessLevel.PROTECTED)
     private final JavaPlayerRepository playerRepository;
 
-    private final Striped<Lock> playerLock = Striped.lock(128);
+    private final Striped<Lock> playerLock = Striped.lock(1_024);
     private final Cache<UUID, JavaRepositoryPlayer> playerCache = Caffeine.newBuilder()
             .expireAfterAccess(7, TimeUnit.MINUTES)
             .build();

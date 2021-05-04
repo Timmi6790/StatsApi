@@ -20,7 +20,7 @@ public class BedrockPlayerService implements PlayerService<BedrockRepositoryPlay
     @Getter(AccessLevel.PROTECTED)
     private final BedrockPlayerRepository playerRepository;
 
-    private final Striped<Lock> playerLock = Striped.lock(128);
+    private final Striped<Lock> playerLock = Striped.lock(512);
     private final Cache<String, BedrockRepositoryPlayer> playerCache = Caffeine.newBuilder()
             .expireAfterAccess(7, TimeUnit.MINUTES)
             .build();

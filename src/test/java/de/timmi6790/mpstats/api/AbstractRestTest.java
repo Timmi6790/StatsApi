@@ -2,6 +2,7 @@ package de.timmi6790.mpstats.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.reflect.TypeToken;
 import de.timmi6790.mpstats.api.apikey.ApiKeyService;
 import de.timmi6790.mpstats.api.ratelimit.RateLimitService;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public abstract class AbstractRestTest extends AbstractSpringBootTest {
     protected static final String API_KEY_HEADER = "X-Api-Key";
 
-    protected final Gson gson = new GsonBuilder().create();
+    protected final JsonDeserializer<LocalDateTime> localDateTimeJsonSerializer = (jsonElement, type, jsonDeserializationContext) -> LocalDateTime.parse(jsonElement.getAsString());
+    protected final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(LocalDateTime.class, this.localDateTimeJsonSerializer)
+            .create();
 
     @Autowired
     protected ApiKeyService apiKeyService;

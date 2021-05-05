@@ -25,7 +25,7 @@ public class LeaderboardMapper implements RowMapper<Leaderboard> {
                 this.statService.getStat(rs.getString("stat_name")).orElseThrow(RuntimeException::new),
                 this.boardService.getBoard(rs.getString("board_name")).orElseThrow(RuntimeException::new),
                 rs.getBoolean("deprecated"),
-                rs.getTimestamp("last_update")
+                rs.getTimestamp("last_update").toLocalDateTime()
         );
     }
 }

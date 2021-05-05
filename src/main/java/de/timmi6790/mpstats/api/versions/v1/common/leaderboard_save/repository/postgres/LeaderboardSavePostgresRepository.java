@@ -10,7 +10,6 @@ import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
-import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlayer;
 import de.timmi6790.mpstats.api.versions.v1.common.utilities.PostgresRepository;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
@@ -19,8 +18,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public class LeaderboardSavePostgresRepository<R extends Player & RepositoryPlayer> extends PostgresRepository implements LeaderboardSaveRepository<R> {
-    private final LeaderboardEntryMapper<R> leaderboardEntryMapper;
+public class LeaderboardSavePostgresRepository<P extends Player> extends PostgresRepository implements LeaderboardSaveRepository<P> {
+    private final LeaderboardEntryMapper<P> leaderboardEntryMapper;
 
     private final String insertLeaderboardSaveId;
     private final String insertLeaderboardSave;
@@ -32,7 +31,7 @@ public class LeaderboardSavePostgresRepository<R extends Player & RepositoryPlay
 
     public LeaderboardSavePostgresRepository(final Jdbi database,
                                              final String schema,
-                                             final PlayerService<R> playerService) {
+                                             final PlayerService<P> playerService) {
         super(database, schema);
 
         this.getDatabase().registerRowMapper(new LeaderboardSaveDataMapper());
@@ -80,8 +79,8 @@ public class LeaderboardSavePostgresRepository<R extends Player & RepositoryPlay
             final PreparedBatch batch = handle.prepareBatch(this.insertLeaderboardSave);
             for (final PlayerData entry : entries) {
                 batch.bind("leaderboardSaveId", saveId);
-                batch.bind("playerId", entry.getRepositoryId());
-                batch.bind("score", entry.score());
+                batch.bind("playerId", entry.getPlayerRepositoryId());
+                batch.bind("score", entry.getScore());
                 batch.add();
             }
             batch.execute();
@@ -99,7 +98,7 @@ public class LeaderboardSavePostgresRepository<R extends Player & RepositoryPlay
     }
 
     @Override
-    public Optional<LeaderboardSave<R>> getLeaderboardEntries(final Leaderboard leaderboard,
+    public Optional<LeaderboardSave<P>> getLeaderboardEntries(final Leaderboard leaderboard,
                                                               final LocalDateTime saveTime) {
         final Optional<LeaderboardSaveData> saveDataOpt = this.getLeaderboardSaveId(leaderboard, saveTime);
         if (saveDataOpt.isEmpty()) {
@@ -107,7 +106,7 @@ public class LeaderboardSavePostgresRepository<R extends Player & RepositoryPlay
         }
 
         final LeaderboardSaveData saveData = saveDataOpt.get();
-        final List<LeaderboardEntry<R>> leaderboardEntries = this.getDatabase().withHandle(handle ->
+        final List<LeaderboardEntry<P>> leaderboardEntries = this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getLeaderboardEntries)
                         .bind("saveId", saveData.saveId())
                         .map(this.leaderboardEntryMapper)

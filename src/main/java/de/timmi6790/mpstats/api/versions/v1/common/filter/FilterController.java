@@ -6,7 +6,6 @@ import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.LeaderboardServic
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
-import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlayer;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,7 +18,7 @@ import java.util.Optional;
 
 @AllArgsConstructor
 @Getter(AccessLevel.PROTECTED)
-public class FilterController<P extends Player & RepositoryPlayer, S extends PlayerService<P>> {
+public class FilterController<P extends Player, S extends PlayerService<P>> {
     private final FilterService<P, S> filterService;
 
     protected LeaderboardService getLeaderboardService() {

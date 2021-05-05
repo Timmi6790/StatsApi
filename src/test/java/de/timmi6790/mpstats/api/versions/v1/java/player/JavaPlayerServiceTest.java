@@ -2,7 +2,7 @@ package de.timmi6790.mpstats.api.versions.v1.java.player;
 
 import de.timmi6790.mpstats.api.utilities.java.JavaServiceGenerator;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.JavaPlayerRepository;
-import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaRepositoryPlayer;
+import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -43,16 +43,16 @@ class JavaPlayerServiceTest {
         final String playerName = generatePlayerName();
         final UUID playerUUID = generatePlayerUUID();
 
-        final Optional<JavaRepositoryPlayer> playerNotFound = javaPlayerService.getPlayer(playerName, playerUUID);
+        final Optional<JavaPlayer> playerNotFound = javaPlayerService.getPlayer(playerName, playerUUID);
         assertThat(playerNotFound).isNotPresent();
 
         // Insert player
-        final JavaRepositoryPlayer repositoryPlayer = javaPlayerService.getPlayerOrCreate(playerName, playerUUID);
+        final JavaPlayer player = javaPlayerService.getPlayerOrCreate(playerName, playerUUID);
 
-        final Optional<JavaRepositoryPlayer> playerFound = javaPlayerService.getPlayer(playerName, playerUUID);
+        final Optional<JavaPlayer> playerFound = javaPlayerService.getPlayer(playerName, playerUUID);
         assertThat(playerFound)
                 .isPresent()
-                .contains(repositoryPlayer);
+                .contains(player);
     }
 
     @Test
@@ -61,12 +61,12 @@ class JavaPlayerServiceTest {
         final UUID playerUUID = generatePlayerUUID();
 
         // Insert player
-        final JavaRepositoryPlayer repositoryPlayer = javaPlayerService.getPlayerOrCreate(playerName, playerUUID);
+        final JavaPlayer player = javaPlayerService.getPlayerOrCreate(playerName, playerUUID);
 
-        final Optional<JavaRepositoryPlayer> playerFound = javaPlayerService.getPlayer(repositoryPlayer.getRepositoryId());
+        final Optional<JavaPlayer> playerFound = javaPlayerService.getPlayer(player.getRepositoryId());
         assertThat(playerFound)
                 .isPresent()
-                .contains(repositoryPlayer);
+                .contains(player);
     }
 
     @Test
@@ -79,14 +79,14 @@ class JavaPlayerServiceTest {
         javaPlayerService.getPlayerOrCreate(playerName, playerUUID);
 
         // Get with current name
-        final Optional<JavaRepositoryPlayer> playerOldName = javaPlayerService.getPlayer(playerName, playerUUID);
+        final Optional<JavaPlayer> playerOldName = javaPlayerService.getPlayer(playerName, playerUUID);
         assertThat(playerOldName).isPresent();
 
         // Get with new name
-        final Optional<JavaRepositoryPlayer> playerNewName = javaPlayerService.getPlayer(newPlayerName, playerUUID);
+        final Optional<JavaPlayer> playerNewName = javaPlayerService.getPlayer(newPlayerName, playerUUID);
         assertThat(playerNewName).isPresent();
 
-        assertThat(playerNewName.get().getPlayerName()).isEqualTo(newPlayerName);
+        assertThat(playerNewName.get().getName()).isEqualTo(newPlayerName);
     }
 
     @Test
@@ -94,19 +94,20 @@ class JavaPlayerServiceTest {
         final String playerName = generatePlayerName();
         final UUID playerUUID = generatePlayerUUID();
 
-        final Optional<JavaRepositoryPlayer> playerNotFound = javaPlayerService.getPlayer(playerName, playerUUID);
+        final Optional<JavaPlayer> playerNotFound = javaPlayerService.getPlayer(playerName, playerUUID);
         assertThat(playerNotFound).isNotPresent();
 
-        final JavaRepositoryPlayer player = javaPlayerService.getPlayerOrCreate(playerName, playerUUID);
-        assertThat(player.getPlayerUUID()).isEqualTo(playerUUID);
-        assertThat(player.getPlayerName()).isEqualTo(playerName);
+        final JavaPlayer player = javaPlayerService.getPlayerOrCreate(playerName, playerUUID);
+        assertThat(player.getRepositoryId()).isNotZero();
+        assertThat(player.getUuid()).isEqualTo(playerUUID);
+        assertThat(player.getName()).isEqualTo(playerName);
 
         // Cache check
-        final JavaRepositoryPlayer playerCache = javaPlayerService.getPlayerOrCreate(playerName, playerUUID);
+        final JavaPlayer playerCache = javaPlayerService.getPlayerOrCreate(playerName, playerUUID);
         assertThat(player).isEqualTo(playerCache);
 
         // No cache check
-        final Optional<JavaRepositoryPlayer> playerNoCache = javaPlayerRepository.getPlayer(playerName, playerUUID);
+        final Optional<JavaPlayer> playerNoCache = javaPlayerRepository.getPlayer(playerName, playerUUID);
         assertThat(playerNoCache)
                 .isPresent()
                 .contains(player);
@@ -121,9 +122,9 @@ class JavaPlayerServiceTest {
         // Insert with old name
         javaPlayerService.getPlayerOrCreate(playerName, playerUUID);
         // Get with new name
-        final JavaRepositoryPlayer playerChangedName = javaPlayerService.getPlayerOrCreate(newPlayerName, playerUUID);
+        final JavaPlayer playerChangedName = javaPlayerService.getPlayerOrCreate(newPlayerName, playerUUID);
 
-        assertThat(playerChangedName.getPlayerName()).isEqualTo(newPlayerName);
+        assertThat(playerChangedName.getName()).isEqualTo(newPlayerName);
     }
 
     @Test
@@ -131,13 +132,13 @@ class JavaPlayerServiceTest {
         final String playerName = generatePlayerName();
         final UUID playerUUID = generatePlayerUUID();
 
-        final Optional<JavaRepositoryPlayer> playerNotFound = javaPlayerService.getPlayer(playerUUID);
+        final Optional<JavaPlayer> playerNotFound = javaPlayerService.getPlayer(playerUUID);
         assertThat(playerNotFound).isNotPresent();
 
         // Insert player
         javaPlayerService.getPlayerOrCreate(playerName, playerUUID);
 
-        final Optional<JavaRepositoryPlayer> playerFound = javaPlayerService.getPlayer(playerUUID);
+        final Optional<JavaPlayer> playerFound = javaPlayerService.getPlayer(playerUUID);
         assertThat(playerFound).isPresent();
     }
 }

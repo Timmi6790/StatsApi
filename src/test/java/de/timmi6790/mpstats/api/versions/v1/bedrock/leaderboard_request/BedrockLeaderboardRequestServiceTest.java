@@ -1,5 +1,7 @@
 package de.timmi6790.mpstats.api.versions.v1.bedrock.leaderboard_request;
 
+import de.timmi6790.mpstats.api.utilities.bedrock.BedrockServiceGenerator;
+import de.timmi6790.mpstats.api.versions.v1.bedrock.player.BedrockPlayerService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockPlayer;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.AbstractLeaderboardRequestServiceTest;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
@@ -10,17 +12,17 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class BedrockLeaderboardRequestServiceTest extends AbstractLeaderboardRequestServiceTest<BedrockPlayer> {
+class BedrockLeaderboardRequestServiceTest extends AbstractLeaderboardRequestServiceTest<BedrockPlayer, BedrockPlayerService> {
     private static final String BASE_PATH = "leaderboard_request/bedrock/";
 
     public BedrockLeaderboardRequestServiceTest() {
-        super(BedrockLeaderboardRequestService::new);
+        super(BedrockLeaderboardRequestService::new, BedrockServiceGenerator.generatePlayerService());
     }
 
     private void validatePlayerData(final LeaderboardEntry<BedrockPlayer> data,
                                     final String requiredName,
                                     final long requiredScore) {
-        assertThat(data.getPlayer().getPlayerName()).isEqualTo(requiredName);
+        assertThat(data.getPlayer().getName()).isEqualTo(requiredName);
         assertThat(data.getScore()).isEqualTo(requiredScore);
     }
 

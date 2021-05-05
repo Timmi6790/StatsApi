@@ -1,8 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request;
 
-import com.google.common.collect.Lists;
 import com.google.re2j.Pattern;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
@@ -17,9 +15,12 @@ import okhttp3.Response;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Data
 @Log4j2
@@ -53,14 +54,13 @@ public abstract class LeaderboardRequestService<P extends Player> {
     protected abstract Optional<LeaderboardEntry<P>> parseRow(String row);
 
     protected List<LeaderboardEntry<P>> parseLeaderboardEntry(final String response) {
-        final List<LeaderboardEntry<P>> leaderboard = Lists.newArrayListWithExpectedSize(this.estimatedResultSize);
-
         final String[] rows = HTML_ROW_PARSER.split(response);
-        for (final String row : rows) {
-            this.parseRow(row).ifPresent(leaderboard::add);
-        }
-
-        return leaderboard;
+        return Arrays.stream(rows).parallel()
+                .map(this::parseRow)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .sorted(Comparator.comparing(LeaderboardEntry::getScore, Comparator.reverseOrder()))
+                .collect(Collectors.toList());
     }
 
     public Optional<LeaderboardSave<P>> retrieveLeaderboard(final String game, final String stat, final String board) {
@@ -97,16 +97,6 @@ public abstract class LeaderboardRequestService<P extends Player> {
         } catch (final IOException e) {
             log.error("{}-{}-{}", game, stat, board, e);
             return Optional.empty();
-        }
-    }
-
-    public void retrieveLeaderboards(final List<Leaderboard> leaderboards) {
-        for (final Leaderboard leaderboard : leaderboards) {
-            this.retrieveLeaderboard(
-                    leaderboard.getGame().getWebsiteName(),
-                    leaderboard.getStat().getWebsiteName(),
-                    leaderboard.getBoard().getWebsiteName()
-            );
         }
     }
 }

@@ -3,7 +3,6 @@ package de.timmi6790.mpstats.api.utilities;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
-import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlayer;
 
 import java.util.Comparator;
 import java.util.List;
@@ -12,8 +11,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class LeaderboardEntryUtilities {
-    public static <R extends Player & RepositoryPlayer, P extends Player> List<LeaderboardEntry<P>> generateEntries(final PlayerService<R> playerService,
-                                                                                                                    final int count) {
+    public static <P extends Player> List<LeaderboardEntry<P>> generateEntries(final PlayerService<P> playerService,
+                                                                               final int count) {
         // We use a stream here to leverage the parallel speed. Creating n players can take some time
         return IntStream.range(0, count)
                 .parallel()

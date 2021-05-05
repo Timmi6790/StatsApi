@@ -3,6 +3,7 @@ package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request;
 import de.timmi6790.mpstats.api.Config;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
+import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import lombok.SneakyThrows;
 import okhttp3.HttpUrl;
@@ -17,15 +18,18 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public abstract class AbstractLeaderboardRequestServiceTest<P extends Player> {
-    private final Function<Config, LeaderboardRequestService<P>> leaderboardRequestFunction;
+public abstract class AbstractLeaderboardRequestServiceTest<P extends Player, S extends PlayerService<P>> {
+    private final BiFunction<Config, S, LeaderboardRequestService<P>> leaderboardRequestFunction;
+    private final S playerService;
 
-    protected AbstractLeaderboardRequestServiceTest(final Function<Config, LeaderboardRequestService<P>> leaderboardRequestFunction) {
+    protected AbstractLeaderboardRequestServiceTest(final BiFunction<Config, S, LeaderboardRequestService<P>> leaderboardRequestFunction,
+                                                    final S playerService) {
         this.leaderboardRequestFunction = leaderboardRequestFunction;
+        this.playerService = playerService;
     }
 
     @SneakyThrows
@@ -43,7 +47,7 @@ public abstract class AbstractLeaderboardRequestServiceTest<P extends Player> {
         leaderboardConfig.setBedrockUrl(url);
         leaderboardConfig.setJavaUrl(url);
 
-        return this.leaderboardRequestFunction.apply(config);
+        return this.leaderboardRequestFunction.apply(config, this.playerService);
     }
 
     protected Optional<List<LeaderboardEntry<P>>> retrieveLeaderboard(final String responsePath) {

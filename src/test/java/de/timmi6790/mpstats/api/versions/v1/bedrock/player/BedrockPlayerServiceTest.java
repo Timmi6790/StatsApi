@@ -2,7 +2,7 @@ package de.timmi6790.mpstats.api.versions.v1.bedrock.player;
 
 import de.timmi6790.mpstats.api.utilities.bedrock.BedrockServiceGenerator;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.BedrockPlayerRepository;
-import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockRepositoryPlayer;
+import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockPlayer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -55,13 +55,13 @@ class BedrockPlayerServiceTest {
     void getPlayer() {
         final String playerName = generatePlayerName();
 
-        final Optional<BedrockRepositoryPlayer> playerNotFound = bedrockPlayerService.getPlayer(playerName);
+        final Optional<BedrockPlayer> playerNotFound = bedrockPlayerService.getPlayer(playerName);
         assertThat(playerNotFound).isNotPresent();
 
         // Insert player
         bedrockPlayerService.getPlayerOrCreate(playerName);
 
-        final Optional<BedrockRepositoryPlayer> playerFound = bedrockPlayerService.getPlayer(playerName);
+        final Optional<BedrockPlayer> playerFound = bedrockPlayerService.getPlayer(playerName);
         assertThat(playerFound).isPresent();
     }
 
@@ -70,12 +70,12 @@ class BedrockPlayerServiceTest {
         final String playerName = generatePlayerName();
 
         // Insert player
-        final BedrockRepositoryPlayer repositoryPlayer = bedrockPlayerService.getPlayerOrCreate(playerName);
+        final BedrockPlayer player = bedrockPlayerService.getPlayerOrCreate(playerName);
 
-        final Optional<BedrockRepositoryPlayer> playerFound = bedrockPlayerService.getPlayer(repositoryPlayer.getRepositoryId());
+        final Optional<BedrockPlayer> playerFound = bedrockPlayerService.getPlayer(player.getRepositoryId());
         assertThat(playerFound)
                 .isPresent()
-                .contains(repositoryPlayer);
+                .contains(player);
     }
 
     @Test
@@ -86,11 +86,11 @@ class BedrockPlayerServiceTest {
         bedrockPlayerService.getPlayerOrCreate(playerName);
 
         // Uppercase check
-        final Optional<BedrockRepositoryPlayer> playerUpper = bedrockPlayerService.getPlayer(playerName.toUpperCase());
+        final Optional<BedrockPlayer> playerUpper = bedrockPlayerService.getPlayer(playerName.toUpperCase());
         assertThat(playerUpper).isPresent();
 
         // Lowercase check
-        final Optional<BedrockRepositoryPlayer> playerLower = bedrockPlayerService.getPlayer(playerName.toLowerCase());
+        final Optional<BedrockPlayer> playerLower = bedrockPlayerService.getPlayer(playerName.toLowerCase());
         assertThat(playerLower).isPresent();
     }
 
@@ -98,18 +98,18 @@ class BedrockPlayerServiceTest {
     void getPlayerOrCreate() {
         final String playerName = generatePlayerName();
 
-        final Optional<BedrockRepositoryPlayer> playerNotFound = bedrockPlayerService.getPlayer(playerName);
+        final Optional<BedrockPlayer> playerNotFound = bedrockPlayerService.getPlayer(playerName);
         assertThat(playerNotFound).isNotPresent();
 
-        final BedrockRepositoryPlayer player = bedrockPlayerService.getPlayerOrCreate(playerName);
-        assertThat(player.getPlayerName()).isEqualTo(playerName);
+        final BedrockPlayer player = bedrockPlayerService.getPlayerOrCreate(playerName);
+        assertThat(player.getName()).isEqualTo(playerName);
 
         // Cache check
-        final BedrockRepositoryPlayer playerCache = bedrockPlayerService.getPlayerOrCreate(playerName);
+        final BedrockPlayer playerCache = bedrockPlayerService.getPlayerOrCreate(playerName);
         assertThat(player).isEqualTo(playerCache);
 
         // No cache check
-        final Optional<BedrockRepositoryPlayer> playerNoCache = bedrockPlayerRepository.getPlayer(playerName);
+        final Optional<BedrockPlayer> playerNoCache = bedrockPlayerRepository.getPlayer(playerName);
         assertThat(playerNoCache)
                 .isPresent()
                 .contains(player);

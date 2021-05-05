@@ -2,7 +2,7 @@ package de.timmi6790.mpstats.api.versions.v1.bedrock.filter;
 
 import de.timmi6790.mpstats.api.versions.v1.bedrock.leaderboard.BedrockLeaderboardService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.BedrockPlayerService;
-import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockRepositoryPlayer;
+import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockPlayer;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.FilterService;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.models.FilterCache;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.Filter;
@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class BedrockFilterService extends FilterService<BedrockRepositoryPlayer, BedrockPlayerService> {
+public class BedrockFilterService extends FilterService<BedrockPlayer, BedrockPlayerService> {
     private final Map<String, Integer> nameToIdPlayerMap = new HashMap<>();
 
     @Autowired
@@ -38,14 +38,14 @@ public class BedrockFilterService extends FilterService<BedrockRepositoryPlayer,
     }
 
     @Override
-    protected void addFilterToCache(final Filter<BedrockRepositoryPlayer> filter) {
-        this.nameToIdPlayerMap.put(filter.player().getPlayerName(), filter.player().getRepositoryId());
+    protected void addFilterToCache(final Filter<BedrockPlayer> filter) {
+        this.nameToIdPlayerMap.put(filter.player().getName(), filter.player().getRepositoryId());
         super.addFilterToCache(filter);
     }
 
     @Override
-    protected void removeFilterFromCache(final Filter<BedrockRepositoryPlayer> filter) {
-        this.nameToIdPlayerMap.remove(filter.player().getPlayerName());
+    protected void removeFilterFromCache(final Filter<BedrockPlayer> filter) {
+        this.nameToIdPlayerMap.remove(filter.player().getName());
         super.removeFilterFromCache(filter);
     }
 

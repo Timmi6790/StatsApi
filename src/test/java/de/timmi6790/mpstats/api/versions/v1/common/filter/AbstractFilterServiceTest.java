@@ -9,7 +9,6 @@ import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.LeaderboardServic
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
-import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlayer;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.StatService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,7 +22,7 @@ import java.util.function.Supplier;
 import static org.assertj.core.api.Assertions.assertThat;
 
 // TODO: Add more specific tests
-public abstract class AbstractFilterServiceTest<P extends Player & RepositoryPlayer, S extends PlayerService<P>, F extends FilterService<P, S>> {
+public abstract class AbstractFilterServiceTest<P extends Player, S extends PlayerService<P>, F extends FilterService<P, S>> {
     protected final Supplier<F> filterServiceSupplier;
     protected final F filterService;
     protected final GameService gameService;

@@ -10,6 +10,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.stat.StatService;
 import de.timmi6790.mpstats.api.versions.v1.java.board.JavaBoardService;
 import de.timmi6790.mpstats.api.versions.v1.java.game.JavaGameService;
 import de.timmi6790.mpstats.api.versions.v1.java.leaderboard.JavaLeaderboardService;
+import de.timmi6790.mpstats.api.versions.v1.java.player.JavaPlayerService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
 import de.timmi6790.mpstats.api.versions.v1.java.stat.JavaStatService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ class JavaLeaderboardCacheServiceTest extends AbstractLeaderboardCacheServiceTes
     private JavaBoardService boardService;
     @Autowired
     private JavaLeaderboardService leaderboardService;
+    @Autowired
+    private JavaPlayerService playerService;
 
     @Override
     protected LeaderboardCacheService<JavaPlayer> getLeaderboardCacheService() {
@@ -53,9 +56,6 @@ class JavaLeaderboardCacheServiceTest extends AbstractLeaderboardCacheServiceTes
 
     @Override
     protected JavaPlayer generatePlayer() {
-        return new JavaPlayer(
-                PlayerUtilities.generatePlayerName(),
-                PlayerUtilities.generatePlayerUUID()
-        );
+        return PlayerUtilities.generatePlayer(this.playerService);
     }
 }

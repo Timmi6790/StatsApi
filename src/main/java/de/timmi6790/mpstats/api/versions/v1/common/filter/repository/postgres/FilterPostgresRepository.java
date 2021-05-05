@@ -8,7 +8,6 @@ import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.LeaderboardServic
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
-import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlayer;
 import de.timmi6790.mpstats.api.versions.v1.common.utilities.PostgresRepository;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
-public class FilterPostgresRepository<P extends Player & RepositoryPlayer> extends PostgresRepository implements FilterRepository<P> {
+public class FilterPostgresRepository<P extends Player> extends PostgresRepository implements FilterRepository<P> {
     private static final String PLAYER_ID = "playerId";
     private static final String LEADERBOARD_ID = "leaderboardId";
 

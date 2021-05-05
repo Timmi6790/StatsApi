@@ -10,7 +10,6 @@ import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.LeaderboardServic
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
-import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlayer;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -22,7 +21,7 @@ import java.util.concurrent.locks.Lock;
 
 @Getter(AccessLevel.PROTECTED)
 @Log4j2
-public class FilterService<P extends Player & RepositoryPlayer, S extends PlayerService<P>> {
+public class FilterService<P extends Player, S extends PlayerService<P>> {
     private final S playerService;
     private final LeaderboardService leaderboardService;
 

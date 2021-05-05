@@ -1,10 +1,10 @@
 package de.timmi6790.mpstats.api.versions.v1.common.player;
 
-import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlayer;
+import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 
 import java.util.Optional;
 
-public interface PlayerService<P extends RepositoryPlayer> {
+public interface PlayerService<P extends Player> {
     boolean hasPlayer(final String playerName);
 
     Optional<P> getPlayer(final int repositoryId);

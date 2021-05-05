@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Log4j2
-public class LeaderboardCacheService<P extends Player> {
+public abstract class LeaderboardCacheService<P extends Player> {
     private final String schemaName;
 
     private final RedisTemplate<String, LeaderboardSave<P>> redisTemplate;

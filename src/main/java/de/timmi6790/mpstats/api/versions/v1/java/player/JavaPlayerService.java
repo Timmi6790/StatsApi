@@ -6,7 +6,7 @@ import com.google.common.util.concurrent.Striped;
 import de.timmi6790.api.mojang.MojangApiClient;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.JavaPlayerRepository;
-import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaRepositoryPlayer;
+import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +18,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 @Service
-public class JavaPlayerService implements PlayerService<JavaRepositoryPlayer> {
+public class JavaPlayerService implements PlayerService<JavaPlayer> {
     @Getter(AccessLevel.PROTECTED)
     private final JavaPlayerRepository playerRepository;
 
     private final Striped<Lock> playerLock = Striped.lock(1_024);
-    private final Cache<UUID, JavaRepositoryPlayer> playerCache = Caffeine.newBuilder()
+    private final Cache<UUID, JavaPlayer> playerCache = Caffeine.newBuilder()
             .expireAfterAccess(7, TimeUnit.MINUTES)
             .build();
 
@@ -46,57 +46,57 @@ public class JavaPlayerService implements PlayerService<JavaRepositoryPlayer> {
     }
 
     @Override
-    public Optional<JavaRepositoryPlayer> getPlayer(final int repositoryId) {
+    public Optional<JavaPlayer> getPlayer(final int repositoryId) {
         return this.playerRepository.getPlayer(repositoryId);
     }
 
-    public Optional<JavaRepositoryPlayer> getPlayer(final UUID playerUUID) {
+    public Optional<JavaPlayer> getPlayer(final UUID playerUUID) {
         // Cache check
-        final JavaRepositoryPlayer playerCached = this.playerCache.getIfPresent(playerUUID);
+        final JavaPlayer playerCached = this.playerCache.getIfPresent(playerUUID);
         if (playerCached != null) {
             return Optional.of(playerCached);
         }
 
-        final Optional<JavaRepositoryPlayer> playerOpt = this.playerRepository.getPlayer(playerUUID);
+        final Optional<JavaPlayer> playerOpt = this.playerRepository.getPlayer(playerUUID);
         playerOpt.ifPresent(player -> this.playerCache.put(playerUUID, player));
         return playerOpt;
     }
 
-    public Optional<JavaRepositoryPlayer> getPlayer(final String playerName, final UUID playerUUID) {
+    public Optional<JavaPlayer> getPlayer(final String playerName, final UUID playerUUID) {
         // Cache check
-        final JavaRepositoryPlayer playerCached = this.playerCache.getIfPresent(playerUUID);
+        final JavaPlayer playerCached = this.playerCache.getIfPresent(playerUUID);
         if (playerCached != null) {
             // Check if the player name changed while we had the cache
-            if (!playerCached.getPlayerName().equals(playerName)) {
-                playerCached.setPlayerName(playerName);
+            if (!playerCached.getName().equals(playerName)) {
+                playerCached.setName(playerName);
                 this.playerRepository.changePlayerName(playerCached.getRepositoryId(), playerName);
             }
 
             return Optional.of(playerCached);
         }
 
-        final Optional<JavaRepositoryPlayer> playerOpt = this.playerRepository.getPlayer(playerName, playerUUID);
+        final Optional<JavaPlayer> playerOpt = this.playerRepository.getPlayer(playerName, playerUUID);
         playerOpt.ifPresent(player -> this.playerCache.put(playerUUID, player));
         return playerOpt;
     }
 
     @Override
-    public Optional<JavaRepositoryPlayer> getPlayer(final String playerName) {
+    public Optional<JavaPlayer> getPlayer(final String playerName) {
         return MojangApiClient.getInstance().getPlayerInfo(playerName)
                 .flatMap(playerInfo -> this.getPlayer(playerInfo.getName(), playerInfo.getUuid()));
     }
 
-    public JavaRepositoryPlayer getPlayerOrCreate(final String playerName, final UUID playerUUID) {
+    public JavaPlayer getPlayerOrCreate(final String playerName, final UUID playerUUID) {
         final Lock lock = this.getPlayerLock(playerUUID);
         lock.lock();
         try {
-            final Optional<JavaRepositoryPlayer> playerOpt = this.getPlayer(playerName, playerUUID);
+            final Optional<JavaPlayer> playerOpt = this.getPlayer(playerName, playerUUID);
             if (playerOpt.isPresent()) {
                 return playerOpt.get();
             }
 
-            final JavaRepositoryPlayer player = this.playerRepository.insertPlayer(playerName, playerUUID);
-            this.playerCache.put(player.getPlayerUUID(), player);
+            final JavaPlayer player = this.playerRepository.insertPlayer(playerName, playerUUID);
+            this.playerCache.put(player.getUuid(), player);
             return player;
         } finally {
             lock.unlock();

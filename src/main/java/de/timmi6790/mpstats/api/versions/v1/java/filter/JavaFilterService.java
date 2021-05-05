@@ -6,7 +6,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.Filt
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.java.leaderboard.JavaLeaderboardService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.JavaPlayerService;
-import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaRepositoryPlayer;
+import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class JavaFilterService extends FilterService<JavaRepositoryPlayer, JavaPlayerService> {
+public class JavaFilterService extends FilterService<JavaPlayer, JavaPlayerService> {
     private final Map<UUID, Integer> uuidToIdPlayerMap = new HashMap<>();
 
     @Autowired
@@ -39,14 +39,14 @@ public class JavaFilterService extends FilterService<JavaRepositoryPlayer, JavaP
     }
 
     @Override
-    protected void addFilterToCache(final Filter<JavaRepositoryPlayer> filter) {
-        this.uuidToIdPlayerMap.put(filter.player().getPlayerUUID(), filter.player().getRepositoryId());
+    protected void addFilterToCache(final Filter<JavaPlayer> filter) {
+        this.uuidToIdPlayerMap.put(filter.player().getUuid(), filter.player().getRepositoryId());
         super.addFilterToCache(filter);
     }
 
     @Override
-    protected void removeFilterFromCache(final Filter<JavaRepositoryPlayer> filter) {
-        this.uuidToIdPlayerMap.remove(filter.player().getPlayerUUID());
+    protected void removeFilterFromCache(final Filter<JavaPlayer> filter) {
+        this.uuidToIdPlayerMap.remove(filter.player().getUuid());
         super.removeFilterFromCache(filter);
     }
 

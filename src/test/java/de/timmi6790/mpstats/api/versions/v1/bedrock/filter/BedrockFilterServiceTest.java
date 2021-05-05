@@ -6,7 +6,7 @@ import de.timmi6790.mpstats.api.versions.v1.bedrock.board.BedrockBoardService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.game.BedrockGameService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.leaderboard.BedrockLeaderboardService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.BedrockPlayerService;
-import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockRepositoryPlayer;
+import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockPlayer;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.stat.BedrockStatService;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.AbstractFilterServiceTest;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.Filter;
@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import static de.timmi6790.mpstats.api.utilities.PlayerUtilities.generatePlayerName;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class BedrockFilterServiceTest extends AbstractFilterServiceTest<BedrockRepositoryPlayer, BedrockPlayerService, BedrockFilterService> {
+class BedrockFilterServiceTest extends AbstractFilterServiceTest<BedrockPlayer, BedrockPlayerService, BedrockFilterService> {
     private static final BedrockGameService GAME_SERVICE = BedrockServiceGenerator.generateGameService();
     private static final BedrockStatService STAT_SERVICE = BedrockServiceGenerator.generateStatService();
     private static final BedrockBoardService BOARD_SERVICE = BedrockServiceGenerator.generateBoardService();
@@ -43,10 +43,10 @@ class BedrockFilterServiceTest extends AbstractFilterServiceTest<BedrockReposito
 
     @Test
     void isFiltered_playerName_leaderboard_time_equals_filter_start() {
-        final Filter<BedrockRepositoryPlayer> filter = this.generateFilter();
+        final Filter<BedrockPlayer> filter = this.generateFilter();
 
         final boolean found = this.filterService.isFiltered(
-                filter.player().getPlayerName(),
+                filter.player().getName(),
                 filter.leaderboard(),
                 filter.start()
         );
@@ -55,10 +55,10 @@ class BedrockFilterServiceTest extends AbstractFilterServiceTest<BedrockReposito
 
     @Test
     void isFiltered_playerName_leaderboard_time_equals_filter_end() {
-        final Filter<BedrockRepositoryPlayer> filter = this.generateFilter();
+        final Filter<BedrockPlayer> filter = this.generateFilter();
 
         final boolean found = this.filterService.isFiltered(
-                filter.player().getPlayerName(),
+                filter.player().getName(),
                 filter.leaderboard(),
                 filter.end()
         );
@@ -68,10 +68,10 @@ class BedrockFilterServiceTest extends AbstractFilterServiceTest<BedrockReposito
 
     @Test
     void isFiltered_playerName_leaderboard() {
-        final Filter<BedrockRepositoryPlayer> filter = this.generateFilter();
+        final Filter<BedrockPlayer> filter = this.generateFilter();
 
         final boolean found = this.filterService.isFiltered(
-                filter.player().getPlayerName(),
+                filter.player().getName(),
                 filter.leaderboard()
         );
         assertThat(found).isTrue();

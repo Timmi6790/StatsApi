@@ -6,13 +6,12 @@ import de.timmi6790.mpstats.api.versions.v1.bedrock.board.BedrockBoardService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.game.BedrockGameService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.leaderboard.BedrockLeaderboardService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockPlayer;
-import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockRepositoryPlayer;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.stat.BedrockStatService;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.AbstractLeaderboardSaveServiceTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class BedrockLeaderboardSaveServiceTest extends AbstractLeaderboardSaveServiceTest<BedrockPlayer, BedrockRepositoryPlayer> {
+class BedrockLeaderboardSaveServiceTest extends AbstractLeaderboardSaveServiceTest<BedrockPlayer> {
     private static final BedrockGameService GAME_SERVICE = BedrockServiceGenerator.generateGameService();
     private static final BedrockStatService STAT_SERVICE = BedrockServiceGenerator.generateStatService();
     private static final BedrockBoardService BOARD_SERVICE = BedrockServiceGenerator.generateBoardService();
@@ -37,7 +36,7 @@ class BedrockLeaderboardSaveServiceTest extends AbstractLeaderboardSaveServiceTe
     }
 
     @Override
-    protected void verifyPlayer(final BedrockPlayer insertedPlayer, final BedrockRepositoryPlayer repositoryPlayer) {
-        assertThat(insertedPlayer.getPlayerName()).isEqualTo(repositoryPlayer.getPlayerName());
+    protected void verifyPlayer(final BedrockPlayer insertedPlayer, final BedrockPlayer player) {
+        assertThat(insertedPlayer.getName()).isEqualTo(player.getName());
     }
 }

@@ -4,7 +4,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.util.concurrent.Striped;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.BedrockPlayerRepository;
-import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockRepositoryPlayer;
+import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockPlayer;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,12 +16,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 @Service
-public class BedrockPlayerService implements PlayerService<BedrockRepositoryPlayer> {
+public class BedrockPlayerService implements PlayerService<BedrockPlayer> {
     @Getter(AccessLevel.PROTECTED)
     private final BedrockPlayerRepository playerRepository;
 
     private final Striped<Lock> playerLock = Striped.lock(512);
-    private final Cache<String, BedrockRepositoryPlayer> playerCache = Caffeine.newBuilder()
+    private final Cache<String, BedrockPlayer> playerCache = Caffeine.newBuilder()
             .expireAfterAccess(7, TimeUnit.MINUTES)
             .build();
 
@@ -34,11 +34,11 @@ public class BedrockPlayerService implements PlayerService<BedrockRepositoryPlay
         return this.playerLock.get(playerName.toLowerCase());
     }
 
-    private void addPlayerToCache(final BedrockRepositoryPlayer player) {
-        this.playerCache.put(player.getPlayerName().toLowerCase(), player);
+    private void addPlayerToCache(final BedrockPlayer player) {
+        this.playerCache.put(player.getName().toLowerCase(), player);
     }
 
-    private Optional<BedrockRepositoryPlayer> getPlayerFromCache(final String playerName) {
+    private Optional<BedrockPlayer> getPlayerFromCache(final String playerName) {
         return Optional.ofNullable(this.playerCache.getIfPresent(playerName.toLowerCase()));
     }
 
@@ -48,33 +48,33 @@ public class BedrockPlayerService implements PlayerService<BedrockRepositoryPlay
     }
 
     @Override
-    public Optional<BedrockRepositoryPlayer> getPlayer(final int repositoryId) {
+    public Optional<BedrockPlayer> getPlayer(final int repositoryId) {
         return this.playerRepository.getPlayer(repositoryId);
     }
 
     @Override
-    public Optional<BedrockRepositoryPlayer> getPlayer(final String playerName) {
+    public Optional<BedrockPlayer> getPlayer(final String playerName) {
         // Cache check
-        final Optional<BedrockRepositoryPlayer> playerCached = this.getPlayerFromCache(playerName);
+        final Optional<BedrockPlayer> playerCached = this.getPlayerFromCache(playerName);
         if (playerCached.isPresent()) {
             return playerCached;
         }
 
-        final Optional<BedrockRepositoryPlayer> playerOpt = this.playerRepository.getPlayer(playerName);
+        final Optional<BedrockPlayer> playerOpt = this.playerRepository.getPlayer(playerName);
         playerOpt.ifPresent(this::addPlayerToCache);
         return playerOpt;
     }
 
-    public BedrockRepositoryPlayer getPlayerOrCreate(final String playerName) {
+    public BedrockPlayer getPlayerOrCreate(final String playerName) {
         final Lock lock = this.getPlayerLock(playerName);
         lock.lock();
         try {
-            final Optional<BedrockRepositoryPlayer> playerOpt = this.getPlayer(playerName);
+            final Optional<BedrockPlayer> playerOpt = this.getPlayer(playerName);
             if (playerOpt.isPresent()) {
                 return playerOpt.get();
             }
 
-            final BedrockRepositoryPlayer player = this.playerRepository.insertPlayer(playerName);
+            final BedrockPlayer player = this.playerRepository.insertPlayer(playerName);
             this.addPlayerToCache(player);
             return player;
         } finally {

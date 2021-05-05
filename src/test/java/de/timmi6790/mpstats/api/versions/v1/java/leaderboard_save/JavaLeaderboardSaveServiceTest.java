@@ -7,12 +7,11 @@ import de.timmi6790.mpstats.api.versions.v1.java.board.JavaBoardService;
 import de.timmi6790.mpstats.api.versions.v1.java.game.JavaGameService;
 import de.timmi6790.mpstats.api.versions.v1.java.leaderboard.JavaLeaderboardService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
-import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaRepositoryPlayer;
 import de.timmi6790.mpstats.api.versions.v1.java.stat.JavaStatService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JavaLeaderboardSaveServiceTest extends AbstractLeaderboardSaveServiceTest<JavaPlayer, JavaRepositoryPlayer> {
+class JavaLeaderboardSaveServiceTest extends AbstractLeaderboardSaveServiceTest<JavaPlayer> {
     private static final JavaGameService GAME_SERVICE = JavaServiceGenerator.generateGameService();
     private static final JavaStatService STAT_SERVICE = JavaServiceGenerator.generateStatService();
     private static final JavaBoardService BOARD_SERVICE = JavaServiceGenerator.generateBoardService();
@@ -37,8 +36,8 @@ class JavaLeaderboardSaveServiceTest extends AbstractLeaderboardSaveServiceTest<
     }
 
     @Override
-    protected void verifyPlayer(final JavaPlayer insertedPlayer, final JavaRepositoryPlayer repositoryPlayer) {
-        assertThat(insertedPlayer.getPlayerName()).isEqualTo(repositoryPlayer.getPlayerName());
-        assertThat(insertedPlayer.getPlayerUUID()).isEqualTo(repositoryPlayer.getPlayerUUID());
+    protected void verifyPlayer(final JavaPlayer insertedPlayer, final JavaPlayer player) {
+        assertThat(insertedPlayer.getName()).isEqualTo(player.getName());
+        assertThat(insertedPlayer.getUuid()).isEqualTo(player.getUuid());
     }
 }

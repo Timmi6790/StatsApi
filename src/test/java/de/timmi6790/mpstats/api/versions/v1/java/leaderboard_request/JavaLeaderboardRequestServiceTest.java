@@ -1,7 +1,9 @@
 package de.timmi6790.mpstats.api.versions.v1.java.leaderboard_request;
 
+import de.timmi6790.mpstats.api.utilities.java.JavaServiceGenerator;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.AbstractLeaderboardRequestServiceTest;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
+import de.timmi6790.mpstats.api.versions.v1.java.player.JavaPlayerService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
 import org.junit.jupiter.api.Test;
 
@@ -11,11 +13,11 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JavaLeaderboardRequestServiceTest extends AbstractLeaderboardRequestServiceTest<JavaPlayer> {
+class JavaLeaderboardRequestServiceTest extends AbstractLeaderboardRequestServiceTest<JavaPlayer, JavaPlayerService> {
     private static final String BASE_PATH = "leaderboard_request/java/";
 
     public JavaLeaderboardRequestServiceTest() {
-        super(JavaLeaderboardRequestService::new);
+        super(JavaLeaderboardRequestService::new, JavaServiceGenerator.generatePlayerService());
     }
 
     private void validatePlayerData(final LeaderboardEntry<JavaPlayer> data,
@@ -25,8 +27,8 @@ class JavaLeaderboardRequestServiceTest extends AbstractLeaderboardRequestServic
         assertThat(data.getScore()).isEqualTo(requiredScore);
 
         final JavaPlayer player = data.getPlayer();
-        assertThat(player.getPlayerName()).isEqualTo(requiredName);
-        assertThat(player.getPlayerUUID()).isEqualTo(UUID.fromString(requiredUUID));
+        assertThat(player.getName()).isEqualTo(requiredName);
+        assertThat(player.getUuid()).isEqualTo(UUID.fromString(requiredUUID));
     }
 
     @Test

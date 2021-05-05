@@ -11,7 +11,6 @@ import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
-import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlayer;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.StatService;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,14 +26,14 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractLeaderboardSaveServiceTest<P extends Player, R extends Player & RepositoryPlayer> {
+public abstract class AbstractLeaderboardSaveServiceTest<P extends Player> {
     protected final GameService gameService;
     protected final StatService statService;
     protected final BoardService boardService;
-    private final LeaderboardSaveService<P, R> saveService;
+    private final LeaderboardSaveService<P> saveService;
     private final LeaderboardService leaderboardService;
 
-    protected AbstractLeaderboardSaveServiceTest(final LeaderboardSaveService<P, R> saveService,
+    protected AbstractLeaderboardSaveServiceTest(final LeaderboardSaveService<P> saveService,
                                                  final LeaderboardService leaderboardService,
                                                  final GameService gameService,
                                                  final StatService statService,
@@ -46,11 +45,11 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player, R ext
         this.boardService = boardService;
     }
 
-    protected PlayerService<R> getPlayerService() {
+    protected PlayerService<P> getPlayerService() {
         return this.saveService.getPlayerService();
     }
 
-    protected LeaderboardSavePostgresRepository<R> getRepository() {
+    protected LeaderboardSavePostgresRepository<P> getRepository() {
         return this.saveService.getRepository();
     }
 
@@ -68,11 +67,11 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player, R ext
     }
 
     protected void verifyLeaderboardEntries(final List<LeaderboardEntry<P>> insertedEntries,
-                                            final List<LeaderboardEntry<R>> repositoryEntries) {
+                                            final List<LeaderboardEntry<P>> repositoryEntries) {
         assertThat(insertedEntries).hasSameSizeAs(repositoryEntries);
         for (int index = 0; insertedEntries.size() > index; index++) {
             final LeaderboardEntry<P> insertedEntry = insertedEntries.get(index);
-            final LeaderboardEntry<R> repositoryEntry = repositoryEntries.get(index);
+            final LeaderboardEntry<P> repositoryEntry = repositoryEntries.get(index);
 
             assertThat(insertedEntry.getScore()).isEqualTo(repositoryEntry.getScore());
             this.verifyPlayer(insertedEntry.getPlayer(), repositoryEntry.getPlayer());
@@ -85,13 +84,13 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player, R ext
         return Math.abs(unixSecondsFirst - unixSecondsSecond);
     }
 
-    protected Optional<List<LeaderboardEntry<R>>> getSavedLeaderboardEntries(final Leaderboard leaderboard,
+    protected Optional<List<LeaderboardEntry<P>>> getSavedLeaderboardEntries(final Leaderboard leaderboard,
                                                                              final LocalDateTime saveTime) {
         return this.saveService.retrieveLeaderboardSave(leaderboard, saveTime)
                 .map(LeaderboardSave::getEntries);
     }
 
-    protected abstract void verifyPlayer(P insertedPlayer, R repositoryPlayer);
+    protected abstract void verifyPlayer(P insertedPlayer, P player);
 
     @Test
     void getLeaderboardSaveTimes() {
@@ -119,7 +118,7 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player, R ext
         final LocalDateTime saveTime = LocalDateTime.now();
         this.saveService.saveLeaderboardEntries(leaderboard, entries, saveTime);
 
-        final Optional<LeaderboardSave<R>> foundSave = this.saveService.retrieveLeaderboardSave(leaderboard, saveTime);
+        final Optional<LeaderboardSave<P>> foundSave = this.saveService.retrieveLeaderboardSave(leaderboard, saveTime);
         assertThat(foundSave)
                 .isPresent();
         assertThat(foundSave.get().getSaveTime()).isEqualToIgnoringNanos(saveTime);
@@ -134,7 +133,7 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player, R ext
         // Try to save an empty list
         this.saveService.saveLeaderboardEntries(leaderboard, new ArrayList<>(), saveTime);
 
-        final Optional<LeaderboardSave<R>> notFound = this.saveService.retrieveLeaderboardSave(leaderboard, saveTime);
+        final Optional<LeaderboardSave<P>> notFound = this.saveService.retrieveLeaderboardSave(leaderboard, saveTime);
         assertThat(notFound)
                 .isNotPresent();
 
@@ -165,30 +164,30 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player, R ext
         this.saveService.saveLeaderboardEntries(leaderboard, thirdEntries, thirdSaveTime);
 
         // Verify with the exact same time
-        final Optional<List<LeaderboardEntry<R>>> foundFirst = this.getSavedLeaderboardEntries(leaderboard, firstSaveTime);
+        final Optional<List<LeaderboardEntry<P>>> foundFirst = this.getSavedLeaderboardEntries(leaderboard, firstSaveTime);
         assertThat(foundFirst).isPresent();
         this.verifyLeaderboardEntries(firstEntries, foundFirst.get());
 
-        final Optional<List<LeaderboardEntry<R>>> foundSecond = this.getSavedLeaderboardEntries(leaderboard, secondSaveTime);
+        final Optional<List<LeaderboardEntry<P>>> foundSecond = this.getSavedLeaderboardEntries(leaderboard, secondSaveTime);
         assertThat(foundSecond).isPresent();
         this.verifyLeaderboardEntries(secondEntries, foundSecond.get());
 
-        final Optional<List<LeaderboardEntry<R>>> foundThird = this.getSavedLeaderboardEntries(leaderboard, thirdSaveTime);
+        final Optional<List<LeaderboardEntry<P>>> foundThird = this.getSavedLeaderboardEntries(leaderboard, thirdSaveTime);
         assertThat(foundThird).isPresent();
         this.verifyLeaderboardEntries(thirdEntries, foundThird.get());
 
         // Verify above and below
-        final Optional<List<LeaderboardEntry<R>>> foundBelowFirst = this.getSavedLeaderboardEntries(leaderboard, firstSaveTime.minusDays(1));
+        final Optional<List<LeaderboardEntry<P>>> foundBelowFirst = this.getSavedLeaderboardEntries(leaderboard, firstSaveTime.minusDays(1));
         assertThat(foundBelowFirst).isPresent();
         this.verifyLeaderboardEntries(firstEntries, foundBelowFirst.get());
 
-        final Optional<List<LeaderboardEntry<R>>> foundAboveThird = this.getSavedLeaderboardEntries(leaderboard, thirdSaveTime.plusDays(1));
+        final Optional<List<LeaderboardEntry<P>>> foundAboveThird = this.getSavedLeaderboardEntries(leaderboard, thirdSaveTime.plusDays(1));
         assertThat(foundAboveThird).isPresent();
         this.verifyLeaderboardEntries(thirdEntries, foundAboveThird.get());
 
         // Verify between closets
         final double lowerDifference = this.getDateTimeDifferenceInSeconds(firstSaveTime, secondSaveTime) / 2D;
-        final Optional<List<LeaderboardEntry<R>>> foundLowerSecond = this.getSavedLeaderboardEntries(
+        final Optional<List<LeaderboardEntry<P>>> foundLowerSecond = this.getSavedLeaderboardEntries(
                 leaderboard,
                 secondSaveTime.minus((long) (lowerDifference - 1), ChronoUnit.SECONDS)
         );
@@ -196,7 +195,7 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player, R ext
         this.verifyLeaderboardEntries(secondEntries, foundLowerSecond.get());
 
         final double upperDifference = this.getDateTimeDifferenceInSeconds(thirdSaveTime, secondSaveTime) / 2D;
-        final Optional<List<LeaderboardEntry<R>>> foundUpperSecond = this.getSavedLeaderboardEntries(
+        final Optional<List<LeaderboardEntry<P>>> foundUpperSecond = this.getSavedLeaderboardEntries(
                 leaderboard,
                 secondSaveTime.plus((long) (upperDifference - 1), ChronoUnit.SECONDS)
         );

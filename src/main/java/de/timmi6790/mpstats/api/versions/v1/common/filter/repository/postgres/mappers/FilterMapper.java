@@ -6,7 +6,6 @@ import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.LeaderboardServic
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
-import de.timmi6790.mpstats.api.versions.v1.common.player.models.RepositoryPlayer;
 import lombok.AllArgsConstructor;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
@@ -16,7 +15,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 @AllArgsConstructor
-public class FilterMapper<P extends Player & RepositoryPlayer> implements RowMapper<Filter<P>> {
+public class FilterMapper<P extends Player> implements RowMapper<Filter<P>> {
     private final PlayerService<P> playerService;
     private final LeaderboardService leaderboardService;
 

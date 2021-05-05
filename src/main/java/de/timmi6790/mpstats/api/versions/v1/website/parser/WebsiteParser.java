@@ -39,8 +39,7 @@ public class WebsiteParser {
     private final WebsiteFilter websiteFilter;
 
     private final OkHttpClient httpClient;
-
-
+    
     @Autowired
     public WebsiteParser(final WebsiteConverter websiteConverter, final WebsiteFilter websiteFilter) {
         this.websiteConverter = websiteConverter;

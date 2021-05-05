@@ -4,6 +4,7 @@ import de.timmi6790.mpstats.api.utilities.PlayerUtilities;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.board.BedrockBoardService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.game.BedrockGameService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.leaderboard.BedrockLeaderboardService;
+import de.timmi6790.mpstats.api.versions.v1.bedrock.player.BedrockPlayerService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockPlayer;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.stat.BedrockStatService;
 import de.timmi6790.mpstats.api.versions.v1.common.board.BoardService;
@@ -25,6 +26,8 @@ class BedrockLeaderboardCacheServiceTest extends AbstractLeaderboardCacheService
     private BedrockBoardService boardService;
     @Autowired
     private BedrockLeaderboardService leaderboardService;
+    @Autowired
+    private BedrockPlayerService playerService;
 
     @Override
     protected LeaderboardCacheService<BedrockPlayer> getLeaderboardCacheService() {
@@ -53,8 +56,6 @@ class BedrockLeaderboardCacheServiceTest extends AbstractLeaderboardCacheService
 
     @Override
     protected BedrockPlayer generatePlayer() {
-        return new BedrockPlayer(
-                PlayerUtilities.generatePlayerName()
-        );
+        return PlayerUtilities.generatePlayer(this.playerService);
     }
 }

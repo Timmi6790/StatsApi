@@ -1,7 +1,7 @@
 package de.timmi6790.mpstats.api.versions.v1.java.player.repository.postgres;
 
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.JavaPlayerRepository;
-import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaRepositoryPlayer;
+import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.postgres.mappers.PlayerMapper;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,46 +27,46 @@ public class JavaPlayerPostgresRepository implements JavaPlayerRepository {
     }
 
     @Override
-    public Optional<JavaRepositoryPlayer> getPlayer(final int repositoryId) {
+    public Optional<JavaPlayer> getPlayer(final int repositoryId) {
         return this.database.withHandle(handle ->
                 handle.createQuery(SELECT_PLAYER_BY_ID)
                         .bind("repositoryId", repositoryId)
-                        .mapTo(JavaRepositoryPlayer.class)
+                        .mapTo(JavaPlayer.class)
                         .findFirst()
         );
     }
 
     @Override
-    public Optional<JavaRepositoryPlayer> getPlayer(final UUID playerUUID) {
+    public Optional<JavaPlayer> getPlayer(final UUID playerUUID) {
         return this.database.withHandle(handle ->
                 handle.createQuery(SELECT_PLAYER)
                         .bind("playerUUID", playerUUID)
-                        .mapTo(JavaRepositoryPlayer.class)
+                        .mapTo(JavaPlayer.class)
                         .findFirst()
         );
     }
 
     @Override
-    public Optional<JavaRepositoryPlayer> getPlayer(final String playerName, final UUID playerUUID) {
-        final Optional<JavaRepositoryPlayer> playerOpt = this.getPlayer(playerUUID);
+    public Optional<JavaPlayer> getPlayer(final String playerName, final UUID playerUUID) {
+        final Optional<JavaPlayer> playerOpt = this.getPlayer(playerUUID);
         // Assure that the name was not changed
         if (playerOpt.isPresent()) {
-            final JavaRepositoryPlayer player = playerOpt.get();
-            if (!player.getPlayerName().equals(playerName)) {
+            final JavaPlayer player = playerOpt.get();
+            if (!player.getName().equals(playerName)) {
                 this.changePlayerName(player.getRepositoryId(), playerName);
-                player.setPlayerName(playerName);
+                player.setName(playerName);
             }
         }
         return playerOpt;
     }
 
     @Override
-    public JavaRepositoryPlayer insertPlayer(final String playerName, final UUID playerUUID) {
+    public JavaPlayer insertPlayer(final String playerName, final UUID playerUUID) {
         return this.database.withHandle(handle ->
                 handle.createQuery(INSERT_PLAYER)
                         .bind("playerName", playerName)
                         .bind("playerUUID", playerUUID)
-                        .mapTo(JavaRepositoryPlayer.class)
+                        .mapTo(JavaPlayer.class)
                         .first()
         );
     }

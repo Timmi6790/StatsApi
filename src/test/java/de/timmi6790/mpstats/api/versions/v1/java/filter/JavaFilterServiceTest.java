@@ -8,7 +8,7 @@ import de.timmi6790.mpstats.api.versions.v1.java.board.JavaBoardService;
 import de.timmi6790.mpstats.api.versions.v1.java.game.JavaGameService;
 import de.timmi6790.mpstats.api.versions.v1.java.leaderboard.JavaLeaderboardService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.JavaPlayerService;
-import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaRepositoryPlayer;
+import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.postgres.JavaPlayerPostgresRepository;
 import de.timmi6790.mpstats.api.versions.v1.java.stat.JavaStatService;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ import java.util.UUID;
 import static de.timmi6790.mpstats.api.utilities.PlayerUtilities.generatePlayerUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JavaFilterServiceTest extends AbstractFilterServiceTest<JavaRepositoryPlayer, JavaPlayerService, JavaFilterService> {
+class JavaFilterServiceTest extends AbstractFilterServiceTest<JavaPlayer, JavaPlayerService, JavaFilterService> {
     private static final JavaGameService GAME_SERVICE = new JavaGameService(AbstractIntegrationTest.jdbi());
     private static final JavaStatService STAT_SERVICE = new JavaStatService(AbstractIntegrationTest.jdbi());
     private static final JavaBoardService BOARD_SERVICE = new JavaBoardService(AbstractIntegrationTest.jdbi());
@@ -45,10 +45,10 @@ class JavaFilterServiceTest extends AbstractFilterServiceTest<JavaRepositoryPlay
 
     @Test
     void isFiltered_playerUUID_leaderboard_time_equals_filter_start() {
-        final Filter<JavaRepositoryPlayer> filter = this.generateFilter();
+        final Filter<JavaPlayer> filter = this.generateFilter();
 
         final boolean found = this.filterService.isFiltered(
-                filter.player().getPlayerUUID(),
+                filter.player().getUuid(),
                 filter.leaderboard(),
                 filter.start()
         );
@@ -57,10 +57,10 @@ class JavaFilterServiceTest extends AbstractFilterServiceTest<JavaRepositoryPlay
 
     @Test
     void isFiltered_playerUUID_leaderboard_time_equals_filter_end() {
-        final Filter<JavaRepositoryPlayer> filter = this.generateFilter();
+        final Filter<JavaPlayer> filter = this.generateFilter();
 
         final boolean found = this.filterService.isFiltered(
-                filter.player().getPlayerUUID(),
+                filter.player().getUuid(),
                 filter.leaderboard(),
                 filter.end()
         );
@@ -69,10 +69,10 @@ class JavaFilterServiceTest extends AbstractFilterServiceTest<JavaRepositoryPlay
 
     @Test
     void isFiltered_playerUUID_leaderboard() {
-        final Filter<JavaRepositoryPlayer> filter = this.generateFilter();
+        final Filter<JavaPlayer> filter = this.generateFilter();
 
         final boolean found = this.filterService.isFiltered(
-                filter.player().getPlayerUUID(),
+                filter.player().getUuid(),
                 filter.leaderboard()
         );
         assertThat(found).isTrue();

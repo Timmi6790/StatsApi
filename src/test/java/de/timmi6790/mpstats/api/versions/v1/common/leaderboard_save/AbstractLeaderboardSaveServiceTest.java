@@ -6,7 +6,6 @@ import de.timmi6790.mpstats.api.versions.v1.common.board.BoardService;
 import de.timmi6790.mpstats.api.versions.v1.common.game.GameService;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.LeaderboardService;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.repository.postgres.LeaderboardSavePostgresRepository;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
@@ -47,10 +46,6 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player> {
 
     protected PlayerService<P> getPlayerService() {
         return this.saveService.getPlayerService();
-    }
-
-    protected LeaderboardSavePostgresRepository<P> getRepository() {
-        return this.saveService.getRepository();
     }
 
     protected List<LeaderboardEntry<P>> generateEntries(final int count) {

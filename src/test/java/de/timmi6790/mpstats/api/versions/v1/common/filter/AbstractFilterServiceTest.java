@@ -3,6 +3,7 @@ package de.timmi6790.mpstats.api.versions.v1.common.filter;
 import de.timmi6790.mpstats.api.utilities.LeaderboardUtilities;
 import de.timmi6790.mpstats.api.utilities.PlayerUtilities;
 import de.timmi6790.mpstats.api.versions.v1.common.board.BoardService;
+import de.timmi6790.mpstats.api.versions.v1.common.filter.models.Reason;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.Filter;
 import de.timmi6790.mpstats.api.versions.v1.common.game.GameService;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.LeaderboardService;
@@ -97,7 +98,7 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
     void getFilters_player() {
         final Filter<P> filter = this.generateFilter();
 
-        final List<Filter<P>> foundFilters = this.filterService.getFilters(filter.player());
+        final List<Filter<P>> foundFilters = this.filterService.getFilters(filter.getPlayer());
         assertThat(foundFilters).containsOnly(filter);
     }
 
@@ -105,7 +106,7 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
     void getFilters_leaderboard() {
         final Filter<P> filter = this.generateFilter();
 
-        final List<Filter<P>> foundFilters = this.filterService.getFilters(filter.leaderboard());
+        final List<Filter<P>> foundFilters = this.filterService.getFilters(filter.getLeaderboard());
         assertThat(foundFilters).containsOnly(filter);
     }
 
@@ -113,7 +114,7 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
     void getFilters_player_leaderboard() {
         final Filter<P> filter = this.generateFilter();
 
-        final List<Filter<P>> foundFilters = this.filterService.getFilters(filter.player(), filter.leaderboard());
+        final List<Filter<P>> foundFilters = this.filterService.getFilters(filter.getPlayer(), filter.getLeaderboard());
         assertThat(foundFilters).containsOnly(filter);
     }
 
@@ -122,9 +123,9 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
         final Filter<P> filter = this.generateFilter();
 
         final List<Filter<P>> foundFilters = this.filterService.getFilters(
-                filter.player(),
-                filter.leaderboard(),
-                filter.start()
+                filter.getPlayer(),
+                filter.getLeaderboard(),
+                filter.getStart()
         );
         assertThat(foundFilters).containsOnly(filter);
     }
@@ -134,9 +135,9 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
         final Filter<P> filter = this.generateFilter();
 
         final boolean found = this.filterService.isFiltered(
-                filter.player(),
-                filter.leaderboard(),
-                filter.start()
+                filter.getPlayer(),
+                filter.getLeaderboard(),
+                filter.getStart()
         );
         assertThat(found).isTrue();
     }
@@ -146,9 +147,9 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
         final Filter<P> filter = this.generateFilter();
 
         final boolean found = this.filterService.isFiltered(
-                filter.player(),
-                filter.leaderboard(),
-                filter.end()
+                filter.getPlayer(),
+                filter.getLeaderboard(),
+                filter.getEnd()
         );
         assertThat(found).isTrue();
     }
@@ -159,9 +160,9 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
         final Filter<P> filter = this.generateFilter(reason);
 
         final boolean found = this.filterService.isFiltered(
-                filter.player(),
-                filter.leaderboard(),
-                filter.end(),
+                filter.getPlayer(),
+                filter.getLeaderboard(),
+                filter.getEnd(),
                 Collections.singleton(reason)
         );
         assertThat(found).isTrue();
@@ -175,9 +176,9 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
         final Set<Reason> reasons = EnumSet.allOf(Reason.class);
         reasons.remove(reason);
         final boolean notFound = this.filterService.isFiltered(
-                filter.player(),
-                filter.leaderboard(),
-                filter.end(),
+                filter.getPlayer(),
+                filter.getLeaderboard(),
+                filter.getEnd(),
                 reasons
         );
         assertThat(notFound).isFalse();
@@ -188,8 +189,8 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
         final Filter<P> filter = this.generateFilter();
 
         final boolean found = this.filterService.isFiltered(
-                filter.player(),
-                filter.leaderboard()
+                filter.getPlayer(),
+                filter.getLeaderboard()
         );
         assertThat(found).isTrue();
     }
@@ -222,11 +223,11 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
         final Filter<P> filter = this.filterService.addFilter(player, leaderboard, reason, filterStart, filterEnd);
 
         // Verify that the content is the same
-        assertThat(filter.player()).isEqualTo(player);
-        assertThat(filter.leaderboard()).isEqualTo(leaderboard);
-        assertThat(filter.reason()).isEqualTo(reason);
-        assertThat(filter.start()).isEqualToIgnoringNanos(filterStart);
-        assertThat(filter.end()).isEqualToIgnoringNanos(filterEnd);
+        assertThat(filter.getPlayer()).isEqualTo(player);
+        assertThat(filter.getLeaderboard()).isEqualTo(leaderboard);
+        assertThat(filter.getReason()).isEqualTo(reason);
+        assertThat(filter.getStart()).isEqualToIgnoringNanos(filterStart);
+        assertThat(filter.getEnd()).isEqualToIgnoringNanos(filterEnd);
     }
 
     @Test
@@ -237,7 +238,7 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
         this.filterService.removeFilter(filter);
 
         // All filter objects have uniq player and leaderboard instances
-        final boolean notFound = this.filterService.isFiltered(filter.player(), filter.leaderboard());
+        final boolean notFound = this.filterService.isFiltered(filter.getPlayer(), filter.getLeaderboard());
         assertThat(notFound).isFalse();
     }
 
@@ -248,7 +249,7 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
         final F newFilterService = this.filterServiceSupplier.get();
 
         // Check that filter is loaded correctly from the repository
-        final boolean filterFound = newFilterService.isFiltered(filter.player(), filter.leaderboard(), filter.start());
+        final boolean filterFound = newFilterService.isFiltered(filter.getPlayer(), filter.getLeaderboard(), filter.getStart());
         assertThat(filterFound).isTrue();
     }
 }

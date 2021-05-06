@@ -2,6 +2,9 @@ package de.timmi6790.mpstats.api.versions.v1.common.group;
 
 import de.timmi6790.mpstats.api.security.annontations.RequireAdminPerms;
 import de.timmi6790.mpstats.api.versions.v1.common.group.repository.models.Group;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,13 +12,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Getter(AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class GroupController {
     private final GroupService groupService;
-
-    protected GroupController(final GroupService groupService) {
-        this.groupService = groupService;
-    }
-
+    
     @PutMapping("/{groupName}")
     @RequireAdminPerms
     public Group createGroup(@PathVariable final String groupName, @RequestParam final String cleanName) {

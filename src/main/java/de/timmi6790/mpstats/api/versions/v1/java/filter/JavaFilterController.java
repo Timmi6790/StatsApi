@@ -2,7 +2,7 @@ package de.timmi6790.mpstats.api.versions.v1.java.filter;
 
 import de.timmi6790.mpstats.api.security.annontations.RequireAdminPerms;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.FilterController;
-import de.timmi6790.mpstats.api.versions.v1.common.filter.Reason;
+import de.timmi6790.mpstats.api.versions.v1.common.filter.models.Reason;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.Filter;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.java.player.JavaPlayerService;

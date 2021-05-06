@@ -48,9 +48,9 @@ class JavaFilterServiceTest extends AbstractFilterServiceTest<JavaPlayer, JavaPl
         final Filter<JavaPlayer> filter = this.generateFilter();
 
         final boolean found = this.filterService.isFiltered(
-                filter.player().getUuid(),
-                filter.leaderboard(),
-                filter.start()
+                filter.getPlayer().getUuid(),
+                filter.getLeaderboard(),
+                filter.getStart()
         );
         assertThat(found).isTrue();
     }
@@ -60,9 +60,9 @@ class JavaFilterServiceTest extends AbstractFilterServiceTest<JavaPlayer, JavaPl
         final Filter<JavaPlayer> filter = this.generateFilter();
 
         final boolean found = this.filterService.isFiltered(
-                filter.player().getUuid(),
-                filter.leaderboard(),
-                filter.end()
+                filter.getPlayer().getUuid(),
+                filter.getLeaderboard(),
+                filter.getEnd()
         );
         assertThat(found).isTrue();
     }
@@ -72,8 +72,8 @@ class JavaFilterServiceTest extends AbstractFilterServiceTest<JavaPlayer, JavaPl
         final Filter<JavaPlayer> filter = this.generateFilter();
 
         final boolean found = this.filterService.isFiltered(
-                filter.player().getUuid(),
-                filter.leaderboard()
+                filter.getPlayer().getUuid(),
+                filter.getLeaderboard()
         );
         assertThat(found).isTrue();
     }

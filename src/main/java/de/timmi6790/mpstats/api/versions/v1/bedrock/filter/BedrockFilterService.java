@@ -39,13 +39,13 @@ public class BedrockFilterService extends FilterService<BedrockPlayer, BedrockPl
 
     @Override
     protected void addFilterToCache(final Filter<BedrockPlayer> filter) {
-        this.nameToIdPlayerMap.put(filter.player().getName(), filter.player().getRepositoryId());
+        this.nameToIdPlayerMap.put(filter.getPlayer().getName(), filter.getPlayer().getRepositoryId());
         super.addFilterToCache(filter);
     }
 
     @Override
     protected void removeFilterFromCache(final Filter<BedrockPlayer> filter) {
-        this.nameToIdPlayerMap.remove(filter.player().getName());
+        this.nameToIdPlayerMap.remove(filter.getPlayer().getName());
         super.removeFilterFromCache(filter);
     }
 

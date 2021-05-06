@@ -3,6 +3,7 @@ package de.timmi6790.mpstats.api.versions.v1.common.filter;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Striped;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.models.FilterCache;
+import de.timmi6790.mpstats.api.versions.v1.common.filter.models.Reason;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.FilterRepository;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.Filter;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.postgres.FilterPostgresRepository;
@@ -63,12 +64,12 @@ public class FilterService<P extends Player, S extends PlayerService<P>> {
     }
 
     protected void addFilterToCache(final Filter<P> filter) {
-        final Lock lock = this.getFilterCacheLock(filter.player().getRepositoryId());
+        final Lock lock = this.getFilterCacheLock(filter.getPlayer().getRepositoryId());
         lock.lock();
 
         try {
             log.debug("[{}] Add {} to cache", this.schema, filter);
-            this.filterCache.computeIfAbsent(filter.player().getRepositoryId(), k -> new FilterCache())
+            this.filterCache.computeIfAbsent(filter.getPlayer().getRepositoryId(), k -> new FilterCache())
                     .addFilter(filter);
         } finally {
             lock.unlock();
@@ -76,19 +77,19 @@ public class FilterService<P extends Player, S extends PlayerService<P>> {
     }
 
     protected void removeFilterFromCache(final Filter<P> filter) {
-        final FilterCache cacheEntry = this.filterCache.get(filter.player().getRepositoryId());
+        final FilterCache cacheEntry = this.filterCache.get(filter.getPlayer().getRepositoryId());
         if (cacheEntry == null) {
             return;
         }
 
-        final Lock lock = this.getFilterCacheLock(filter.player().getRepositoryId());
+        final Lock lock = this.getFilterCacheLock(filter.getPlayer().getRepositoryId());
         lock.lock();
 
         try {
             log.debug("[{}] Remove {} from cache", this.schema, filter);
             cacheEntry.removeFilter(filter);
             if (cacheEntry.size() <= 0) {
-                this.filterCache.remove(filter.player().getRepositoryId());
+                this.filterCache.remove(filter.getPlayer().getRepositoryId());
             }
         } finally {
             lock.unlock();

@@ -10,6 +10,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.stat.StatService;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.repository.models.Stat;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,21 +21,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Getter(AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class LeaderboardController {
+    private final LeaderboardService leaderboardService;
     private final GameService gameService;
     private final StatService statService;
     private final BoardService boardService;
-    private final LeaderboardService leaderboardService;
-
-    protected LeaderboardController(final LeaderboardService leaderboardService,
-                                    final GameService gameService,
-                                    final StatService statService,
-                                    final BoardService boardService) {
-        this.leaderboardService = leaderboardService;
-        this.gameService = gameService;
-        this.statService = statService;
-        this.boardService = boardService;
-    }
 
     @GetMapping
     @Operation(summary = "Find all available leaderboards")
@@ -47,14 +39,7 @@ public abstract class LeaderboardController {
     public Optional<Leaderboard> getLeaderboard(@PathVariable final String gameName,
                                                 @PathVariable final String statName,
                                                 @PathVariable final String boardName) {
-        final Optional<Game> gameOpt = this.gameService.getGame(gameName);
-        final Optional<Stat> statOpt = this.statService.getStat(statName);
-        final Optional<Board> boardOpt = this.boardService.getBoard(boardName);
-
-        if (gameOpt.isPresent() && statOpt.isPresent() && boardOpt.isPresent()) {
-            return this.leaderboardService.getLeaderboard(gameOpt.get(), statOpt.get(), boardOpt.get());
-        }
-        return Optional.empty();
+        return this.leaderboardService.getLeaderboard(gameName, statName, boardName);
     }
 
     @PutMapping("/{gameName}/{statName}/{boardName}")

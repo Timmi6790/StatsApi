@@ -1,4 +1,4 @@
-package de.timmi6790.mpstats.api.versions.v1.common.filter;
+package de.timmi6790.mpstats.api.versions.v1.common.filter.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

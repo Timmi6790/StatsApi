@@ -137,12 +137,12 @@ class WebsiteParserTest {
         final WebsitePlayerModel data = dataOpt.get();
 
         // General data
-        assertThat(data.playerName()).isEqualTo(playerName);
-        assertThat(data.primaryRank()).isEqualTo("Eternal");
-        assertThat(data.playerUUID()).isEqualTo(UUID.fromString("9d59daad-6f62-4bd9-b13e-c961bf906750"));
+        assertThat(data.getPlayerName()).isEqualTo(playerName);
+        assertThat(data.getPrimaryRank()).isEqualTo("Eternal");
+        assertThat(data.getPlayerUUID()).isEqualTo(UUID.fromString("9d59daad-6f62-4bd9-b13e-c961bf906750"));
 
         // Stats
-        final Map<String, Map<String, Long>> stats = data.stats();
+        final Map<String, Map<String, Long>> stats = data.getStats();
 
         // Global
         this.checkIfContains(

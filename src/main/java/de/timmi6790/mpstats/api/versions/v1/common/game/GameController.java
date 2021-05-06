@@ -5,6 +5,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.Game;
 import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.GameCategory;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,13 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 import java.util.Optional;
 
+@Getter(AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class GameController {
-    @Getter(AccessLevel.PROTECTED)
     private final GameService gameService;
-
-    protected GameController(final GameService gameService) {
-        this.gameService = gameService;
-    }
 
     @GetMapping
     @Operation(summary = "Find all available games")

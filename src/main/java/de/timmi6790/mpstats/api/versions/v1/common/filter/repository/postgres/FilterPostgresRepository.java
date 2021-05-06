@@ -1,6 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.common.filter.repository.postgres;
 
-import de.timmi6790.mpstats.api.versions.v1.common.filter.Reason;
+import de.timmi6790.mpstats.api.versions.v1.common.filter.models.Reason;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.FilterRepository;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.Filter;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.postgres.mappers.FilterMapper;
@@ -142,7 +142,7 @@ public class FilterPostgresRepository<P extends Player> extends PostgresReposito
     public void removeFilter(final Filter<P> filter) {
         this.getDatabase().useHandle(handler ->
                 handler.createUpdate(this.removeFilter)
-                        .bind("repositoryId", filter.repositoryId())
+                        .bind("repositoryId", filter.getRepositoryId())
                         .execute()
         );
     }

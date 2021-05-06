@@ -18,12 +18,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Log4j2
+@Getter(AccessLevel.PROTECTED)
 public abstract class LeaderboardSaveService<P extends Player> {
-    @Getter(AccessLevel.PROTECTED)
     private final PlayerService<P> playerService;
-    @Getter(AccessLevel.PROTECTED)
     private final LeaderboardSavePostgresRepository<P> repository;
-
+    
     private final String schemaName;
 
     protected LeaderboardSaveService(final PlayerService<P> playerService, final Jdbi database, final String schema) {

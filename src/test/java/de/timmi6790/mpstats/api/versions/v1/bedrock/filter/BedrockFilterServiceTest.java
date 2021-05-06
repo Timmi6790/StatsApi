@@ -46,9 +46,9 @@ class BedrockFilterServiceTest extends AbstractFilterServiceTest<BedrockPlayer, 
         final Filter<BedrockPlayer> filter = this.generateFilter();
 
         final boolean found = this.filterService.isFiltered(
-                filter.player().getName(),
-                filter.leaderboard(),
-                filter.start()
+                filter.getPlayer().getName(),
+                filter.getLeaderboard(),
+                filter.getStart()
         );
         assertThat(found).isTrue();
     }
@@ -58,9 +58,9 @@ class BedrockFilterServiceTest extends AbstractFilterServiceTest<BedrockPlayer, 
         final Filter<BedrockPlayer> filter = this.generateFilter();
 
         final boolean found = this.filterService.isFiltered(
-                filter.player().getName(),
-                filter.leaderboard(),
-                filter.end()
+                filter.getPlayer().getName(),
+                filter.getLeaderboard(),
+                filter.getEnd()
         );
         assertThat(found).isTrue();
     }
@@ -71,8 +71,8 @@ class BedrockFilterServiceTest extends AbstractFilterServiceTest<BedrockPlayer, 
         final Filter<BedrockPlayer> filter = this.generateFilter();
 
         final boolean found = this.filterService.isFiltered(
-                filter.player().getName(),
-                filter.leaderboard()
+                filter.getPlayer().getName(),
+                filter.getLeaderboard()
         );
         assertThat(found).isTrue();
     }

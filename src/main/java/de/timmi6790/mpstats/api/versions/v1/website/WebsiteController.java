@@ -47,7 +47,7 @@ public class WebsiteController {
     public Map<String, Map<String, Long>> getPlayerStats(
             @PathVariable("player") @ValidJavaPlayerName final String player
     ) {
-        return this.getWebsitePlayerModel(player).stats();
+        return this.getWebsitePlayerModel(player).getStats();
     }
 
     @GetMapping("{player}/stats/{game}")
@@ -55,7 +55,7 @@ public class WebsiteController {
             @PathVariable("player") @ValidJavaPlayerName final String player,
             @PathVariable("game") final String game
     ) {
-        final Map<String, Map<String, Long>> stats = this.getWebsitePlayerModel(player).stats();
+        final Map<String, Map<String, Long>> stats = this.getWebsitePlayerModel(player).getStats();
         final Map<String, Long> gameStats = stats.get(game);
         if (gameStats != null) {
             return gameStats;

@@ -45,7 +45,7 @@ public class WebsiteService {
             final Optional<WebsitePlayerModel> playerDataOpt = this.retrievePlayerSync(player);
             if (playerDataOpt.isPresent()) {
                 final WebsitePlayerModel playerData = playerDataOpt.get();
-                return Optional.ofNullable(playerData.stats().get(gameName));
+                return Optional.ofNullable(playerData.getStats().get(gameName));
             }
 
             return Optional.empty();

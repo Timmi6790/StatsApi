@@ -36,12 +36,12 @@ public abstract class AbstractGroupServiceTest {
 
         // Insert group
         final Group groupCreate = this.groupService.createGroup(groupName, groupName);
-        assertThat(groupCreate.groupName()).isEqualTo(groupName);
+        assertThat(groupCreate.getGroupName()).isEqualTo(groupName);
 
         // Verify cache
         final Optional<Group> groupCache = this.groupService.getGroup(groupName);
         assertThat(groupCache).isPresent();
-        assertThat(groupCache.get().groupName()).isEqualTo(groupName);
+        assertThat(groupCache.get().getGroupName()).isEqualTo(groupName);
 
         // Verify none cache
         final Optional<Group> groupNoCache = this.groupRepository.getGroup(groupName);
@@ -136,7 +136,7 @@ public abstract class AbstractGroupServiceTest {
         // Assure that the groups does not exist
         final List<String> groupsNotContains = this.groupService.getGroups()
                 .stream()
-                .map(Group::groupName)
+                .map(Group::getGroupName)
                 .collect(Collectors.toList());
         assertThat(groupsNotContains).doesNotContain(groupName1, groupName2);
 
@@ -146,7 +146,7 @@ public abstract class AbstractGroupServiceTest {
 
         final List<String> groupsContains = this.groupService.getGroups()
                 .stream()
-                .map(Group::groupName)
+                .map(Group::getGroupName)
                 .collect(Collectors.toList());
         assertThat(groupsContains).contains(groupName1, groupName2);
     }

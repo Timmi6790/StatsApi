@@ -1,6 +1,7 @@
 package de.timmi6790.mpstats.api.versions.v1.common.filter;
 
 import de.timmi6790.mpstats.api.security.annontations.RequireAdminPerms;
+import de.timmi6790.mpstats.api.versions.v1.common.filter.models.Reason;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.Filter;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.LeaderboardService;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter(AccessLevel.PROTECTED)
 public class FilterController<P extends Player, S extends PlayerService<P>> {
     private final FilterService<P, S> filterService;

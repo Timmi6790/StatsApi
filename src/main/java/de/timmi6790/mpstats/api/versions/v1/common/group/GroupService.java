@@ -32,7 +32,7 @@ public class GroupService {
         this.groupRepository = new GroupPostgresRepository(database, schema);
 
         for (final Group group : this.groupRepository.getGroups()) {
-            this.groupNames.add(group.groupName());
+            this.groupNames.add(group.getGroupName());
         }
     }
 
@@ -46,7 +46,7 @@ public class GroupService {
 
     private void insertGroupIntoCache(final Group group) {
         log.debug("Add group to cache: {}", group);
-        this.groupCache.put(group.groupName().toLowerCase(), group);
+        this.groupCache.put(group.getGroupName().toLowerCase(), group);
     }
 
     private void invalidateGroupCache(final String groupName) {
@@ -69,7 +69,7 @@ public class GroupService {
             log.info("Creating group {}", groupName);
             final Group group = this.groupRepository.createGroup(groupName, cleanName);
             this.insertGroupIntoCache(group);
-            this.groupNames.add(group.groupName());
+            this.groupNames.add(group.getGroupName());
             return group;
         } finally {
             lock.unlock();
@@ -84,8 +84,8 @@ public class GroupService {
             final Optional<Group> groupOpt = this.getGroup(groupName);
             if (groupOpt.isPresent()) {
                 log.info("Deleting group {}", groupOpt.get());
-                this.groupRepository.deleteGroup(groupOpt.get().repositoryId());
-                this.groupNames.remove(groupOpt.get().groupName());
+                this.groupRepository.deleteGroup(groupOpt.get().getRepositoryId());
+                this.groupNames.remove(groupOpt.get().getGroupName());
                 this.invalidateGroupCache(groupName);
             }
         } finally {

@@ -40,13 +40,13 @@ public class JavaFilterService extends FilterService<JavaPlayer, JavaPlayerServi
 
     @Override
     protected void addFilterToCache(final Filter<JavaPlayer> filter) {
-        this.uuidToIdPlayerMap.put(filter.player().getUuid(), filter.player().getRepositoryId());
+        this.uuidToIdPlayerMap.put(filter.getPlayer().getUuid(), filter.getPlayer().getRepositoryId());
         super.addFilterToCache(filter);
     }
 
     @Override
     protected void removeFilterFromCache(final Filter<JavaPlayer> filter) {
-        this.uuidToIdPlayerMap.remove(filter.player().getUuid());
+        this.uuidToIdPlayerMap.remove(filter.getPlayer().getUuid());
         super.removeFilterFromCache(filter);
     }
 

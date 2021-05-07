@@ -8,19 +8,13 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Data
 @Log4j2
@@ -30,17 +24,27 @@ public abstract class LeaderboardRequestService<P extends Player> {
 
     @Getter(AccessLevel.PROTECTED)
     private final String leaderboardBaseUrl;
-    private final int estimatedResultSize;
 
     @Getter(AccessLevel.PROTECTED)
     private final OkHttpClient httpClient;
 
-    protected LeaderboardRequestService(final String leaderboardBaseUrl, final int estimatedResultSize) {
+    protected LeaderboardRequestService(final String leaderboardBaseUrl) {
         this.leaderboardBaseUrl = leaderboardBaseUrl;
-        this.estimatedResultSize = estimatedResultSize;
+
+        final Dispatcher dispatcher = new Dispatcher();
+        dispatcher.setMaxRequests(100);
+        dispatcher.setMaxRequestsPerHost(100);
+
+        final ConnectionPool connectionPool = new ConnectionPool(
+                100,
+                15000,
+                TimeUnit.MILLISECONDS
+        );
 
         this.httpClient = new OkHttpClient.Builder()
                 .connectTimeout(45, TimeUnit.SECONDS)
+                .dispatcher(dispatcher)
+                .connectionPool(connectionPool)
                 .addInterceptor(chain -> {
                     final Request originalRequest = chain.request();
                     final Request requestWithUserAgent = originalRequest.newBuilder()
@@ -51,16 +55,11 @@ public abstract class LeaderboardRequestService<P extends Player> {
                 .build();
     }
 
-    protected abstract Optional<LeaderboardEntry<P>> parseRow(String row);
+    protected abstract List<LeaderboardEntry<P>> parseRows(String[] rows);
 
     protected List<LeaderboardEntry<P>> parseLeaderboardEntry(final String response) {
         final String[] rows = HTML_ROW_PARSER.split(response);
-        return Arrays.stream(rows).parallel()
-                .map(this::parseRow)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .sorted(Comparator.comparing(LeaderboardEntry::getScore, Comparator.reverseOrder()))
-                .collect(Collectors.toList());
+        return this.parseRows(rows);
     }
 
     public Optional<LeaderboardSave<P>> retrieveLeaderboard(final String game, final String stat, final String board) {
@@ -84,7 +83,7 @@ public abstract class LeaderboardRequestService<P extends Player> {
                 if (!parsedResponse.isEmpty()) {
                     return Optional.of(
                             new LeaderboardSave<>(
-                                    LocalDateTime.now(),
+                                    ZonedDateTime.now(),
                                     parsedResponse
                             )
                     );

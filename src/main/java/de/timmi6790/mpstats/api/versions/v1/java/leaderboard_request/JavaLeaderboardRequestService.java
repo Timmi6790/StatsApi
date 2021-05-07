@@ -1,5 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.java.leaderboard_request;
 
+import com.google.common.collect.Lists;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import de.timmi6790.mpstats.api.Config;
@@ -7,10 +8,13 @@ import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.Leaderboa
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.java.player.JavaPlayerService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -21,24 +25,49 @@ public class JavaLeaderboardRequestService extends LeaderboardRequestService<Jav
 
     @Autowired
     public JavaLeaderboardRequestService(final Config config, final JavaPlayerService playerService) {
-        super(config.getLeaderboard().getJavaUrl(), 1_000);
+        super(config.getLeaderboard().getJavaUrl());
 
         this.playerService = playerService;
     }
 
     @Override
-    protected Optional<LeaderboardEntry<JavaPlayer>> parseRow(final String row) {
-        final Matcher leaderboardMatcher = LEADERBOARD_PATTERN.matcher(row);
-        if (leaderboardMatcher.find()) {
-            final String playerName = leaderboardMatcher.group(2);
-            final UUID playerUUID = UUID.fromString(leaderboardMatcher.group(1));
-            return Optional.of(
+    protected List<LeaderboardEntry<JavaPlayer>> parseRows(final String[] rows) {
+        final Map<UUID, String> parsedPlayers = new HashMap<>();
+        final List<PreEntry> entries = Lists.newArrayListWithCapacity(1_000);
+        for (final String row : rows) {
+            final Matcher leaderboardMatcher = LEADERBOARD_PATTERN.matcher(row);
+            if (leaderboardMatcher.find()) {
+                final String playerName = leaderboardMatcher.group(2);
+                final UUID playerUUID = UUID.fromString(leaderboardMatcher.group(1));
+                final long score = Long.parseLong(leaderboardMatcher.group(3).replace(",", ""));
+
+                parsedPlayers.put(playerUUID, playerName);
+                entries.add(
+                        new PreEntry(
+                                playerUUID,
+                                score
+                        )
+                );
+            }
+        }
+
+        final Map<UUID, JavaPlayer> players = this.playerService.getPlayersOrCreate(parsedPlayers);
+        final List<LeaderboardEntry<JavaPlayer>> parsedEntries = Lists.newArrayListWithCapacity(entries.size());
+        for (final PreEntry entry : entries) {
+            parsedEntries.add(
                     new LeaderboardEntry<>(
-                            this.playerService.getPlayerOrCreate(playerName, playerUUID),
-                            Long.parseLong(leaderboardMatcher.group(3).replace(",", ""))
+                            players.get(entry.getPlayerUUID()),
+                            entry.getScore()
                     )
             );
         }
-        return Optional.empty();
+
+        return parsedEntries;
+    }
+
+    @Data
+    private static class PreEntry {
+        private final UUID playerUUID;
+        private final long score;
     }
 }

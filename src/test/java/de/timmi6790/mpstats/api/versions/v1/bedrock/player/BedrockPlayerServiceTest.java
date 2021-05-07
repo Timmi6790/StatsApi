@@ -6,32 +6,35 @@ import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.Bed
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static de.timmi6790.mpstats.api.utilities.PlayerUtilities.generatePlayerName;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class BedrockPlayerServiceTest {
     private static BedrockPlayerRepository bedrockPlayerRepository;
-    private static BedrockPlayerService bedrockPlayerService;
+    private static BedrockPlayerService playerService;
 
     @BeforeAll
     static void setUp() {
-        bedrockPlayerService = BedrockServiceGenerator.generatePlayerService();
-        bedrockPlayerRepository = bedrockPlayerService.getPlayerRepository();
+        playerService = BedrockServiceGenerator.generatePlayerService();
+        bedrockPlayerRepository = playerService.getPlayerRepository();
     }
 
     @Test
     void hasPlayer() {
         final String playerName = generatePlayerName();
 
-        final boolean playerNotFound = bedrockPlayerService.hasPlayer(playerName);
+        final boolean playerNotFound = playerService.hasPlayer(playerName);
         assertThat(playerNotFound).isFalse();
 
         // Insert player
-        bedrockPlayerService.getPlayerOrCreate(playerName);
+        playerService.getPlayerOrCreate(playerName);
 
-        final boolean playerFound = bedrockPlayerService.hasPlayer(playerName);
+        final boolean playerFound = playerService.hasPlayer(playerName);
         assertThat(playerFound).isTrue();
     }
 
@@ -40,14 +43,14 @@ class BedrockPlayerServiceTest {
         final String playerName = generatePlayerName();
 
         // Insert player
-        bedrockPlayerService.getPlayerOrCreate(playerName);
+        playerService.getPlayerOrCreate(playerName);
 
         // Uppercase check
-        final boolean playerUpper = bedrockPlayerService.hasPlayer(playerName.toUpperCase());
+        final boolean playerUpper = playerService.hasPlayer(playerName.toUpperCase());
         assertThat(playerUpper).isTrue();
 
         // Lowercase check
-        final boolean playerLower = bedrockPlayerService.hasPlayer(playerName.toLowerCase());
+        final boolean playerLower = playerService.hasPlayer(playerName.toLowerCase());
         assertThat(playerLower).isTrue();
     }
 
@@ -55,13 +58,13 @@ class BedrockPlayerServiceTest {
     void getPlayer() {
         final String playerName = generatePlayerName();
 
-        final Optional<BedrockPlayer> playerNotFound = bedrockPlayerService.getPlayer(playerName);
+        final Optional<BedrockPlayer> playerNotFound = playerService.getPlayer(playerName);
         assertThat(playerNotFound).isNotPresent();
 
         // Insert player
-        bedrockPlayerService.getPlayerOrCreate(playerName);
+        playerService.getPlayerOrCreate(playerName);
 
-        final Optional<BedrockPlayer> playerFound = bedrockPlayerService.getPlayer(playerName);
+        final Optional<BedrockPlayer> playerFound = playerService.getPlayer(playerName);
         assertThat(playerFound).isPresent();
     }
 
@@ -70,9 +73,9 @@ class BedrockPlayerServiceTest {
         final String playerName = generatePlayerName();
 
         // Insert player
-        final BedrockPlayer player = bedrockPlayerService.getPlayerOrCreate(playerName);
+        final BedrockPlayer player = playerService.getPlayerOrCreate(playerName);
 
-        final Optional<BedrockPlayer> playerFound = bedrockPlayerService.getPlayer(player.getRepositoryId());
+        final Optional<BedrockPlayer> playerFound = playerService.getPlayer(player.getRepositoryId());
         assertThat(playerFound)
                 .isPresent()
                 .contains(player);
@@ -83,14 +86,14 @@ class BedrockPlayerServiceTest {
         final String playerName = generatePlayerName();
 
         // Insert player
-        bedrockPlayerService.getPlayerOrCreate(playerName);
+        playerService.getPlayerOrCreate(playerName);
 
         // Uppercase check
-        final Optional<BedrockPlayer> playerUpper = bedrockPlayerService.getPlayer(playerName.toUpperCase());
+        final Optional<BedrockPlayer> playerUpper = playerService.getPlayer(playerName.toUpperCase());
         assertThat(playerUpper).isPresent();
 
         // Lowercase check
-        final Optional<BedrockPlayer> playerLower = bedrockPlayerService.getPlayer(playerName.toLowerCase());
+        final Optional<BedrockPlayer> playerLower = playerService.getPlayer(playerName.toLowerCase());
         assertThat(playerLower).isPresent();
     }
 
@@ -98,14 +101,14 @@ class BedrockPlayerServiceTest {
     void getPlayerOrCreate() {
         final String playerName = generatePlayerName();
 
-        final Optional<BedrockPlayer> playerNotFound = bedrockPlayerService.getPlayer(playerName);
+        final Optional<BedrockPlayer> playerNotFound = playerService.getPlayer(playerName);
         assertThat(playerNotFound).isNotPresent();
 
-        final BedrockPlayer player = bedrockPlayerService.getPlayerOrCreate(playerName);
+        final BedrockPlayer player = playerService.getPlayerOrCreate(playerName);
         assertThat(player.getName()).isEqualTo(playerName);
 
         // Cache check
-        final BedrockPlayer playerCache = bedrockPlayerService.getPlayerOrCreate(playerName);
+        final BedrockPlayer playerCache = playerService.getPlayerOrCreate(playerName);
         assertThat(player).isEqualTo(playerCache);
 
         // No cache check
@@ -113,5 +116,44 @@ class BedrockPlayerServiceTest {
         assertThat(playerNoCache)
                 .isPresent()
                 .contains(player);
+    }
+
+    @Test
+    void getPlayersOrCreate() {
+        final Set<String> playerNames = new HashSet<>();
+        for (int count = 0; 20 > count; count++) {
+            playerNames.add(generatePlayerName());
+        }
+
+        final Map<String, BedrockPlayer> foundsPlayers = playerService.getPlayersOrCreate(playerNames);
+        assertThat(foundsPlayers).containsOnlyKeys(playerNames);
+        for (final Map.Entry<String, BedrockPlayer> entry : foundsPlayers.entrySet()) {
+            assertThat(entry.getKey()).isEqualTo(entry.getValue().getName());
+        }
+    }
+
+    @Test
+    void getPlayersOrCreate_pre_created_players() {
+        final Set<String> playerNames = new HashSet<>();
+        for (int count = 0; 20 > count; count++) {
+            final String playerName = generatePlayerName();
+            playerNames.add(playerName);
+            // Initialize a few players
+            if (count % 2 == 0) {
+                playerService.getPlayerOrCreate(playerName);
+            }
+        }
+
+        final Map<String, BedrockPlayer> foundsPlayers = playerService.getPlayersOrCreate(playerNames);
+        assertThat(foundsPlayers).containsOnlyKeys(playerNames);
+        for (final Map.Entry<String, BedrockPlayer> entry : foundsPlayers.entrySet()) {
+            assertThat(entry.getKey()).isEqualTo(entry.getValue().getName());
+        }
+    }
+
+    @Test
+    void getPlayersOrCreate_empty() {
+        final Map<String, BedrockPlayer> empty = playerService.getPlayersOrCreate(new HashSet<>());
+        assertThat(empty).isEmpty();
     }
 }

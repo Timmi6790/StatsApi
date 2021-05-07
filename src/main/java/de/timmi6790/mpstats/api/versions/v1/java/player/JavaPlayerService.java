@@ -12,6 +12,8 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -101,5 +103,13 @@ public class JavaPlayerService implements PlayerService<JavaPlayer> {
         } finally {
             lock.unlock();
         }
+    }
+
+    public Map<UUID, JavaPlayer> getPlayersOrCreate(final Map<UUID, String> players) {
+        if (players.isEmpty()) {
+            return new HashMap<>();
+        }
+
+        return this.playerRepository.getPlayersOrCreate(players);
     }
 }

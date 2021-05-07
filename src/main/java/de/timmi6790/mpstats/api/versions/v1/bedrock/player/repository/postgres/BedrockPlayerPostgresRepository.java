@@ -4,15 +4,19 @@ import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.BedrockPla
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockPlayer;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.postgres.mappers.PlayerMapper;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.PreparedBatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class BedrockPlayerPostgresRepository implements BedrockPlayerRepository {
-    private static final String SELECT_PLAYER = "SELECT id player_id, player_name player_name FROM bedrock.players WHERE player_name = :playerName LIMIT 1;";
-    private static final String SELECT_PLAYER_BY_ID = "SELECT id player_id, player_name player_name FROM bedrock.players WHERE id = :repositoryId LIMIT 1;";
+    private static final String SELECT_PLAYER_BASE = "SELECT id player_id, player_name player_name FROM bedrock.players %s;";
+    private static final String SELECT_PLAYER = String.format(SELECT_PLAYER_BASE, "WHERE LOWER(player_name) = LOWER(:playerName) LIMIT 1");
+    private static final String SELECT_PLAYER_BY_ID = String.format(SELECT_PLAYER_BASE, "WHERE id = :repositoryId LIMIT 1");
+    private static final String SELECT_PLAYER_BY_NAMES = String.format(SELECT_PLAYER_BASE, "WHERE LOWER(player_name) IN (<playerNames>);");
     private static final String INSERT_PLAYER = "INSERT INTO bedrock.players(player_name) VALUES(:playerName) RETURNING id player_id, player_name player_name;";
 
     private final Jdbi database;
@@ -52,5 +56,58 @@ public class BedrockPlayerPostgresRepository implements BedrockPlayerRepository 
                         .mapTo(BedrockPlayer.class)
                         .first()
         );
+    }
+
+    @Override
+    public Map<String, BedrockPlayer> getPlayersOrCreate(final Set<String> playerNames) {
+        return this.database.withHandle(handle -> {
+            // Convert all names to lower to avoid creating duplicate names
+            final Set<String> lowerNames = new HashSet<>();
+            for (final String playerName : playerNames) {
+                lowerNames.add(playerName.toLowerCase());
+            }
+
+            final Map<String, BedrockPlayer> foundPlayers = handle.createQuery(SELECT_PLAYER_BY_NAMES)
+                    .bindList("playerNames", lowerNames)
+                    .mapTo(BedrockPlayer.class)
+                    .stream()
+                    .collect(
+                            Collectors.toMap(
+                                    BedrockPlayer::getName,
+                                    p -> p,
+                                    (bedrockPlayer, bedrockPlayer2) -> bedrockPlayer,
+                                    () -> new TreeMap<>(String.CASE_INSENSITIVE_ORDER)
+                            )
+                    );
+
+            // Insert new players
+            final Set<String> newPlayerNames = new HashSet<>();
+            final PreparedBatch newPlayersBatch = handle.prepareBatch(INSERT_PLAYER);
+            for (final String playerName : playerNames) {
+                if (!foundPlayers.containsKey(playerName)) {
+                    newPlayerNames.add(playerName.toLowerCase());
+                    newPlayersBatch.bind("playerName", playerName);
+                    newPlayersBatch.add();
+                }
+            }
+            if (newPlayersBatch.size() > 0) {
+                newPlayersBatch.execute();
+                final Map<String, BedrockPlayer> newPlayers = handle.createQuery(SELECT_PLAYER_BY_NAMES)
+                        .bindList("playerNames", newPlayerNames)
+                        .mapTo(BedrockPlayer.class)
+                        .stream()
+                        .collect(
+                                Collectors.toMap(
+                                        BedrockPlayer::getName,
+                                        p -> p,
+                                        (bedrockPlayer, bedrockPlayer2) -> bedrockPlayer,
+                                        () -> new TreeMap<>(String.CASE_INSENSITIVE_ORDER)
+                                )
+                        );
+                // Combine the two maps into one
+                foundPlayers.putAll(newPlayers);
+            }
+            return foundPlayers;
+        });
     }
 }

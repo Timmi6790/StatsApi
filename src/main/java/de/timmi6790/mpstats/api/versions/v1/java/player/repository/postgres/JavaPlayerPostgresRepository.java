@@ -4,16 +4,19 @@ import de.timmi6790.mpstats.api.versions.v1.java.player.repository.JavaPlayerRep
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.postgres.mappers.PlayerMapper;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.PreparedBatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class JavaPlayerPostgresRepository implements JavaPlayerRepository {
-    private static final String SELECT_PLAYER = "SELECT id player_id, player_name player_name, player_uuid player_uuid FROM java.players WHERE player_uuid = :playerUUID LIMIT 1;";
-    private static final String SELECT_PLAYER_BY_ID = "SELECT id player_id, player_name player_name, player_uuid player_uuid FROM java.players WHERE id = :repositoryId LIMIT 1;";
+    private static final String SELECT_PLAYER_BASE = "SELECT id player_id, player_name player_name, player_uuid player_uuid FROM java.players %s;";
+    private static final String SELECT_PLAYER = String.format(SELECT_PLAYER_BASE, "WHERE player_uuid = :playerUUID LIMIT 1");
+    private static final String SELECT_PLAYER_BY_ID = String.format(SELECT_PLAYER_BASE, "WHERE id = :repositoryId LIMIT 1");
+    private static final String SELECT_PLAYER_BY_UUIDS = String.format(SELECT_PLAYER_BASE, "WHERE player_uuid IN (<playerUUIDS>)");
     private static final String UPDATE_PLAYER_NAME = "UPDATE java.players SET player_name = :playerName WHERE id = :playerId;";
     private static final String INSERT_PLAYER = "INSERT INTO java.players(player_name, player_uuid) VALUES(:playerName, :playerUUID) RETURNING id player_id, player_name player_name, player_uuid player_uuid;";
 
@@ -79,5 +82,56 @@ public class JavaPlayerPostgresRepository implements JavaPlayerRepository {
                         .bind("playerName", newName)
                         .execute()
         );
+    }
+
+    @Override
+    public Map<UUID, JavaPlayer> getPlayersOrCreate(final Map<UUID, String> players) {
+        return this.database.withHandle(handle -> {
+            final Map<UUID, JavaPlayer> foundPlayers = handle.createQuery(SELECT_PLAYER_BY_UUIDS)
+                    .bindList("playerUUIDS", players.keySet())
+                    .mapTo(JavaPlayer.class)
+                    .stream()
+                    .collect(Collectors.toMap(JavaPlayer::getUuid, p -> p));
+
+            // Changed name detection
+            final PreparedBatch updateNameBatch = handle.prepareBatch(UPDATE_PLAYER_NAME);
+            for (final Map.Entry<UUID, JavaPlayer> foundEntry : foundPlayers.entrySet()) {
+                final JavaPlayer player = foundEntry.getValue();
+                final String newName = players.get(foundEntry.getKey());
+                if (!player.getName().equals(newName)) {
+                    // Update the old name
+                    player.setName(newName);
+                    
+                    updateNameBatch.bind("playerId", player.getRepositoryId());
+                    updateNameBatch.bind("playerName", newName);
+                    updateNameBatch.add();
+                }
+            }
+            updateNameBatch.execute();
+
+            // Insert new players
+            final Set<UUID> newPlayerUUIDs = new HashSet<>();
+            final PreparedBatch newPlayersBatch = handle.prepareBatch(INSERT_PLAYER);
+            for (final Map.Entry<UUID, String> playerEntry : players.entrySet()) {
+                if (!foundPlayers.containsKey(playerEntry.getKey())) {
+                    newPlayerUUIDs.add(playerEntry.getKey());
+                    newPlayersBatch.bind("playerName", playerEntry.getValue());
+                    newPlayersBatch.bind("playerUUID", playerEntry.getKey());
+                    newPlayersBatch.add();
+                }
+            }
+            if (newPlayersBatch.size() > 0) {
+                newPlayersBatch.execute();
+                final Map<UUID, JavaPlayer> newPlayers = handle.createQuery(SELECT_PLAYER_BY_UUIDS)
+                        .bindList("playerUUIDS", newPlayerUUIDs)
+                        .mapTo(JavaPlayer.class)
+                        .stream()
+                        .collect(Collectors.toMap(JavaPlayer::getUuid, p -> p));
+
+                // Combine the two maps into one
+                foundPlayers.putAll(newPlayers);
+            }
+            return foundPlayers;
+        });
     }
 }

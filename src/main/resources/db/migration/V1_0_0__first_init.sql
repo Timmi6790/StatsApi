@@ -90,12 +90,13 @@ CREATE TABLE "bedrock"."leaderboard_saves"
 
 CREATE TABLE "bedrock"."leaderboards"
 (
-    "id"          serial4,
-    "game_id"     int4        NOT NULL,
-    "stat_id"     int4        NOT NULL,
-    "board_id"    int4        NOT NULL,
-    "deprecated"  boolean     NOT NULL,
-    "last_update" timestamptz NOT NULL DEFAULT TO_TIMESTAMP(0),
+    "id"                serial4,
+    "game_id"           int4        NOT NULL,
+    "stat_id"           int4        NOT NULL,
+    "board_id"          int4        NOT NULL,
+    "deprecated"        boolean     NOT NULL,
+    "last_update"       timestamptz NOT NULL DEFAULT TO_TIMESTAMP(0),
+    "last_cache_update" timestamptz NOT NULL DEFAULT TO_TIMESTAMP(0),
     PRIMARY KEY ("id")
 );
 
@@ -223,12 +224,13 @@ CREATE TABLE "java"."leaderboard_saves"
 
 CREATE TABLE "java"."leaderboards"
 (
-    "id"          serial4,
-    "game_id"     int4        NOT NULL,
-    "stat_id"     int4        NOT NULL,
-    "board_id"    int4        NOT NULL,
-    "deprecated"  boolean     NOT NULL,
-    "last_update" timestamptz NOT NULL DEFAULT TO_TIMESTAMP(0),
+    "id"                serial4,
+    "game_id"           int4        NOT NULL,
+    "stat_id"           int4        NOT NULL,
+    "board_id"          int4        NOT NULL,
+    "deprecated"        boolean     NOT NULL,
+    "last_update"       timestamptz NOT NULL DEFAULT TO_TIMESTAMP(0),
+    "last_cache_update" timestamptz NOT NULL DEFAULT TO_TIMESTAMP(0),
     PRIMARY KEY ("id")
 );
 

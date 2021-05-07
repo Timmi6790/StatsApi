@@ -5,6 +5,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.Game;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.repository.models.Stat;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,5 +22,7 @@ public interface LeaderboardRepository {
 
     void setLeaderboardDeprecated(int leaderboardId, boolean deprecated);
 
-    void setLeaderboardLastUpdate(int leaderboardId, long lastUpdate);
+    void setLeaderboardLastUpdate(int leaderboardId, ZonedDateTime lastUpdate);
+
+    void setLeaderboardLastCacheUpdate(int leaderboardId, ZonedDateTime lastUpdate);
 }

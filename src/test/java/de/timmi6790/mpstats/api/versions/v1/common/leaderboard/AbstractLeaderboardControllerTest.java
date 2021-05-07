@@ -30,7 +30,7 @@ import static de.timmi6790.mpstats.api.utilities.StatUtilities.generateStatName;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractLeaderboardControllerTest<L extends LeaderboardService, G extends GameService, S extends StatService, B extends BoardService> extends AbstractRestTest {
-    protected static final String[] IGNORED_FIELDS = {"repositoryId", "websiteName", "game.repositoryId", "game.websiteName", "stat.repositoryId", "stat.websiteName", "board.repositoryId", "board.websiteName"};
+    protected static final String[] IGNORED_FIELDS = {"leaderboardRepository", "repositoryId", "websiteName", "game.repositoryId", "game.websiteName", "stat.repositoryId", "stat.websiteName", "board.repositoryId", "board.websiteName"};
 
     private final String basePath;
 
@@ -157,9 +157,10 @@ public abstract class AbstractLeaderboardControllerTest<L extends LeaderboardSer
         assertThat(boardFound)
                 .usingRecursiveComparison()
                 .ignoringFields(IGNORED_FIELDS)
-                .ignoringFields("lastSave")
+                .ignoringFields("lastSaveTime", "lastCacheSaveTime")
                 .isEqualTo(leaderboard);
-        assertThat(boardFound.getLastSave()).isEqualTo(leaderboard.getLastSave());
+        assertThat(boardFound.getLastSaveTime()).isEqualTo(leaderboard.getLastSaveTime());
+        assertThat(boardFound.getLastCacheSaveTime()).isEqualTo(leaderboard.getLastCacheSaveTime());
     }
 
     @Test

@@ -1,5 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.postgres;
 
+import com.google.common.collect.Sets;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.BedrockPlayerRepository;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockPlayer;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.postgres.mappers.PlayerMapper;
@@ -62,7 +63,7 @@ public class BedrockPlayerPostgresRepository implements BedrockPlayerRepository 
     public Map<String, BedrockPlayer> getPlayersOrCreate(final Set<String> playerNames) {
         return this.database.withHandle(handle -> {
             // Convert all names to lower to avoid creating duplicate names
-            final Set<String> lowerNames = new HashSet<>();
+            final Set<String> lowerNames = Sets.newHashSetWithExpectedSize(playerNames.size());
             for (final String playerName : playerNames) {
                 lowerNames.add(playerName.toLowerCase());
             }

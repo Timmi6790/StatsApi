@@ -4,6 +4,7 @@ import com.google.re2j.Pattern;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
+import io.sentry.Sentry;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -95,6 +96,7 @@ public abstract class LeaderboardRequestService<P extends Player> {
             return Optional.empty();
         } catch (final IOException e) {
             log.error("{}-{}-{}", game, stat, board, e);
+            Sentry.captureException(e);
             return Optional.empty();
         }
     }

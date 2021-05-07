@@ -1,5 +1,6 @@
 package de.timmi6790.mpstats.api.security;
 
+import io.sentry.Sentry;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -42,10 +43,11 @@ public class ApiKeyAuthenticationFilter extends GenericFilterBean {
 
             chain.doFilter(request, response);
         } catch (final InternalAuthenticationServiceException exception) {
-            this.logger.error("Internal authentication service exception", exception);
-
             SecurityContextHolder.clearContext();
             ((HttpServletResponse) response).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+            this.logger.error("Internal authentication service exception", exception);
+            Sentry.captureException(exception);
         } catch (final AuthenticationException exception) {
             SecurityContextHolder.clearContext();
             ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, exception.getMessage());

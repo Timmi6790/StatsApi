@@ -17,7 +17,7 @@ public class BytesRedisSerializer<T> implements RedisSerializer<T> {
     private final JavaType javaType;
     private final ObjectMapper objectMapper = new ObjectMapper(new MessagePackFactory()).disable(MapperFeature.USE_ANNOTATIONS)
             .registerModules(new Jdk8Module(), new JavaTimeModule(), new ParameterNamesModule())
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true)
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
             .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .setSerializationInclusion(JsonInclude.Include.NON_NULL);

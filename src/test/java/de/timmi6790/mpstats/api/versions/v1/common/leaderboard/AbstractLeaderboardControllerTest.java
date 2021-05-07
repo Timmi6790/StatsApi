@@ -153,10 +153,13 @@ public abstract class AbstractLeaderboardControllerTest<L extends LeaderboardSer
                 responseSupplier.get(),
                 Leaderboard.class
         );
+
         assertThat(boardFound)
                 .usingRecursiveComparison()
                 .ignoringFields(IGNORED_FIELDS)
+                .ignoringFields("lastSave")
                 .isEqualTo(leaderboard);
+        assertThat(boardFound.getLastSave()).isEqualTo(leaderboard.getLastSave());
     }
 
     @Test

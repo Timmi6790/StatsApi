@@ -13,7 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,8 +44,8 @@ public class FilterController<P extends Player, S extends PlayerService<P>> {
                                             @PathVariable final String boardName,
                                             @PathVariable final String playerName,
                                             @RequestParam final Reason reason,
-                                            @RequestParam final LocalDateTime filterStart,
-                                            @RequestParam final LocalDateTime filterEnd) {
+                                            @RequestParam final ZonedDateTime filterStart,
+                                            @RequestParam final ZonedDateTime filterEnd) {
         final Optional<Leaderboard> leaderboardOpt = this.getLeaderboardService().getLeaderboard(gameName, statName, boardName);
         if (leaderboardOpt.isEmpty()) {
             return Optional.empty();

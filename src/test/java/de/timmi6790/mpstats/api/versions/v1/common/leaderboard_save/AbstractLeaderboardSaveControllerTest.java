@@ -15,7 +15,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.stat.StatService;
 import io.restassured.module.mockmvc.response.MockMvcResponse;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -62,22 +62,22 @@ public abstract class AbstractLeaderboardSaveControllerTest<P extends Player> ex
                 .when()
                 .get(this.basePath + "/" + leaderboard.getGame().getGameName() + "/" + leaderboard.getStat().getStatName() + "/" + leaderboard.getBoard().getBoardName() + "/saves");
 
-        final List<LocalDateTime> savesNotFound = this.parseResponse(
+        final List<ZonedDateTime> savesNotFound = this.parseResponse(
                 responseSupplier.get(),
-                new TypeToken<ArrayList<LocalDateTime>>() {
+                new TypeToken<ArrayList<ZonedDateTime>>() {
                 }
         );
         assertThat(savesNotFound).isEmpty();
 
         final int addedEntries = 3;
         for (int count = 0; addedEntries > count; count++) {
-            this.getSaveService().saveLeaderboardEntries(leaderboard, this.generateEntries(1), LocalDateTime.now());
+            this.getSaveService().saveLeaderboardEntries(leaderboard, this.generateEntries(1), ZonedDateTime.now());
         }
 
 
-        final List<LocalDateTime> savesFound = this.parseResponse(
+        final List<ZonedDateTime> savesFound = this.parseResponse(
                 responseSupplier.get(),
-                new TypeToken<ArrayList<LocalDateTime>>() {
+                new TypeToken<ArrayList<ZonedDateTime>>() {
                 }
         );
         assertThat(savesFound).hasSize(addedEntries);

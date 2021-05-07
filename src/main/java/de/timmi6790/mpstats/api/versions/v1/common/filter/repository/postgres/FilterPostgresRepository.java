@@ -12,7 +12,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.utilities.PostgresRepository;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -109,7 +109,7 @@ public class FilterPostgresRepository<P extends Player> extends PostgresReposito
     @Override
     public List<Filter<P>> getFilters(final P player,
                                       final Leaderboard leaderboard,
-                                      final LocalDateTime timestamp) {
+                                      final ZonedDateTime timestamp) {
         return this.getDatabase().withHandle(handler ->
                 handler.createQuery(this.getFiltersByPlayerLeaderboardTime)
                         .bind(PLAYER_ID, player.getRepositoryId())
@@ -124,8 +124,8 @@ public class FilterPostgresRepository<P extends Player> extends PostgresReposito
     public Filter<P> addFilter(final P player,
                                final Leaderboard leaderboard,
                                final Reason reason,
-                               final LocalDateTime filterStart,
-                               final LocalDateTime filterEnd) {
+                               final ZonedDateTime filterStart,
+                               final ZonedDateTime filterEnd) {
         return this.getDatabase().withHandle(handler ->
                 handler.createQuery(this.insertFilter)
                         .bind(PLAYER_ID, player.getRepositoryId())

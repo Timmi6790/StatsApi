@@ -6,7 +6,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Data
 public class Filter<P extends Player> {
@@ -15,6 +15,6 @@ public class Filter<P extends Player> {
     private final P player;
     private final Leaderboard leaderboard;
     private final Reason reason;
-    private final LocalDateTime start;
-    private final LocalDateTime end;
+    private final ZonedDateTime start;
+    private final ZonedDateTime end;
 }

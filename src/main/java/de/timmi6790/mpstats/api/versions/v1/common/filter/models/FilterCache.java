@@ -4,7 +4,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.Filt
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,7 +28,7 @@ public class FilterCache {
         return this.filters.get(leaderboard.getRepositoryId());
     }
 
-    private Optional<FilterData> getFilterData(final Leaderboard leaderboard, final LocalDateTime timestamp) {
+    private Optional<FilterData> getFilterData(final Leaderboard leaderboard, final ZonedDateTime timestamp) {
         final List<FilterData> filterDurations = this.getFilterDataList(leaderboard);
         if (filterDurations.isEmpty()) {
             return Optional.empty();
@@ -54,12 +54,12 @@ public class FilterCache {
         }
     }
 
-    public boolean isFiltered(final Leaderboard leaderboard, final LocalDateTime timestamp) {
+    public boolean isFiltered(final Leaderboard leaderboard, final ZonedDateTime timestamp) {
         return this.getFilterData(leaderboard, timestamp).isPresent();
     }
 
     public boolean isFiltered(final Leaderboard leaderboard,
-                              final LocalDateTime timestamp,
+                              final ZonedDateTime timestamp,
                               final Collection<Reason> allowedReasons) {
         return this.getFilterData(leaderboard, timestamp)
                 .map(filterData -> allowedReasons.contains(filterData.getReason()))
@@ -82,10 +82,10 @@ public class FilterCache {
     private static class FilterData {
         private final int filterId;
         private final Reason reason;
-        private final LocalDateTime filterStart;
-        private final LocalDateTime filterEnd;
+        private final ZonedDateTime filterStart;
+        private final ZonedDateTime filterEnd;
 
-        public boolean betweenDate(final LocalDateTime timestamp) {
+        public boolean betweenDate(final ZonedDateTime timestamp) {
             return this.filterStart.compareTo(timestamp) <= 0 && this.filterEnd.compareTo(timestamp) >= 0;
         }
     }

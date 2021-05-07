@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,8 +33,8 @@ public class JavaFilterController extends FilterController<JavaPlayer, JavaPlaye
                                                      @PathVariable final String boardName,
                                                      @PathVariable final UUID playerUUID,
                                                      @RequestParam final Reason reason,
-                                                     @RequestParam final LocalDateTime filterStart,
-                                                     @RequestParam final LocalDateTime filterEnd) {
+                                                     @RequestParam final ZonedDateTime filterStart,
+                                                     @RequestParam final ZonedDateTime filterEnd) {
         final Optional<Leaderboard> leaderboardOpt = this.getLeaderboardService().getLeaderboard(gameName, statName, boardName);
         if (leaderboardOpt.isEmpty()) {
             return Optional.empty();

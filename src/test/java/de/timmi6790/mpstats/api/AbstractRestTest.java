@@ -19,7 +19,7 @@ import org.springframework.http.HttpStatus;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,9 +27,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public abstract class AbstractRestTest extends AbstractSpringBootTest {
     protected static final String API_KEY_HEADER = "X-Api-Key";
 
-    protected final JsonDeserializer<LocalDateTime> localDateTimeJsonSerializer = (jsonElement, type, jsonDeserializationContext) -> LocalDateTime.parse(jsonElement.getAsString());
+    protected final JsonDeserializer<ZonedDateTime> localDateTimeJsonSerializer = (jsonElement, type, jsonDeserializationContext) -> ZonedDateTime.parse(jsonElement.getAsString());
     protected final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDateTime.class, this.localDateTimeJsonSerializer)
+            .registerTypeAdapter(ZonedDateTime.class, this.localDateTimeJsonSerializer)
             .create();
 
     @Autowired

@@ -12,7 +12,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -43,8 +43,8 @@ public abstract class LeaderboardCacheService<P extends Player> {
 
     public void saveLeaderboardEntryPosition(final Leaderboard leaderboard,
                                              final List<LeaderboardEntry<P>> entries,
-                                             final LocalDateTime saveTime) {
-        log.debug(
+                                             final ZonedDateTime saveTime) {
+        log.info(
                 "[{}] Add {}-{}-{} to cache",
                 this.schemaName,
                 leaderboard.getGame().getGameName(),

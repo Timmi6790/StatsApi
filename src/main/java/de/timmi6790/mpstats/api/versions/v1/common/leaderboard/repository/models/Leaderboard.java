@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Data
 @NoArgsConstructor(force = true)
@@ -20,5 +20,5 @@ public class Leaderboard {
     private final Stat stat;
     private final Board board;
     private final boolean deprecated;
-    private final LocalDateTime lastSave;
+    private final ZonedDateTime lastSave;
 }

@@ -13,7 +13,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.StatService;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
@@ -60,7 +60,7 @@ public abstract class AbstractLeaderboardCacheServiceTest<P extends Player> exte
     @Test
     void saveLeaderboardEntryPosition() {
         final Leaderboard leaderboard = this.generateLeaderboard();
-        final LocalDateTime saveTime = LocalDateTime.now();
+        final ZonedDateTime saveTime = ZonedDateTime.now();
         final List<LeaderboardEntry<P>> entries = this.generateEntries(100);
 
         // Insert

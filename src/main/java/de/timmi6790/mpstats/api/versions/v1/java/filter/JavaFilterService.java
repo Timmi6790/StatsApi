@@ -11,7 +11,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -50,7 +50,7 @@ public class JavaFilterService extends FilterService<JavaPlayer, JavaPlayerServi
         super.removeFilterFromCache(filter);
     }
 
-    public boolean isFiltered(final UUID playerUUID, final Leaderboard leaderboard, final LocalDateTime timestamp) {
+    public boolean isFiltered(final UUID playerUUID, final Leaderboard leaderboard, final ZonedDateTime timestamp) {
         return this.getFilterCache(playerUUID)
                 .map(cache -> cache.isFiltered(leaderboard, timestamp))
                 .orElse(Boolean.FALSE);

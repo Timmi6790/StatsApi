@@ -3,10 +3,10 @@ package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.repository.
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Data
 public class LeaderboardSaveData {
     private final int saveId;
-    private final LocalDateTime saveTime;
+    private final ZonedDateTime saveTime;
 }

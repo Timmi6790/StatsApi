@@ -8,7 +8,7 @@ import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,7 +16,7 @@ import java.util.Optional;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class GroupController {
     private final GroupService groupService;
-    
+
     @PutMapping("/{groupName}")
     @RequireAdminPerms
     public Group createGroup(@PathVariable final String groupName, @RequestParam final String cleanName) {
@@ -43,8 +43,8 @@ public class GroupController {
     public void getLeaderboard(@PathVariable final String groupName,
                                @PathVariable final String stat,
                                @PathVariable final String board,
-                               @RequestParam(required = false, defaultValue = "#{T(java.time.LocalDateTime).now()}")
-                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final LocalDateTime dateTime,
+                               @RequestParam(required = false, defaultValue = "#{T(java.time.ZonedDateTime).now()}")
+                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final ZonedDateTime dateTime,
                                @RequestParam(required = false, defaultValue = "true") final boolean filter) {
 
     }
@@ -55,8 +55,8 @@ public class GroupController {
             @PathVariable final String playerName,
             @PathVariable final String stat,
             @PathVariable final String board,
-            @RequestParam(required = false, defaultValue = "#{T(java.time.LocalDateTime).now()}")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final LocalDateTime dateTime,
+            @RequestParam(required = false, defaultValue = "#{T(java.time.ZonedDateTime).now()}")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final ZonedDateTime dateTime,
             @RequestParam(required = false, defaultValue = "true") final boolean filter) {
         // Include lb, website and generated stats
     }

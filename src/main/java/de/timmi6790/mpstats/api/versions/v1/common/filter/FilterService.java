@@ -16,7 +16,7 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.jdbi.v3.core.Jdbi;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 
@@ -123,11 +123,11 @@ public class FilterService<P extends Player, S extends PlayerService<P>> {
         return this.filterRepository.getFilters(player, leaderboard);
     }
 
-    public List<Filter<P>> getFilters(final P player, final Leaderboard leaderboard, final LocalDateTime timestamp) {
+    public List<Filter<P>> getFilters(final P player, final Leaderboard leaderboard, final ZonedDateTime timestamp) {
         return this.filterRepository.getFilters(player, leaderboard, timestamp);
     }
 
-    public boolean isFiltered(final P player, final Leaderboard leaderboard, final LocalDateTime timestamp) {
+    public boolean isFiltered(final P player, final Leaderboard leaderboard, final ZonedDateTime timestamp) {
         return this.getFilterCache(player.getRepositoryId())
                 .map(cache -> cache.isFiltered(leaderboard, timestamp))
                 .orElse(Boolean.FALSE);
@@ -135,7 +135,7 @@ public class FilterService<P extends Player, S extends PlayerService<P>> {
 
     public boolean isFiltered(final P player,
                               final Leaderboard leaderboard,
-                              final LocalDateTime timestamp,
+                              final ZonedDateTime timestamp,
                               final Collection<Reason> allowedReasons) {
         return this.getFilterCache(player.getRepositoryId())
                 .map(cache -> cache.isFiltered(leaderboard, timestamp, allowedReasons))
@@ -151,8 +151,8 @@ public class FilterService<P extends Player, S extends PlayerService<P>> {
     public Filter<P> addFilter(final P player,
                                final Leaderboard leaderboard,
                                final Reason reason,
-                               final LocalDateTime filterStart,
-                               final LocalDateTime filterEnd) {
+                               final ZonedDateTime filterStart,
+                               final ZonedDateTime filterEnd) {
         final Filter<P> filter = this.filterRepository.addFilter(player, leaderboard, reason, filterStart, filterEnd);
         this.addFilterToCache(filter);
         log.info("[{}] Created new filter {}", this.schema, filter);

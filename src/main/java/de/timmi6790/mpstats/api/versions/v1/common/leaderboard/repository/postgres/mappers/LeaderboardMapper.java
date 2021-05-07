@@ -10,6 +10,7 @@ import org.jdbi.v3.core.statement.StatementContext;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.ZoneId;
 
 @AllArgsConstructor
 public class LeaderboardMapper implements RowMapper<Leaderboard> {
@@ -25,7 +26,7 @@ public class LeaderboardMapper implements RowMapper<Leaderboard> {
                 this.statService.getStat(rs.getString("stat_name")).orElseThrow(RuntimeException::new),
                 this.boardService.getBoard(rs.getString("board_name")).orElseThrow(RuntimeException::new),
                 rs.getBoolean("deprecated"),
-                rs.getTimestamp("last_update").toLocalDateTime()
+                rs.getTimestamp("last_update").toLocalDateTime().atZone(ZoneId.systemDefault())
         );
     }
 }

@@ -14,7 +14,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.utilities.PostgresRepository;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,7 +48,7 @@ public class LeaderboardSavePostgresRepository<P extends Player> extends Postgre
         this.getLeaderboardEntries = this.formatQuery(QueryTemplates.GET_LEADERBOARD_ENTRIES);
     }
 
-    private int insertSaveId(final Leaderboard leaderboard, final LocalDateTime saveTime) {
+    private int insertSaveId(final Leaderboard leaderboard, final ZonedDateTime saveTime) {
         return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.insertLeaderboardSaveId)
                         .bind("leaderboardId", leaderboard.getRepositoryId())
@@ -59,7 +59,7 @@ public class LeaderboardSavePostgresRepository<P extends Player> extends Postgre
     }
 
     private Optional<LeaderboardSaveData> getLeaderboardSaveId(final Leaderboard leaderboard,
-                                                               final LocalDateTime saveTime) {
+                                                               final ZonedDateTime saveTime) {
         return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getLeaderboardSaveId)
                         .bind("leaderboardId", leaderboard.getRepositoryId())
@@ -72,7 +72,7 @@ public class LeaderboardSavePostgresRepository<P extends Player> extends Postgre
     @Override
     public void saveLeaderboard(final Leaderboard leaderboard,
                                 final List<PlayerData> entries,
-                                final LocalDateTime saveTime) {
+                                final ZonedDateTime saveTime) {
         final int saveId = this.insertSaveId(leaderboard, saveTime);
 
         this.getDatabase().useHandle(handle -> {
@@ -88,18 +88,18 @@ public class LeaderboardSavePostgresRepository<P extends Player> extends Postgre
     }
 
     @Override
-    public List<LocalDateTime> getLeaderboardSaveTimes(final Leaderboard leaderboard) {
+    public List<ZonedDateTime> getLeaderboardSaveTimes(final Leaderboard leaderboard) {
         return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getLeaderboardSaveTimes)
                         .bind("leaderboardId", leaderboard.getRepositoryId())
-                        .mapTo(LocalDateTime.class)
+                        .mapTo(ZonedDateTime.class)
                         .list()
         );
     }
 
     @Override
     public Optional<LeaderboardSave<P>> getLeaderboardEntries(final Leaderboard leaderboard,
-                                                              final LocalDateTime saveTime) {
+                                                              final ZonedDateTime saveTime) {
         final Optional<LeaderboardSaveData> saveDataOpt = this.getLeaderboardSaveId(leaderboard, saveTime);
         if (saveDataOpt.isEmpty()) {
             return Optional.empty();

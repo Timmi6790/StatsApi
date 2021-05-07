@@ -15,8 +15,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,14 +72,14 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player> {
         }
     }
 
-    protected long getDateTimeDifferenceInSeconds(final LocalDateTime firstDateTime, final LocalDateTime secondDateTime) {
-        final long unixSecondsFirst = firstDateTime.toEpochSecond(ZoneOffset.ofHours(0));
-        final long unixSecondsSecond = secondDateTime.toEpochSecond(ZoneOffset.ofHours(0));
+    protected long getDateTimeDifferenceInSeconds(final ZonedDateTime firstDateTime, final ZonedDateTime secondDateTime) {
+        final long unixSecondsFirst = firstDateTime.toEpochSecond();
+        final long unixSecondsSecond = secondDateTime.toEpochSecond();
         return Math.abs(unixSecondsFirst - unixSecondsSecond);
     }
 
     protected Optional<List<LeaderboardEntry<P>>> getSavedLeaderboardEntries(final Leaderboard leaderboard,
-                                                                             final LocalDateTime saveTime) {
+                                                                             final ZonedDateTime saveTime) {
         return this.saveService.retrieveLeaderboardSave(leaderboard, saveTime)
                 .map(LeaderboardSave::getEntries);
     }
@@ -91,15 +90,15 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player> {
     void getLeaderboardSaveTimes() {
         final Leaderboard leaderboard = this.generateLeaderboard();
 
-        final List<LocalDateTime> nothingFound = this.saveService.getLeaderboardSaveTimes(leaderboard);
+        final List<ZonedDateTime> nothingFound = this.saveService.getLeaderboardSaveTimes(leaderboard);
         assertThat(nothingFound).isEmpty();
 
         final int addedEntries = 3;
         for (int count = 0; addedEntries > count; count++) {
-            this.saveService.saveLeaderboardEntries(leaderboard, this.generateEntries(1), LocalDateTime.now());
+            this.saveService.saveLeaderboardEntries(leaderboard, this.generateEntries(1), ZonedDateTime.now());
         }
 
-        final List<LocalDateTime> threeEntriesFound = this.saveService.getLeaderboardSaveTimes(leaderboard);
+        final List<ZonedDateTime> threeEntriesFound = this.saveService.getLeaderboardSaveTimes(leaderboard);
         assertThat(threeEntriesFound).hasSize(addedEntries);
     }
 
@@ -110,7 +109,7 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player> {
         // Save entries
         final int generateEntries = 100;
         final List<LeaderboardEntry<P>> entries = this.generateEntries(generateEntries);
-        final LocalDateTime saveTime = LocalDateTime.now();
+        final ZonedDateTime saveTime = ZonedDateTime.now();
         this.saveService.saveLeaderboardEntries(leaderboard, entries, saveTime);
 
         final Optional<LeaderboardSave<P>> foundSave = this.saveService.retrieveLeaderboardSave(leaderboard, saveTime);
@@ -123,7 +122,7 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player> {
     @Test
     void saveLeaderboardEntries_empty() {
         final Leaderboard leaderboard = this.generateLeaderboard();
-        final LocalDateTime saveTime = LocalDateTime.now();
+        final ZonedDateTime saveTime = ZonedDateTime.now();
 
         // Try to save an empty list
         this.saveService.saveLeaderboardEntries(leaderboard, new ArrayList<>(), saveTime);
@@ -132,7 +131,7 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player> {
         assertThat(notFound)
                 .isNotPresent();
 
-        final List<LocalDateTime> noEntriesFound = this.saveService.getLeaderboardSaveTimes(leaderboard);
+        final List<ZonedDateTime> noEntriesFound = this.saveService.getLeaderboardSaveTimes(leaderboard);
         assertThat(noEntriesFound)
                 .isEmpty();
     }
@@ -142,15 +141,15 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player> {
         final Leaderboard leaderboard = this.generateLeaderboard();
 
         // First entries
-        final LocalDateTime firstSaveTime = LocalDateTime.now();
+        final ZonedDateTime firstSaveTime = ZonedDateTime.now();
         final List<LeaderboardEntry<P>> firstEntries = this.generateEntries(1);
 
         // Second entries
-        final LocalDateTime secondSaveTime = firstSaveTime.plus(1, ChronoUnit.HOURS);
+        final ZonedDateTime secondSaveTime = firstSaveTime.plus(1, ChronoUnit.HOURS);
         final List<LeaderboardEntry<P>> secondEntries = this.generateEntries(1);
 
         // Third entries
-        final LocalDateTime thirdSaveTime = secondSaveTime.plus(1, ChronoUnit.HOURS);
+        final ZonedDateTime thirdSaveTime = secondSaveTime.plus(1, ChronoUnit.HOURS);
         final List<LeaderboardEntry<P>> thirdEntries = this.generateEntries(1);
 
         // Insert all entries

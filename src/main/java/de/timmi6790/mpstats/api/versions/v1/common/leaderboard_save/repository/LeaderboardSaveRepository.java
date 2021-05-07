@@ -5,15 +5,15 @@ import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.models.Playe
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface LeaderboardSaveRepository<P extends Player> {
-    void saveLeaderboard(Leaderboard leaderboard, List<PlayerData> entries, LocalDateTime saveTime);
+    void saveLeaderboard(Leaderboard leaderboard, List<PlayerData> entries, ZonedDateTime saveTime);
 
-    List<LocalDateTime> getLeaderboardSaveTimes(Leaderboard leaderboard);
+    List<ZonedDateTime> getLeaderboardSaveTimes(Leaderboard leaderboard);
 
     Optional<LeaderboardSave<P>> getLeaderboardEntries(Leaderboard leaderboard,
-                                                       LocalDateTime saveTime);
+                                                       ZonedDateTime saveTime);
 }

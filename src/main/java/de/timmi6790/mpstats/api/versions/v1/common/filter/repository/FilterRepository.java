@@ -5,7 +5,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.Filt
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -20,9 +20,9 @@ public interface FilterRepository<P extends Player> {
 
     List<Filter<P>> getFilters(P player, Leaderboard leaderboard);
 
-    List<Filter<P>> getFilters(P player, Leaderboard leaderboard, LocalDateTime timestamp);
+    List<Filter<P>> getFilters(P player, Leaderboard leaderboard, ZonedDateTime timestamp);
 
-    Filter<P> addFilter(P player, Leaderboard leaderboard, Reason reason, LocalDateTime filterStart, LocalDateTime filterEnd);
+    Filter<P> addFilter(P player, Leaderboard leaderboard, Reason reason, ZonedDateTime filterStart, ZonedDateTime filterEnd);
 
     void removeFilter(Filter<P> filter);
 }

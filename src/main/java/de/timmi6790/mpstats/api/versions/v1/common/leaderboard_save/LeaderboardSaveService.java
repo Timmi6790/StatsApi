@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.jdbi.v3.core.Jdbi;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +22,7 @@ import java.util.Optional;
 public abstract class LeaderboardSaveService<P extends Player> {
     private final PlayerService<P> playerService;
     private final LeaderboardSavePostgresRepository<P> repository;
-    
+
     private final String schemaName;
 
     protected LeaderboardSaveService(final PlayerService<P> playerService, final Jdbi database, final String schema) {
@@ -32,13 +32,13 @@ public abstract class LeaderboardSaveService<P extends Player> {
         this.repository = new LeaderboardSavePostgresRepository<>(database, schema, playerService);
     }
 
-    public List<LocalDateTime> getLeaderboardSaveTimes(final Leaderboard leaderboard) {
+    public List<ZonedDateTime> getLeaderboardSaveTimes(final Leaderboard leaderboard) {
         return this.repository.getLeaderboardSaveTimes(leaderboard);
     }
 
     public void saveLeaderboardEntries(final Leaderboard leaderboard,
                                        final List<LeaderboardEntry<P>> leaderboardData,
-                                       final LocalDateTime saveTime) {
+                                       final ZonedDateTime saveTime) {
         final List<PlayerData> parsedData = Lists.newArrayListWithCapacity(leaderboardData.size());
         for (final LeaderboardEntry<P> entry : leaderboardData) {
             parsedData.add(
@@ -50,7 +50,7 @@ public abstract class LeaderboardSaveService<P extends Player> {
         }
 
         if (!parsedData.isEmpty()) {
-            log.debug(
+            log.info(
                     "[{}] Save {}-{}-{} into repository",
                     this.schemaName,
                     leaderboard.getGame().getGameName(),
@@ -62,7 +62,7 @@ public abstract class LeaderboardSaveService<P extends Player> {
     }
 
     public Optional<LeaderboardSave<P>> retrieveLeaderboardSave(final Leaderboard leaderboard,
-                                                                final LocalDateTime saveTime) {
+                                                                final ZonedDateTime saveTime) {
         return this.repository.getLeaderboardEntries(leaderboard, saveTime);
     }
 }

@@ -12,6 +12,7 @@ import org.jdbi.v3.core.statement.StatementContext;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.ZoneId;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -40,8 +41,8 @@ public class FilterMapper<P extends Player> implements RowMapper<Filter<P>> {
                 playerOpt.get(),
                 leaderboardOpt.get(),
                 Reason.valueOf(rs.getString("reason")),
-                rs.getTimestamp("filter_start").toLocalDateTime(),
-                rs.getTimestamp("filter_end").toLocalDateTime()
+                rs.getTimestamp("filter_start").toLocalDateTime().atZone(ZoneId.systemDefault()),
+                rs.getTimestamp("filter_end").toLocalDateTime().atZone(ZoneId.systemDefault())
         );
     }
 }

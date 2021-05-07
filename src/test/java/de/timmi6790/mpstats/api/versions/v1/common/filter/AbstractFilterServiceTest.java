@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
@@ -77,8 +77,8 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
     }
 
     protected Filter<P> generateFilter(final P player, final Leaderboard leaderboard, final Reason reason) {
-        final LocalDateTime filterStart = LocalDateTime.now();
-        final LocalDateTime filterEnd = LocalDateTime.now().plusMinutes(ThreadLocalRandom.current().nextInt(5_000));
+        final ZonedDateTime filterStart = ZonedDateTime.now();
+        final ZonedDateTime filterEnd = ZonedDateTime.now().plusMinutes(ThreadLocalRandom.current().nextInt(5_000));
 
         return this.filterService.addFilter(player, leaderboard, reason, filterStart, filterEnd);
     }
@@ -212,8 +212,8 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
         final P player = this.generatePlayer();
         final Leaderboard leaderboard = this.generateLeaderboard();
         final Reason reason = Reason.SUSPECTED_HACKED;
-        final LocalDateTime filterStart = LocalDateTime.now();
-        final LocalDateTime filterEnd = LocalDateTime.now().plusMinutes(ThreadLocalRandom.current().nextInt(5_000));
+        final ZonedDateTime filterStart = ZonedDateTime.now();
+        final ZonedDateTime filterEnd = ZonedDateTime.now().plusMinutes(ThreadLocalRandom.current().nextInt(5_000));
 
         // Check that filter does not exist
         final boolean filterNotFound = this.filterService.isFiltered(player, leaderboard, filterStart);

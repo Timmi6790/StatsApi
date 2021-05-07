@@ -51,6 +51,8 @@ public abstract class LeaderboardCacheService<P extends Player> {
                 leaderboard.getBoard().getBoardName(),
                 leaderboard.getStat().getStatName()
         );
+        leaderboard.setLastCacheSaveTime(saveTime);
+        
         // Let them expire after a long time to prevent zombie data
         this.hashOperations.set(
                 this.getSaveCacheId(leaderboard),

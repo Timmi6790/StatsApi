@@ -67,7 +67,6 @@ public abstract class AbstractLeaderboardCacheServiceTest<P extends Player> exte
         this.getLeaderboardCacheService().saveLeaderboardEntryPosition(leaderboard, entries, saveTime);
 
         final Optional<LeaderboardSave<P>> cacheFound = this.getLeaderboardCacheService().retrieveLeaderboardEntryPosition(leaderboard);
-        System.out.println(cacheFound);
         assertThat(cacheFound).isPresent();
 
         final LeaderboardSave<P> cache = cacheFound.get();

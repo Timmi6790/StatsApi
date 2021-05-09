@@ -38,5 +38,4 @@ public class LeaderboardSaveCombinerController<P extends Player, S extends Playe
                     .flatMap(leaderboard -> this.leaderboardSaveCombinerService.getLeaderboardSave(leaderboard, saveTime, filterReasons));
         }
     }
-
 }

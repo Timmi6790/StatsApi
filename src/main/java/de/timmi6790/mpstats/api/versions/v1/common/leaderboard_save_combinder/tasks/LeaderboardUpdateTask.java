@@ -52,6 +52,30 @@ public class LeaderboardUpdateTask<P extends Player> {
         this.savePolicies.sort(Comparator.comparingInt(e -> e.getPriority().ordinal()));
     }
 
+    private boolean shouldFetchLeaderboard(final Leaderboard leaderboard) {
+        final PreFetchPolicyEvent preCachePolicyEvent = new PreFetchPolicyEvent(leaderboard);
+        for (final Policy<P> policy : this.savePolicies) {
+            policy.onPreLeaderboardFetch(preCachePolicyEvent);
+        }
+        return preCachePolicyEvent.isShouldFetch();
+    }
+
+    private boolean shouldSaveIntoCache(final Leaderboard leaderboard, final LeaderboardSave<P> webLeaderboard) {
+        final SavePolicyEvent<P> cacheSavePolicyEvent = new SavePolicyEvent<>(leaderboard, webLeaderboard);
+        for (final Policy<P> policy : this.savePolicies) {
+            policy.onCacheSave(cacheSavePolicyEvent);
+        }
+        return cacheSavePolicyEvent.isShouldSave();
+    }
+
+    private boolean shouldSaveIntoRepository(final Leaderboard leaderboard, final LeaderboardSave<P> webLeaderboard) {
+        final SavePolicyEvent<P> repositorySavePolicyEvent = new SavePolicyEvent<>(leaderboard, webLeaderboard);
+        for (final Policy<P> policy : this.savePolicies) {
+            policy.onRepositorySave(repositorySavePolicyEvent);
+        }
+        return repositorySavePolicyEvent.isShouldSave();
+    }
+
     public void updateLeaderboards() {
         log.info("Update leaderboards");
         final ThreadFactory threadFactory = new ThreadFactoryBuilder()
@@ -63,11 +87,7 @@ public class LeaderboardUpdateTask<P extends Player> {
             executorService.submit(() -> {
                 // Pre check
                 // Check if we even want to fetch this lb
-                final PreFetchPolicyEvent preCachePolicyEvent = new PreFetchPolicyEvent(leaderboard);
-                for (final Policy<P> policy : this.savePolicies) {
-                    policy.onPreLeaderboardFetch(preCachePolicyEvent);
-                }
-                if (!preCachePolicyEvent.isShouldFetch()) {
+                if (!this.shouldFetchLeaderboard(leaderboard)) {
                     return;
                 }
 
@@ -84,11 +104,7 @@ public class LeaderboardUpdateTask<P extends Player> {
 
                 // Check where we want to save it
                 // Cache
-                final SavePolicyEvent<P> cacheSavePolicyEvent = new SavePolicyEvent<>(leaderboard, webLeaderboard);
-                for (final Policy<P> policy : this.savePolicies) {
-                    policy.onCacheSave(cacheSavePolicyEvent);
-                }
-                if (cacheSavePolicyEvent.isShouldSave()) {
+                if (this.shouldSaveIntoCache(leaderboard, webLeaderboard)) {
                     this.leaderboardCacheService.saveLeaderboardEntryPosition(
                             leaderboard,
                             webLeaderboard.getEntries(),
@@ -97,11 +113,7 @@ public class LeaderboardUpdateTask<P extends Player> {
                 }
 
                 // Repository
-                final SavePolicyEvent<P> repositorySavePolicyEvent = new SavePolicyEvent<>(leaderboard, webLeaderboard);
-                for (final Policy<P> policy : this.savePolicies) {
-                    policy.onRepositorySave(repositorySavePolicyEvent);
-                }
-                if (repositorySavePolicyEvent.isShouldSave()) {
+                if (this.shouldSaveIntoRepository(leaderboard, webLeaderboard)) {
                     this.leaderboardSaveService.saveLeaderboardEntries(
                             leaderboard,
                             webLeaderboard.getEntries(),

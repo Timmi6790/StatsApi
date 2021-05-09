@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class LeaderboardSaveCombinerService<P extends Player, S extends PlayerService<P>> {
-    private final LeaderboardService leaderboardService;
-    private final LeaderboardRequestService<P> leaderboardRequestService;
     private final LeaderboardCacheService<P> leaderboardCacheService;
     private final LeaderboardSaveService<P> leaderboardSaveService;
     private final FilterService<P, S> filterService;
@@ -37,8 +35,6 @@ public class LeaderboardSaveCombinerService<P extends Player, S extends PlayerSe
                                           final LeaderboardCacheService<P> leaderboardCacheService,
                                           final LeaderboardSaveService<P> leaderboardSaveService,
                                           final FilterService<P, S> filterService) {
-        this.leaderboardService = leaderboardService;
-        this.leaderboardRequestService = leaderboardRequestService;
         this.leaderboardCacheService = leaderboardCacheService;
         this.leaderboardSaveService = leaderboardSaveService;
         this.filterService = filterService;

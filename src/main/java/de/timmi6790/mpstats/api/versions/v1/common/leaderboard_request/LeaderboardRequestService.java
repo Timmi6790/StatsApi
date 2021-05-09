@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 @Data
 @Log4j2
 public abstract class LeaderboardRequestService<P extends Player> {
+    private static final int RETRY_COUNT = 5;
     private static final String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36";
     private static final Pattern HTML_ROW_PARSER = Pattern.compile("<tr>|<tr >|<tr class=\"LeaderboardsOdd\">|<tr class=\"LeaderboardsHead\">[^<]*");
 
@@ -52,6 +53,18 @@ public abstract class LeaderboardRequestService<P extends Player> {
                             .header("User-Agent", USER_AGENT)
                             .build();
                     return chain.proceed(requestWithUserAgent);
+                })
+                .addInterceptor(chain -> {
+                    final Request originalRequest = chain.request();
+                    Response response = chain.proceed(originalRequest);
+
+                    int tryCount = 0;
+                    while (!response.isSuccessful() && tryCount < RETRY_COUNT) {
+                        tryCount++;
+                        response = chain.proceed(originalRequest);
+                    }
+
+                    return response;
                 })
                 .build();
     }

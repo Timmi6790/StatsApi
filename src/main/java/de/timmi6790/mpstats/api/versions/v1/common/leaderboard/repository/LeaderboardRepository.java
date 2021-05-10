@@ -14,6 +14,12 @@ public interface LeaderboardRepository {
 
     List<Leaderboard> getLeaderboards(Game game);
 
+    List<Leaderboard> getLeaderboards(Game game, Board board);
+
+    List<Leaderboard> getLeaderboards(Stat stat);
+
+    List<Leaderboard> getLeaderboards(Stat stat, Board board);
+
     Optional<Leaderboard> getLeaderboard(int repositoryId);
 
     Optional<Leaderboard> getLeaderboard(Game game, Stat stat, Board board);

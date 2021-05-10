@@ -90,6 +90,18 @@ public class LeaderboardService {
         return this.leaderboardRepository.getLeaderboards(game);
     }
 
+    public List<Leaderboard> getLeaderboards(final Game game, final Board board) {
+        return this.leaderboardRepository.getLeaderboards(game, board);
+    }
+
+    public List<Leaderboard> getLeaderboards(final Stat stat) {
+        return this.leaderboardRepository.getLeaderboards(stat);
+    }
+
+    public List<Leaderboard> getLeaderboards(final Stat stat, final Board board) {
+        return this.leaderboardRepository.getLeaderboards(stat, board);
+    }
+
     public Optional<Leaderboard> getLeaderboard(final int repositoryId) {
         return this.leaderboardRepository.getLeaderboard(repositoryId);
     }

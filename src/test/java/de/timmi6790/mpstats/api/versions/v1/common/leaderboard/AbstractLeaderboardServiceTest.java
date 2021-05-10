@@ -64,6 +64,33 @@ public abstract class AbstractLeaderboardServiceTest {
         return LeaderboardUtilities.generateLeaderboard(this.leaderboardService, this.statService, this.boardService, game);
     }
 
+    private Leaderboard generateLeaderboard(final Game game, final Board board) {
+        return LeaderboardUtilities.generateLeaderboard(
+                this.leaderboardService,
+                game,
+                this.generateStat(),
+                board
+        );
+    }
+
+    private Leaderboard generateLeaderboard(final Stat stat) {
+        return LeaderboardUtilities.generateLeaderboard(
+                this.leaderboardService,
+                this.generateGame(),
+                stat,
+                this.generateBoard()
+        );
+    }
+
+    private Leaderboard generateLeaderboard(final Stat stat, final Board board) {
+        return LeaderboardUtilities.generateLeaderboard(
+                this.leaderboardService,
+                this.generateGame(),
+                stat,
+                board
+        );
+    }
+
     @Test
     void getLeaderboards() {
         final List<Leaderboard> requiredLeaderboards = new ArrayList<>();
@@ -84,11 +111,65 @@ public abstract class AbstractLeaderboardServiceTest {
         }
 
         // Generate more leaderboards that should not show up in the results
-        for (int count = 0; 10 > count; count++) {
+        for (int count = 0; 1 > count; count++) {
             this.generateLeaderboard();
         }
 
         final List<Leaderboard> foundLeaderboards = this.leaderboardService.getLeaderboards(requiredGame);
+        assertThat(foundLeaderboards).containsOnly(requiredLeaderboards.toArray(new Leaderboard[0]));
+    }
+
+    @Test
+    void getLeaderboards_game_board() {
+        final Game requiredGame = this.generateGame();
+        final Board requiredBoard = this.generateBoard();
+        final List<Leaderboard> requiredLeaderboards = new ArrayList<>();
+        for (int count = 0; 10 > count; count++) {
+            requiredLeaderboards.add(this.generateLeaderboard(requiredGame, requiredBoard));
+        }
+
+        // Generate more leaderboards that should not show up in the results
+        for (int count = 0; 1 > count; count++) {
+            this.generateLeaderboard();
+        }
+
+        final List<Leaderboard> foundLeaderboards = this.leaderboardService.getLeaderboards(requiredGame, requiredBoard);
+        assertThat(foundLeaderboards).containsOnly(requiredLeaderboards.toArray(new Leaderboard[0]));
+
+    }
+
+    @Test
+    void getLeaderboards_stat() {
+        final Stat requiredStat = this.generateStat();
+        final List<Leaderboard> requiredLeaderboards = new ArrayList<>();
+        for (int count = 0; 10 > count; count++) {
+            requiredLeaderboards.add(this.generateLeaderboard(requiredStat));
+        }
+
+        // Generate more leaderboards that should not show up in the results
+        for (int count = 0; 1 > count; count++) {
+            this.generateLeaderboard();
+        }
+
+        final List<Leaderboard> foundLeaderboards = this.leaderboardService.getLeaderboards(requiredStat);
+        assertThat(foundLeaderboards).containsOnly(requiredLeaderboards.toArray(new Leaderboard[0]));
+    }
+
+    @Test
+    void getLeaderboards_stat_board() {
+        final Stat requiredStat = this.generateStat();
+        final Board requiredBoard = this.generateBoard();
+        final List<Leaderboard> requiredLeaderboards = new ArrayList<>();
+        for (int count = 0; 10 > count; count++) {
+            requiredLeaderboards.add(this.generateLeaderboard(requiredStat, requiredBoard));
+        }
+
+        // Generate more leaderboards that should not show up in the results
+        for (int count = 0; 1 > count; count++) {
+            this.generateLeaderboard();
+        }
+
+        final List<Leaderboard> foundLeaderboards = this.leaderboardService.getLeaderboards(requiredStat, requiredBoard);
         assertThat(foundLeaderboards).containsOnly(requiredLeaderboards.toArray(new Leaderboard[0]));
     }
 

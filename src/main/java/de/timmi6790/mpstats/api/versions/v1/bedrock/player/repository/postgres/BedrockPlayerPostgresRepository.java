@@ -60,7 +60,7 @@ public class BedrockPlayerPostgresRepository implements BedrockPlayerRepository 
     }
 
     @Override
-    public Map<String, BedrockPlayer> getPlayersOrCreate(final Set<String> playerNames) {
+    public synchronized Map<String, BedrockPlayer> getPlayersOrCreate(final Set<String> playerNames) {
         return this.database.withHandle(handle -> {
             // Convert all names to lower to avoid creating duplicate names
             final Set<String> lowerNames = Sets.newHashSetWithExpectedSize(playerNames.size());

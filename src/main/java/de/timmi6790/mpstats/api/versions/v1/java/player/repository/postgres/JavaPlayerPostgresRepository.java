@@ -85,7 +85,7 @@ public class JavaPlayerPostgresRepository implements JavaPlayerRepository {
     }
 
     @Override
-    public Map<UUID, JavaPlayer> getPlayersOrCreate(final Map<UUID, String> players) {
+    public synchronized Map<UUID, JavaPlayer> getPlayersOrCreate(final Map<UUID, String> players) {
         return this.database.withHandle(handle -> {
             final Map<UUID, JavaPlayer> foundPlayers = handle.createQuery(SELECT_PLAYER_BY_UUIDS)
                     .bindList("playerUUIDS", players.keySet())
@@ -101,7 +101,7 @@ public class JavaPlayerPostgresRepository implements JavaPlayerRepository {
                 if (!player.getName().equals(newName)) {
                     // Update the old name
                     player.setName(newName);
-                    
+
                     updateNameBatch.bind("playerId", player.getRepositoryId());
                     updateNameBatch.bind("playerName", newName);
                     updateNameBatch.add();

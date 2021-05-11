@@ -104,7 +104,8 @@ CREATE TABLE "bedrock"."players"
 (
     "id"          serial4,
     "player_name" varchar(32) NOT NULL,
-    PRIMARY KEY ("id")
+    PRIMARY KEY ("id"),
+    CONSTRAINT "player_name-uniq" UNIQUE ("player_name")
 );
 CREATE UNIQUE INDEX "players-player_name_lower" ON "bedrock"."players" (
                                                                         LOWER(player_name)
@@ -239,7 +240,8 @@ CREATE TABLE "java"."players"
     "id"          serial4,
     "player_uuid" uuid        NOT NULL,
     "player_name" varchar(16) NOT NULL,
-    PRIMARY KEY ("id")
+    PRIMARY KEY ("id"),
+    CONSTRAINT "player_uuid-uniq" UNIQUE ("player_uuid")
 );
 
 CREATE TABLE "java"."stat_alias"

@@ -48,11 +48,11 @@ public abstract class LeaderboardCacheService<P extends Player> {
                 "[{}] Add {}-{}-{} to cache",
                 this.schemaName,
                 leaderboard.getGame().getGameName(),
-                leaderboard.getBoard().getBoardName(),
-                leaderboard.getStat().getStatName()
+                leaderboard.getStat().getStatName(),
+                leaderboard.getBoard().getBoardName()
         );
         leaderboard.setLastCacheSaveTime(saveTime);
-        
+
         // Let them expire after a long time to prevent zombie data
         this.hashOperations.set(
                 this.getSaveCacheId(leaderboard),

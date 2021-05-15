@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Data
-public class WebsitePlayerModel {
+public class WebsitePlayer {
     private final String playerName;
     private final UUID playerUUID;
     private final String primaryRank;

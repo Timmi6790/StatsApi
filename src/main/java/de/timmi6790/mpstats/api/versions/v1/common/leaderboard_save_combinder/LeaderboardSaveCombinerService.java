@@ -47,7 +47,7 @@ public class LeaderboardSaveCombinerService<P extends Player, S extends PlayerSe
         );
     }
 
-    @Scheduled(fixedRate = 900_000)
+    @Scheduled(fixedDelay = 900_000)
     private void updateTask() {
         this.updateTask.updateLeaderboards();
     }

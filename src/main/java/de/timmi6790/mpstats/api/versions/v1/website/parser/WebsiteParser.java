@@ -1,6 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.website.parser;
 
-import de.timmi6790.mpstats.api.versions.v1.website.models.WebsitePlayerModel;
+import de.timmi6790.mpstats.api.versions.v1.website.models.WebsitePlayer;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -39,7 +39,7 @@ public class WebsiteParser {
     private final WebsiteFilter websiteFilter;
 
     private final OkHttpClient httpClient;
-    
+
     @Autowired
     public WebsiteParser(final WebsiteConverter websiteConverter, final WebsiteFilter websiteFilter) {
         this.websiteConverter = websiteConverter;
@@ -113,7 +113,7 @@ public class WebsiteParser {
         return Optional.empty();
     }
 
-    public Optional<WebsitePlayerModel> retrievePlayerStats(final String player) {
+    public Optional<WebsitePlayer> retrievePlayerStats(final String player) {
         final Optional<String> htmlOpt = this.getHtmlString(player);
         if (htmlOpt.isEmpty()) {
             return Optional.empty();
@@ -207,7 +207,7 @@ public class WebsiteParser {
         }
 
         return Optional.of(
-                new WebsitePlayerModel(
+                new WebsitePlayer(
                         playerName,
                         playerUUIDOpt.get(),
                         rank,

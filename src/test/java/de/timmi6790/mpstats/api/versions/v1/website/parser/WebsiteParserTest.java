@@ -1,7 +1,7 @@
 package de.timmi6790.mpstats.api.versions.v1.website.parser;
 
 import de.timmi6790.commons.builders.MapBuilder;
-import de.timmi6790.mpstats.api.versions.v1.website.models.WebsitePlayerModel;
+import de.timmi6790.mpstats.api.versions.v1.website.models.WebsitePlayer;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -121,7 +121,7 @@ class WebsiteParserTest {
 
         final WebsiteParser websiteParser = this.setUpWebsiteStats("website/" + playerName);
 
-        final Optional<WebsitePlayerModel> dataOpt = websiteParser.retrievePlayerStats(playerName);
+        final Optional<WebsitePlayer> dataOpt = websiteParser.retrievePlayerStats(playerName);
         assertThat(dataOpt).isEmpty();
     }
 
@@ -131,10 +131,10 @@ class WebsiteParserTest {
 
         final WebsiteParser websiteParser = this.setUpWebsiteStats("website/" + playerName);
 
-        final Optional<WebsitePlayerModel> dataOpt = websiteParser.retrievePlayerStats(playerName);
+        final Optional<WebsitePlayer> dataOpt = websiteParser.retrievePlayerStats(playerName);
         assertThat(dataOpt).isPresent();
 
-        final WebsitePlayerModel data = dataOpt.get();
+        final WebsitePlayer data = dataOpt.get();
 
         // General data
         assertThat(data.getPlayerName()).isEqualTo(playerName);

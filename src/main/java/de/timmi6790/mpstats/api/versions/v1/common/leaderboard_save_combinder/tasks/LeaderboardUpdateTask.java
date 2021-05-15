@@ -14,6 +14,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save_combinder.po
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save_combinder.policy.policies.TimePolicy;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
+import io.sentry.Sentry;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.*;
@@ -23,6 +24,8 @@ import java.util.concurrent.ThreadFactory;
 
 @Log4j2
 public class LeaderboardUpdateTask<P extends Player> {
+    private static final int UPDATE_POOL_SIZE = 15;
+
     private final LeaderboardService leaderboardService;
     private final LeaderboardRequestService<P> leaderboardRequestService;
     private final LeaderboardCacheService<P> leaderboardCacheService;
@@ -76,49 +79,66 @@ public class LeaderboardUpdateTask<P extends Player> {
         return repositorySavePolicyEvent.isShouldSave();
     }
 
+    private String getLeaderboardLogName(final Leaderboard leaderboard) {
+        return String.format(
+                "%s-%s-%s",
+                leaderboard.getGame().getWebsiteName(),
+                leaderboard.getStat().getWebsiteName(),
+                leaderboard.getBoard().getWebsiteName()
+        );
+    }
+
     public void updateLeaderboards() {
         log.info("Update leaderboards");
         final ThreadFactory threadFactory = new ThreadFactoryBuilder()
                 .setPriority(Thread.MIN_PRIORITY)
                 .setNameFormat("lb-update-%d")
                 .build();
-        final ExecutorService executorService = Executors.newScheduledThreadPool(10, threadFactory);
+        final ExecutorService executorService = Executors.newScheduledThreadPool(UPDATE_POOL_SIZE, threadFactory);
         for (final Leaderboard leaderboard : this.leaderboardService.getLeaderboards()) {
             executorService.submit(() -> {
-                // Pre check
-                // Check if we even want to fetch this lb
-                if (!this.shouldFetchLeaderboard(leaderboard)) {
-                    return;
-                }
+                try {
+                    // Pre check
+                    // Check if we even want to fetch this lb
+                    if (!this.shouldFetchLeaderboard(leaderboard)) {
+                        return;
+                    }
 
-                // Fetch web leaderboard
-                final Optional<LeaderboardSave<P>> webLeaderboardOpt = this.leaderboardRequestService.retrieveLeaderboard(
-                        leaderboard.getGame().getWebsiteName(),
-                        leaderboard.getStat().getWebsiteName(),
-                        leaderboard.getBoard().getWebsiteName()
-                );
-                if (webLeaderboardOpt.isEmpty()) {
-                    return;
-                }
-                final LeaderboardSave<P> webLeaderboard = webLeaderboardOpt.get();
-
-                // Check where we want to save it
-                // Cache
-                if (this.shouldSaveIntoCache(leaderboard, webLeaderboard)) {
-                    this.leaderboardCacheService.saveLeaderboardEntryPosition(
-                            leaderboard,
-                            webLeaderboard.getEntries(),
-                            webLeaderboard.getSaveTime()
+                    // Fetch web leaderboard
+                    final Optional<LeaderboardSave<P>> webLeaderboardOpt = this.leaderboardRequestService.retrieveLeaderboard(
+                            leaderboard.getGame().getWebsiteName(),
+                            leaderboard.getStat().getWebsiteName(),
+                            leaderboard.getBoard().getWebsiteName()
                     );
-                }
+                    if (webLeaderboardOpt.isEmpty()) {
+                        return;
+                    }
+                    final LeaderboardSave<P> webLeaderboard = webLeaderboardOpt.get();
 
-                // Repository
-                if (this.shouldSaveIntoRepository(leaderboard, webLeaderboard)) {
-                    this.leaderboardSaveService.saveLeaderboardEntries(
-                            leaderboard,
-                            webLeaderboard.getEntries(),
-                            webLeaderboard.getSaveTime()
+                    // Check where we want to save it
+                    // Cache
+                    if (this.shouldSaveIntoCache(leaderboard, webLeaderboard)) {
+                        this.leaderboardCacheService.saveLeaderboardEntryPosition(
+                                leaderboard,
+                                webLeaderboard.getEntries(),
+                                webLeaderboard.getSaveTime()
+                        );
+                    }
+
+                    // Repository
+                    if (this.shouldSaveIntoRepository(leaderboard, webLeaderboard)) {
+                        this.leaderboardSaveService.saveLeaderboardEntries(
+                                leaderboard,
+                                webLeaderboard.getEntries(),
+                                webLeaderboard.getSaveTime()
+                        );
+                    }
+                } catch (final Exception e) {
+                    log.error(
+                            "Exception during " + this.getLeaderboardLogName(leaderboard),
+                            e
                     );
+                    Sentry.captureException(e);
                 }
             });
         }

@@ -120,7 +120,7 @@
         <dependency>
             <groupId>org.msgpack</groupId>
             <artifactId>jackson-dataformat-msgpack</artifactId>
-            <version>0.8.22</version>
+            <version>0.8.24</version>
         </dependency>
         <dependency>
             <groupId>org.xerial.snappy</groupId>

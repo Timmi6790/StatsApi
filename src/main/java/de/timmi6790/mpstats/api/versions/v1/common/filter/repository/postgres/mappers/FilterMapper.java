@@ -36,11 +36,18 @@ public class FilterMapper<P extends Player> implements RowMapper<Filter<P>> {
             return null;
         }
 
+        final Reason reason;
+        try {
+            reason = Reason.valueOf(rs.getString("reason"));
+        } catch (final IllegalArgumentException e) {
+            return null;
+        }
+
         return new Filter<>(
                 rs.getInt("id"),
                 playerOpt.get(),
                 leaderboardOpt.get(),
-                Reason.valueOf(rs.getString("reason")),
+                reason,
                 rs.getTimestamp("filter_start").toLocalDateTime().atZone(ZoneId.systemDefault()),
                 rs.getTimestamp("filter_end").toLocalDateTime().atZone(ZoneId.systemDefault())
         );

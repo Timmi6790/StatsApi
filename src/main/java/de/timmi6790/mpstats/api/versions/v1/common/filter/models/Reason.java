@@ -9,7 +9,5 @@ public enum Reason {
     GLITCHED,
     GIVEN,
     BOOSTED,
-    HACKED,
-    SUSPECTED_BOOSTED,
-    SUSPECTED_HACKED
+    HACKED
 }

@@ -211,7 +211,7 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
     void addFilter() {
         final P player = this.generatePlayer();
         final Leaderboard leaderboard = this.generateLeaderboard();
-        final Reason reason = Reason.SUSPECTED_HACKED;
+        final Reason reason = Reason.BOOSTED;
         final ZonedDateTime filterStart = ZonedDateTime.now();
         final ZonedDateTime filterEnd = ZonedDateTime.now().plusMinutes(ThreadLocalRandom.current().nextInt(5_000));
 

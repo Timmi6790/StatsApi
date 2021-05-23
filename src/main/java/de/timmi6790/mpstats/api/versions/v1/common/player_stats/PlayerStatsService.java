@@ -54,13 +54,12 @@ public class PlayerStatsService<P extends Player, S extends PlayerService<P>> {
         return generatedStats;
     }
 
-    protected Optional<PlayerStats<P>> getPlayerStats(final List<Leaderboard> leaderboards,
-                                                      final P player,
-                                                      final ZonedDateTime time,
-                                                      final Set<Reason> filterReasons,
-                                                      final boolean includeEmptyEntries) {
-        // TODO: Add website stats
-        final Set<PlayerEntry> stats = leaderboards.parallelStream()
+    protected Set<PlayerEntry> getPlayerEntries(final List<Leaderboard> leaderboards,
+                                                final P player,
+                                                final ZonedDateTime time,
+                                                final Set<Reason> filterReasons,
+                                                final boolean includeEmptyEntries) {
+        return leaderboards.parallelStream()
                 .map(leaderboard -> this.leaderboardSaveCombinerService.getLeaderboardSave(leaderboard, time, filterReasons))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -88,6 +87,17 @@ public class PlayerStatsService<P extends Player, S extends PlayerService<P>> {
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
+    }
+
+    protected Optional<PlayerStats<P>> getPlayerStats(final List<Leaderboard> leaderboards,
+                                                      final P player,
+                                                      final ZonedDateTime time,
+                                                      final Set<Reason> filterReasons,
+                                                      final boolean includeEmptyEntries) {
+        final Set<PlayerEntry> stats = this.getPlayerEntries(leaderboards, player, time, filterReasons, includeEmptyEntries);
+        if (stats.isEmpty()) {
+            return Optional.empty();
+        }
 
         return Optional.of(
                 new PlayerStats<>(
@@ -105,7 +115,7 @@ public class PlayerStatsService<P extends Player, S extends PlayerService<P>> {
                                                        final Set<Reason> filterReasons,
                                                        final boolean includeEmptyEntries) {
         final List<Leaderboard> leaderboards = this.leaderboardService.getLeaderboards(game, board);
-        return this.getPlayerStats(leaderboards, player, time, filterReasons, true);
+        return this.getPlayerStats(leaderboards, player, time, filterReasons, includeEmptyEntries);
     }
 
     public Optional<PlayerStats<P>> getPlayerStatStats(final P player,
@@ -115,6 +125,6 @@ public class PlayerStatsService<P extends Player, S extends PlayerService<P>> {
                                                        final Set<Reason> filterReasons,
                                                        final boolean includeEmptyEntries) {
         final List<Leaderboard> leaderboards = this.leaderboardService.getLeaderboards(stat, board);
-        return this.getPlayerStats(leaderboards, player, time, filterReasons, true);
+        return this.getPlayerStats(leaderboards, player, time, filterReasons, includeEmptyEntries);
     }
 }

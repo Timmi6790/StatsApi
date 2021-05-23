@@ -24,6 +24,8 @@ public class WebsiteService {
     public WebsiteService(final WebsiteParser websiteParser) {
         this.playerStatsCache = Caffeine
                 .newBuilder()
+                .maximumSize(100)
+                .expireAfterAccess(5, TimeUnit.MINUTES)
                 .buildAsync(websiteParser::retrievePlayerStats);
     }
 

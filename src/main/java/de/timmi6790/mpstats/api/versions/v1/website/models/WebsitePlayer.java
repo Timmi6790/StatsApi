@@ -1,5 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.website.models;
 
+import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.Game;
 import lombok.Data;
 
 import java.util.Map;
@@ -10,5 +11,5 @@ public class WebsitePlayer {
     private final String playerName;
     private final UUID playerUUID;
     private final String primaryRank;
-    private final Map<String, Map<String, Long>> stats;
+    private final Map<Game, GameStat> gameStats;
 }

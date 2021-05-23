@@ -1,30 +1,41 @@
 package de.timmi6790.mpstats.api.versions.v1.website.parser;
 
 import de.timmi6790.commons.builders.MapBuilder;
+import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.Game;
+import de.timmi6790.mpstats.api.versions.v1.java.game.JavaGameService;
+import de.timmi6790.mpstats.api.versions.v1.java.stat.JavaStatService;
+import de.timmi6790.mpstats.api.versions.v1.website.models.GameStat;
 import de.timmi6790.mpstats.api.versions.v1.website.models.WebsitePlayer;
 import lombok.NonNull;
 import lombok.SneakyThrows;
+import okhttp3.HttpUrl;
+import okhttp3.Request;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.Test;
+import org.mockito.stubbing.Answer;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.*;
 
 class WebsiteParserTest {
     // Games
     private static final String GLOBAL = "Global";
     private static final String BLOCK_HUNT = "BlockHunt";
-    private static final String BRIDGES = "Bridges";
+    private static final String BRIDGES = "TheBridges";
     private static final String CAKE_WARS_DUOS = "CakeWarsDuos";
     private static final String CAKE_WARS_STANDARD = "CakeWarsStandard";
     private static final String CHAMPIONS_CTF = "ChampionsCTF";
@@ -42,49 +53,43 @@ class WebsiteParserTest {
     private static final String SUPER_SMASH_MOBS_TEAMS = "SuperSmashMobsTeams";
     private static final String SURVIVAL_GAMES = "SurvivalGames";
     private static final String SURVIVAL_GAMES_TEAMS = "SurvivalGamesTeams";
-    private static final String ULTRA_HARDCORE = "UHC";
+    private static final String ULTRA_HARDCORE = "UltraHardCore";
 
     // Stats
-    private static final String EXP_EARNED = "EXP Earned";
-    private static final String GAMES_PLAYED = "Games Played";
+    private static final String EXP_EARNED = "EXPEarned";
+    private static final String GAMES_PLAYED = "GamesPlayed";
     private static final String WINS = "Wins";
     private static final String LOSSES = "Losses";
     private static final String KILLS = "Kills";
     private static final String ASSISTS = "Assists";
     private static final String DEATHS = "Deaths";
-    private static final String GEMS_EARNED = "Gems Earned";
-    private static final String CHESTS_OPENED = "Chests Opened";
-    private static final String BLOCKS_PLACED = "Blocks Placed";
-    private static final String BLOCKS_BROKEN = "Blocks Broken";
+    private static final String GEMS_EARNED = "GemsEarned";
+    private static final String CHESTS_OPENED = "ChestsOpened";
+    private static final String BLOCKS_PLACED = "BlocksPlaced";
+    private static final String BLOCKS_BROKEN = "BlocksBroken";
 
     // Global Stats
     private static final String FRIENDS = "Friends";
 
-    // BlockHunt Stats
-    private static final String HUNTER_KILLS = "Hunter Kills";
-    private static final String HIDER_KILLS = "Hiders Kills";
-    private static final String HUNTER_DEATHS = "Hunter Deaths";
-    private static final String HIDER_DEATHS = "Hiders Deaths";
-
     // CakeWars Stats
-    private static final String FINAL_KILLS = "Final Kills";
-    private static final String CAKE_BITES = "Cake Bites";
+    private static final String FINAL_KILLS = "FinalKills";
+    private static final String CAKE_BITES = "BigAppetite";
 
     // Clans Stats
-    private static final String GOLD_EARNED = "Gold Earned";
-    private static final String TIME_PLAYED = "Time Played";
+    private static final String GOLD_EARNED = "GoldEarned";
+    private static final String TIME_PLAYED = "TimePlaying";
 
     // Gladiator Stats
-    private static final String SWIFT_KILLS = "Swift Kills";
+    private static final String SWIFT_KILLS = "SwiftKill";
 
     // Skywars Stats
-    private static final String TNT_PICKUP = "TNT Pickups";
+    private static final String TNT_PICKUP = "TNTHoarder";
 
     // SpeedBuilder Stats
-    private static final String PERFECT_BUILD = "Perfect Build";
+    private static final String PERFECT_BUILD = "Dependable";
 
     // SupplyDropsOpened Stats
-    private static final String SUPPLY_DROPS_OPENED = "Supply Drops Opened";
+    private static final String SUPPLY_DROPS_OPENED = "LootHoarder";
 
     @SneakyThrows
     private static String getContentFromFile(@NonNull final String path) {
@@ -95,12 +100,33 @@ class WebsiteParserTest {
         return new String(encoded, StandardCharsets.UTF_8);
     }
 
-    private WebsiteParser setUpWebsiteStats(final String htmlContentPath) {
-        final WebsiteParser websiteStats = spy(new WebsiteParser(new WebsiteConverter(), new WebsiteFilter()));
-        final String htmlContent = getContentFromFile(htmlContentPath);
-        doReturn(Optional.of(htmlContent))
+    private Optional<Game> constructGameObject(final String gameName) {
+        return Optional.of(
+                new Game(
+                        0,
+                        gameName,
+                        gameName,
+                        gameName,
+                        new HashSet<>(),
+                        gameName,
+                        gameName,
+                        gameName
+                )
+        );
+    }
+
+    private WebsiteParser setUpWebsiteStats(final HttpUrl url) {
+        final JavaGameService gameService = mock(JavaGameService.class);
+        return this.setUpWebsiteStats(url, gameService);
+    }
+
+    private WebsiteParser setUpWebsiteStats(final HttpUrl url, final JavaGameService gameService) {
+        final JavaStatService statService = mock(JavaStatService.class);
+
+        final WebsiteParser websiteStats = spy(new WebsiteParser(gameService, statService));
+        doReturn(new Request.Builder().url(url).build())
                 .when(websiteStats)
-                .getHtmlString(any());
+                .constructRequest(any());
 
         return websiteStats;
     }
@@ -109,32 +135,54 @@ class WebsiteParserTest {
         assertThat(statModels).containsEntry(stat, value);
     }
 
-    private void checkIfContains(final Map<String, Long> statModels, final Map<String, Long> values) {
+    private void checkIfContains(final GameStat gameStat, final Map<String, Long> values) {
         for (final Map.Entry<String, Long> value : values.entrySet()) {
-            this.checkIfContains(statModels, value.getKey(), value.getValue());
+            this.checkIfContains(gameStat.getOtherStats(), value.getKey(), value.getValue());
         }
     }
 
     @Test
     void retrievePlayerStats_Empty() {
-        final String playerName = "Empty";
+        try (final MockWebServer server = new MockWebServer()) {
+            final String playerName = "Empty";
+            server.enqueue(new MockResponse().setBody(getContentFromFile("website/" + playerName)));
 
-        final WebsiteParser websiteParser = this.setUpWebsiteStats("website/" + playerName);
+            final HttpUrl url = server.url("");
+            final WebsiteParser websiteParser = this.setUpWebsiteStats(url);
 
-        final Optional<WebsitePlayer> dataOpt = websiteParser.retrievePlayerStats(playerName);
-        assertThat(dataOpt).isEmpty();
+            final Optional<WebsitePlayer> dataOpt = websiteParser.retrievePlayerStats(playerName);
+            assertThat(dataOpt).isEmpty();
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     void retrievePlayerStats_Timmi() {
         final String playerName = "Timmi6790";
 
-        final WebsiteParser websiteParser = this.setUpWebsiteStats("website/" + playerName);
+        final JavaGameService gameService = mock(JavaGameService.class);
+        when(gameService.getGame(any())).then((Answer<Optional<Game>>) invocation -> {
+            final String gameName = invocation.getArgument(0, String.class);
+            return this.constructGameObject(gameName);
+        });
 
-        final Optional<WebsitePlayer> dataOpt = websiteParser.retrievePlayerStats(playerName);
-        assertThat(dataOpt).isPresent();
+        final WebsitePlayer data;
+        try (final MockWebServer server = new MockWebServer()) {
+            server.enqueue(new MockResponse().setBody(getContentFromFile("website/" + playerName)));
 
-        final WebsitePlayer data = dataOpt.get();
+            final HttpUrl url = server.url("");
+            final WebsiteParser websiteParser = this.setUpWebsiteStats(url, gameService);
+
+            final Optional<WebsitePlayer> dataOpt = websiteParser.retrievePlayerStats(playerName);
+            assertThat(dataOpt).isPresent();
+
+            data = dataOpt.get();
+        } catch (final IOException e) {
+            e.printStackTrace();
+            fail("IoException");
+            return;
+        }
 
         // General data
         assertThat(data.getPlayerName()).isEqualTo(playerName);
@@ -142,11 +190,11 @@ class WebsiteParserTest {
         assertThat(data.getPlayerUUID()).isEqualTo(UUID.fromString("9d59daad-6f62-4bd9-b13e-c961bf906750"));
 
         // Stats
-        final Map<String, Map<String, Long>> stats = data.getStats();
+        final Map<Game, GameStat> stats = data.getGameStats();
 
         // Global
         this.checkIfContains(
-                stats.get(GLOBAL),
+                stats.get(gameService.getGame(GLOBAL).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(FRIENDS, 83L)
                         .put(EXP_EARNED, 6184777L)
@@ -156,17 +204,13 @@ class WebsiteParserTest {
 
         // BlockHunt
         this.checkIfContains(
-                stats.get(BLOCK_HUNT),
+                stats.get(gameService.getGame(BLOCK_HUNT).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(WINS, 14L)
                         .put(LOSSES, 40L)
                         .put(KILLS, 99L)
                         .put(ASSISTS, 13L)
                         .put(DEATHS, 67L)
-                        .put(HUNTER_KILLS, 4L)
-                        .put(HIDER_KILLS, 1L)
-                        .put(HUNTER_DEATHS, 0L)
-                        .put(HIDER_DEATHS, 4L)
                         .put(GEMS_EARNED, 8871L)
                         .put(EXP_EARNED, 20172L)
                         .build()
@@ -174,7 +218,7 @@ class WebsiteParserTest {
 
         // Bridges
         this.checkIfContains(
-                stats.get(BRIDGES),
+                stats.get(gameService.getGame(BRIDGES).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(WINS, 9L)
                         .put(LOSSES, 18L)
@@ -188,7 +232,7 @@ class WebsiteParserTest {
 
         // CakeWarsDuos
         this.checkIfContains(
-                stats.get(CAKE_WARS_DUOS),
+                stats.get(gameService.getGame(CAKE_WARS_DUOS).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(WINS, 72L)
                         .put(LOSSES, 24L)
@@ -205,7 +249,7 @@ class WebsiteParserTest {
 
         // CakeWarsStandard
         this.checkIfContains(
-                stats.get(CAKE_WARS_STANDARD),
+                stats.get(gameService.getGame(CAKE_WARS_STANDARD).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(WINS, 86L)
                         .put(LOSSES, 76L)
@@ -222,7 +266,7 @@ class WebsiteParserTest {
 
         // ChampionsCTF
         this.checkIfContains(
-                stats.get(CHAMPIONS_CTF),
+                stats.get(gameService.getGame(CHAMPIONS_CTF).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(WINS, 155L)
                         .put(LOSSES, 54L)
@@ -236,7 +280,7 @@ class WebsiteParserTest {
 
         // ChampionsDomination
         this.checkIfContains(
-                stats.get(CHAMPIONS_DOMINATION),
+                stats.get(gameService.getGame(CHAMPIONS_DOMINATION).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(WINS, 35L)
                         .put(LOSSES, 74L)
@@ -250,7 +294,7 @@ class WebsiteParserTest {
 
         // ChampionsTDM
         this.checkIfContains(
-                stats.get(CHAMPIONS_TDM),
+                stats.get(gameService.getGame(CHAMPIONS_TDM).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(WINS, 205L)
                         .put(LOSSES, 98L)
@@ -264,7 +308,7 @@ class WebsiteParserTest {
 
         // Clans
         this.checkIfContains(
-                stats.get(CLANS),
+                stats.get(gameService.getGame(CLANS).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(DEATHS, 259L)
                         .put(GOLD_EARNED, 352000L)
@@ -274,7 +318,7 @@ class WebsiteParserTest {
 
         // DrawMyThing
         this.checkIfContains(
-                stats.get(DRAW_MY_THING),
+                stats.get(gameService.getGame(DRAW_MY_THING).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(WINS, 4L)
                         .put(LOSSES, 16L)
@@ -285,7 +329,7 @@ class WebsiteParserTest {
 
         // Gladiators
         this.checkIfContains(
-                stats.get(GLADIATORS),
+                stats.get(gameService.getGame(GLADIATORS).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(WINS, 115L)
                         .put(LOSSES, 136L)
@@ -300,7 +344,7 @@ class WebsiteParserTest {
 
         // MasterBuilders
         this.checkIfContains(
-                stats.get(MASTER_BUILDERS),
+                stats.get(gameService.getGame(MASTER_BUILDERS).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(WINS, 0L)
                         .put(LOSSES, 27L)
@@ -313,7 +357,7 @@ class WebsiteParserTest {
 
         // MineStrike
         this.checkIfContains(
-                stats.get(MINE_STRIKE),
+                stats.get(gameService.getGame(MINE_STRIKE).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(WINS, 4L)
                         .put(LOSSES, 1L)
@@ -327,7 +371,7 @@ class WebsiteParserTest {
 
         // Skywars
         this.checkIfContains(
-                stats.get(SKYWARS),
+                stats.get(gameService.getGame(SKYWARS).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(WINS, 156L)
                         .put(LOSSES, 215L)
@@ -342,7 +386,7 @@ class WebsiteParserTest {
 
         // SkywarsTeams
         this.checkIfContains(
-                stats.get(SKYWARS_TEAMS),
+                stats.get(gameService.getGame(SKYWARS_TEAMS).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(WINS, 198L)
                         .put(LOSSES, 219L)
@@ -357,7 +401,7 @@ class WebsiteParserTest {
 
         // SpeedBuilders
         this.checkIfContains(
-                stats.get(SPEED_BUILDERS),
+                stats.get(gameService.getGame(SPEED_BUILDERS).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(WINS, 7L)
                         .put(LOSSES, 12L)
@@ -370,7 +414,7 @@ class WebsiteParserTest {
 
         // SuperSmashMobs
         this.checkIfContains(
-                stats.get(SUPER_SMASH_MOBS),
+                stats.get(gameService.getGame(SUPER_SMASH_MOBS).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(WINS, 724L)
                         .put(LOSSES, 420L)
@@ -384,7 +428,7 @@ class WebsiteParserTest {
 
         // SuperSmashMobsTeams
         this.checkIfContains(
-                stats.get(SUPER_SMASH_MOBS_TEAMS),
+                stats.get(gameService.getGame(SUPER_SMASH_MOBS_TEAMS).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(WINS, 1430L)
                         .put(LOSSES, 200L)
@@ -398,7 +442,7 @@ class WebsiteParserTest {
 
         // SurvivalGames
         this.checkIfContains(
-                stats.get(SURVIVAL_GAMES),
+                stats.get(gameService.getGame(SURVIVAL_GAMES).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(WINS, 97L)
                         .put(LOSSES, 76L)
@@ -413,7 +457,7 @@ class WebsiteParserTest {
 
         // SurvivalGamesTeams
         this.checkIfContains(
-                stats.get(SURVIVAL_GAMES_TEAMS),
+                stats.get(gameService.getGame(SURVIVAL_GAMES_TEAMS).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(WINS, 1L)
                         .put(LOSSES, 19L)
@@ -428,7 +472,7 @@ class WebsiteParserTest {
 
         // UHC
         this.checkIfContains(
-                stats.get(ULTRA_HARDCORE),
+                stats.get(gameService.getGame(ULTRA_HARDCORE).orElseThrow()),
                 MapBuilder.<String, Long>ofHashMap()
                         .put(WINS, 0L)
                         .put(LOSSES, 4L)

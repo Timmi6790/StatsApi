@@ -17,6 +17,7 @@ public class JavaPlayerPostgresRepository implements JavaPlayerRepository {
     private static final String SELECT_PLAYER = String.format(SELECT_PLAYER_BASE, "WHERE player_uuid = :playerUUID LIMIT 1");
     private static final String SELECT_PLAYER_BY_ID = String.format(SELECT_PLAYER_BASE, "WHERE id = :repositoryId LIMIT 1");
     private static final String SELECT_PLAYER_BY_UUIDS = String.format(SELECT_PLAYER_BASE, "WHERE player_uuid IN (<playerUUIDS>)");
+    private static final String SELECT_PLAYER_BY_IDS = String.format(SELECT_PLAYER_BASE, "WHERE id IN (<repositoryIds>)");
     private static final String UPDATE_PLAYER_NAME = "UPDATE java.players SET player_name = :playerName WHERE id = :playerId;";
     private static final String INSERT_PLAYER = "INSERT INTO java.players(player_name, player_uuid) VALUES(:playerName, :playerUUID) RETURNING id player_id, player_name player_name, player_uuid player_uuid;";
 
@@ -133,5 +134,16 @@ public class JavaPlayerPostgresRepository implements JavaPlayerRepository {
             }
             return foundPlayers;
         });
+    }
+
+    @Override
+    public Map<Integer, JavaPlayer> getPlayers(final Collection<Integer> repositoryIds) {
+        return this.database.withHandle(handle ->
+                handle.createQuery(SELECT_PLAYER_BY_IDS)
+                        .bindList("repositoryIds", repositoryIds)
+                        .mapTo(JavaPlayer.class)
+                        .stream()
+                        .collect(Collectors.toMap(JavaPlayer::getRepositoryId, p -> p))
+        );
     }
 }

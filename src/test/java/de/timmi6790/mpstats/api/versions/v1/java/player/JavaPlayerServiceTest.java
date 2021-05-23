@@ -1,6 +1,7 @@
 package de.timmi6790.mpstats.api.versions.v1.java.player;
 
 import de.timmi6790.mpstats.api.utilities.java.JavaServiceGenerator;
+import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.JavaPlayerRepository;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
 import org.junit.jupiter.api.BeforeAll;
@@ -11,8 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import static de.timmi6790.mpstats.api.utilities.PlayerUtilities.generatePlayerName;
-import static de.timmi6790.mpstats.api.utilities.PlayerUtilities.generatePlayerUUID;
+import static de.timmi6790.mpstats.api.utilities.PlayerUtilities.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class JavaPlayerServiceTest {
@@ -214,5 +214,17 @@ class JavaPlayerServiceTest {
     void getPlayersOrCreate_empty() {
         final Map<UUID, JavaPlayer> empty = playerService.getPlayersOrCreate(new HashMap<>());
         assertThat(empty).isEmpty();
+    }
+
+    @Test
+    void getPlayers_by_id() {
+        final Map<Integer, Player> players = new HashMap<>();
+        for (int count = 0; 10 > count; count++) {
+            final JavaPlayer player = generatePlayer(playerService);
+            players.put(player.getRepositoryId(), player);
+        }
+
+        final Map<Integer, JavaPlayer> foundPlayers = playerService.getPlayers(players.keySet());
+        assertThat(players).isEqualTo(foundPlayers);
     }
 }

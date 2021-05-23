@@ -3,14 +3,13 @@ package de.timmi6790.mpstats.api.versions.v1.bedrock.player;
 import de.timmi6790.mpstats.api.utilities.bedrock.BedrockServiceGenerator;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.BedrockPlayerRepository;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockPlayer;
+import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
+import static de.timmi6790.mpstats.api.utilities.PlayerUtilities.generatePlayer;
 import static de.timmi6790.mpstats.api.utilities.PlayerUtilities.generatePlayerName;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -155,5 +154,17 @@ class BedrockPlayerServiceTest {
     void getPlayersOrCreate_empty() {
         final Map<String, BedrockPlayer> empty = playerService.getPlayersOrCreate(new HashSet<>());
         assertThat(empty).isEmpty();
+    }
+
+    @Test
+    void getPlayers_by_id() {
+        final Map<Integer, Player> players = new HashMap<>();
+        for (int count = 0; 10 > count; count++) {
+            final BedrockPlayer player = generatePlayer(playerService);
+            players.put(player.getRepositoryId(), player);
+        }
+
+        final Map<Integer, BedrockPlayer> foundPlayers = playerService.getPlayers(players.keySet());
+        assertThat(players).isEqualTo(foundPlayers);
     }
 }

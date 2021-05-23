@@ -18,6 +18,7 @@ public class BedrockPlayerPostgresRepository implements BedrockPlayerRepository 
     private static final String SELECT_PLAYER = String.format(SELECT_PLAYER_BASE, "WHERE LOWER(player_name) = LOWER(:playerName) LIMIT 1");
     private static final String SELECT_PLAYER_BY_ID = String.format(SELECT_PLAYER_BASE, "WHERE id = :repositoryId LIMIT 1");
     private static final String SELECT_PLAYER_BY_NAMES = String.format(SELECT_PLAYER_BASE, "WHERE LOWER(player_name) IN (<playerNames>);");
+    private static final String SELECT_PLAYER_BY_IDS = String.format(SELECT_PLAYER_BASE, "WHERE id IN (<repositoryIds>);");
     private static final String INSERT_PLAYER = "INSERT INTO bedrock.players(player_name) VALUES(:playerName) RETURNING id player_id, player_name player_name;";
 
     private final Jdbi database;
@@ -110,5 +111,16 @@ public class BedrockPlayerPostgresRepository implements BedrockPlayerRepository 
             }
             return foundPlayers;
         });
+    }
+
+    @Override
+    public Map<Integer, BedrockPlayer> getPlayers(final Collection<Integer> repositoryIds) {
+        return this.database.withHandle(handle ->
+                handle.createQuery(SELECT_PLAYER_BY_IDS)
+                        .bindList("repositoryIds", repositoryIds)
+                        .mapTo(BedrockPlayer.class)
+                        .stream()
+                        .collect(Collectors.toMap(BedrockPlayer::getRepositoryId, p -> p))
+        );
     }
 }

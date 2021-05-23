@@ -11,10 +11,7 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
@@ -66,6 +63,11 @@ public class BedrockPlayerService implements PlayerService<BedrockPlayer> {
         final Optional<BedrockPlayer> playerOpt = this.playerRepository.getPlayer(playerName);
         playerOpt.ifPresent(this::addPlayerToCache);
         return playerOpt;
+    }
+
+    @Override
+    public Map<Integer, BedrockPlayer> getPlayers(final Collection<Integer> repositoryIds) {
+        return this.playerRepository.getPlayers(repositoryIds);
     }
 
     public BedrockPlayer getPlayerOrCreate(final String playerName) {

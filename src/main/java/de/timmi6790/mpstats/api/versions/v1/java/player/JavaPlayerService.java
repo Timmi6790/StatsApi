@@ -12,10 +12,7 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
@@ -86,6 +83,11 @@ public class JavaPlayerService implements PlayerService<JavaPlayer> {
     public Optional<JavaPlayer> getPlayer(final String playerName) {
         return MojangApiClient.getInstance().getPlayerInfo(playerName)
                 .flatMap(playerInfo -> this.getPlayer(playerInfo.getName(), playerInfo.getUuid()));
+    }
+
+    @Override
+    public Map<Integer, JavaPlayer> getPlayers(final Collection<Integer> repositoryIds) {
+        return this.playerRepository.getPlayers(repositoryIds);
     }
 
     public JavaPlayer getPlayerOrCreate(final String playerName, final UUID playerUUID) {

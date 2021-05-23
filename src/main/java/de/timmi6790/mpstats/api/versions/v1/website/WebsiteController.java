@@ -14,7 +14,7 @@ import java.util.Optional;
 @Validated
 @RestController
 @RequestMapping("/v1/java/website/")
-@Tag(name = "Website")
+@Tag(name = "Java - Website")
 @AllArgsConstructor
 public class WebsiteController {
     private final WebsiteService websiteService;

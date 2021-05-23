@@ -109,8 +109,7 @@ public class LeaderboardSavePostgresRepository<P extends Player> extends Postgre
         final List<LeaderboardEntry<P>> leaderboardEntries = this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getLeaderboardEntries)
                         .bind("saveId", saveData.getSaveId())
-                        .map(this.leaderboardEntryMapper)
-                        .list()
+                        .scanResultSet(this.leaderboardEntryMapper)
         );
 
         return Optional.of(

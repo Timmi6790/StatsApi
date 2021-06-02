@@ -92,11 +92,7 @@ public abstract class AbstractStatControllerTest<T extends StatService> extends 
                 .get(this.basePath + "/" + statName);
 
         // Assure that the stat does not exist
-        final Stat statNotFound = this.parseResponse(
-                responseSupplier.get(),
-                Stat.class
-        );
-        assertThat(statNotFound).isNull();
+        this.assertStatus(responseSupplier.get(), HttpStatus.NOT_FOUND);
 
         // Create stat
         final Stat stat = this.generateStat(statName);

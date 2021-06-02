@@ -138,6 +138,10 @@ public class JavaPlayerPostgresRepository implements JavaPlayerRepository {
 
     @Override
     public Map<Integer, JavaPlayer> getPlayers(final Collection<Integer> repositoryIds) {
+        if (repositoryIds.isEmpty()) {
+            return new HashMap<>();
+        }
+
         return this.database.withHandle(handle ->
                 handle.createQuery(SELECT_PLAYER_BY_IDS)
                         .bindList("repositoryIds", repositoryIds)

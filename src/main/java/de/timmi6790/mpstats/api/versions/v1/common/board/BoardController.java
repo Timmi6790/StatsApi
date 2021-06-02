@@ -2,7 +2,9 @@ package de.timmi6790.mpstats.api.versions.v1.common.board;
 
 
 import de.timmi6790.mpstats.api.security.annontations.RequireAdminPerms;
+import de.timmi6790.mpstats.api.versions.v1.common.board.exceptions.InvalidBoardNameRestException;
 import de.timmi6790.mpstats.api.versions.v1.common.board.repository.models.Board;
+import de.timmi6790.mpstats.api.versions.v1.common.utilities.RestUtilities;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,7 +15,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Optional;
 
 @Getter(AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,8 +29,8 @@ public abstract class BoardController {
 
     @GetMapping("/{boardName}")
     @Operation(summary = "Find board by name")
-    public Optional<Board> getBoard(@PathVariable final String boardName) {
-        return this.boardService.getBoard(boardName);
+    public Board getBoard(@PathVariable final String boardName) throws InvalidBoardNameRestException {
+        return RestUtilities.getBoardOrThrow(this.boardService, boardName);
     }
 
     @PutMapping("/{boardName}")

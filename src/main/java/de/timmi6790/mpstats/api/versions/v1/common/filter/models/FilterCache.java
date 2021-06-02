@@ -60,7 +60,7 @@ public class FilterCache {
 
     public boolean isFiltered(final Leaderboard leaderboard,
                               final ZonedDateTime timestamp,
-                              final Collection<Reason> allowedReasons) {
+                              final Set<Reason> allowedReasons) {
         return this.getFilterData(leaderboard, timestamp)
                 .map(filterData -> allowedReasons.contains(filterData.getReason()))
                 .orElse(Boolean.FALSE);

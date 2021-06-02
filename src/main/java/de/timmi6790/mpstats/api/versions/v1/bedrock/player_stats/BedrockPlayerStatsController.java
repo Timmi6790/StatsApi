@@ -2,6 +2,7 @@ package de.timmi6790.mpstats.api.versions.v1.bedrock.player_stats;
 
 import de.timmi6790.mpstats.api.versions.v1.bedrock.board.BedrockBoardService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.game.BedrockGameService;
+import de.timmi6790.mpstats.api.versions.v1.bedrock.leaderboard.BedrockLeaderboardService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.BedrockPlayerService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockPlayer;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.stat.BedrockStatService;
@@ -20,7 +21,8 @@ public class BedrockPlayerStatsController extends PlayerStatsController<BedrockP
                                         final BedrockGameService gameService,
                                         final BedrockStatService statService,
                                         final BedrockBoardService boardService,
+                                        final BedrockLeaderboardService leaderboardService,
                                         final BedrockPlayerService playerService) {
-        super(playerStatsService, gameService, statService, boardService, playerService);
+        super(playerStatsService, gameService, statService, boardService, leaderboardService, playerService);
     }
 }

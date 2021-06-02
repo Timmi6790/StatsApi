@@ -14,9 +14,12 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
+import java.util.regex.Pattern;
 
 @Service
 public class BedrockPlayerService implements PlayerService<BedrockPlayer> {
+    private static final Pattern NAME_PATTERN = Pattern.compile("^.{3,32}$");
+
     @Getter(AccessLevel.PROTECTED)
     private final BedrockPlayerRepository playerRepository;
 
@@ -40,6 +43,11 @@ public class BedrockPlayerService implements PlayerService<BedrockPlayer> {
 
     private Optional<BedrockPlayer> getPlayerFromCache(final String playerName) {
         return Optional.ofNullable(this.playerCache.getIfPresent(playerName.toLowerCase()));
+    }
+
+    @Override
+    public boolean isValidPlayerName(final String playerName) {
+        return NAME_PATTERN.matcher(playerName).find();
     }
 
     @Override

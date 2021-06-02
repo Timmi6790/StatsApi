@@ -15,9 +15,12 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
+import java.util.regex.Pattern;
 
 @Service
 public class JavaPlayerService implements PlayerService<JavaPlayer> {
+    private static final Pattern NAME_PATTERN = Pattern.compile("^\\w{1,16}$");
+
     @Getter(AccessLevel.PROTECTED)
     private final JavaPlayerRepository playerRepository;
 
@@ -37,6 +40,11 @@ public class JavaPlayerService implements PlayerService<JavaPlayer> {
 
     public boolean hasPlayer(final String playerName, final UUID playerUUID) {
         return this.getPlayer(playerName, playerUUID).isPresent();
+    }
+
+    @Override
+    public boolean isValidPlayerName(final String playerName) {
+        return NAME_PATTERN.matcher(playerName).find();
     }
 
     @Override

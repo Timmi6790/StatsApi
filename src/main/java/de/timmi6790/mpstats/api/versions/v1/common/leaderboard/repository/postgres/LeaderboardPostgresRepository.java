@@ -26,9 +26,11 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
     private final String getLeaderboards;
     private final String getLeaderboardByRepositoryId;
     private final String getLeaderboardsByGameId;
+    private final String getLeaderboardsByGameStatId;
     private final String getLeaderboardsByGameBoardId;
     private final String getLeaderboardsByStatId;
     private final String getLeaderboardsByStatBoardId;
+    private final String getLeaderboardsByBoardId;
 
     private final String insertLeaderboard;
 
@@ -52,9 +54,11 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
         this.getLeaderboards = this.formatQuery(QueryTemplates.GET_LEADERBOARDS);
         this.getLeaderboardByRepositoryId = this.formatQuery(QueryTemplates.GET_LEADERBOARDS_BY_REPOSITORY_ID);
         this.getLeaderboardsByGameId = this.formatQuery(QueryTemplates.GET_LEADERBOARDS_BY_GAME_ID);
+        this.getLeaderboardsByGameStatId = this.formatQuery(QueryTemplates.GET_LEADERBOARDS_BY_GAME_STAT_ID);
         this.getLeaderboardsByGameBoardId = this.formatQuery(QueryTemplates.GET_LEADERBOARDS_BY_GAME_BOARD_ID);
         this.getLeaderboardsByStatId = this.formatQuery(QueryTemplates.GET_LEADERBOARDS_BY_STAT_ID);
         this.getLeaderboardsByStatBoardId = this.formatQuery(QueryTemplates.GET_LEADERBOARDS_BY_STAT_BOARD_ID);
+        this.getLeaderboardsByBoardId = this.formatQuery(QueryTemplates.GET_LEADERBOARDS_BY_BOARD_ID);
 
         this.insertLeaderboard = this.formatQuery(QueryTemplates.INSERT_LEADERBOARD);
 
@@ -77,6 +81,17 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
         return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getLeaderboardsByGameId)
                         .bind(GAME_ID, game.getRepositoryId())
+                        .map(this.leaderboardMapper)
+                        .list()
+        );
+    }
+
+    @Override
+    public List<Leaderboard> getLeaderboards(final Game game, final Stat stat) {
+        return this.getDatabase().withHandle(handle ->
+                handle.createQuery(this.getLeaderboardsByGameStatId)
+                        .bind(GAME_ID, game.getRepositoryId())
+                        .bind(STAT_ID, stat.getRepositoryId())
                         .map(this.leaderboardMapper)
                         .list()
         );
@@ -108,6 +123,16 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
         return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getLeaderboardsByStatBoardId)
                         .bind(STAT_ID, stat.getRepositoryId())
+                        .bind(BOARD_ID, board.getRepositoryId())
+                        .map(this.leaderboardMapper)
+                        .list()
+        );
+    }
+
+    @Override
+    public List<Leaderboard> getLeaderboards(final Board board) {
+        return this.getDatabase().withHandle(handle ->
+                handle.createQuery(this.getLeaderboardsByBoardId)
                         .bind(BOARD_ID, board.getRepositoryId())
                         .map(this.leaderboardMapper)
                         .list()
@@ -191,9 +216,11 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
         private static final String GET_LEADERBOARDS = String.format(GET_LEADERBOARD_BASE, "");
         private static final String GET_LEADERBOARDS_BY_REPOSITORY_ID = String.format(GET_LEADERBOARD_BASE, "WHERE leaderboard.\"id\" = :repositoryId");
         private static final String GET_LEADERBOARDS_BY_GAME_ID = String.format(GET_LEADERBOARD_BASE, "WHERE game_id = :gameId");
+        private static final String GET_LEADERBOARDS_BY_GAME_STAT_ID = String.format(GET_LEADERBOARD_BASE, "WHERE game_id = :gameId AND stat_id = :statId");
         private static final String GET_LEADERBOARDS_BY_GAME_BOARD_ID = String.format(GET_LEADERBOARD_BASE, "WHERE game_id = :gameId AND board_id = :boardId");
         private static final String GET_LEADERBOARDS_BY_STAT_ID = String.format(GET_LEADERBOARD_BASE, "WHERE stat_id = :statId");
         private static final String GET_LEADERBOARDS_BY_STAT_BOARD_ID = String.format(GET_LEADERBOARD_BASE, "WHERE stat_id = :statId AND board_id = :boardId");
+        private static final String GET_LEADERBOARDS_BY_BOARD_ID = String.format(GET_LEADERBOARD_BASE, "WHERE board_id = :boardId");
 
         private static final String INSERT_LEADERBOARD = "INSERT INTO $schema$.leaderboards(game_id, stat_id, board_id, deprecated) VALUES(:gameId, :statId, :boardId, :deprecated);";
 

@@ -1,8 +1,11 @@
 package de.timmi6790.mpstats.api.versions.v1.common.game;
 
 import de.timmi6790.mpstats.api.security.annontations.RequireAdminPerms;
+import de.timmi6790.mpstats.api.versions.v1.common.game.exceptions.InvalidGameCategoryNameRestException;
+import de.timmi6790.mpstats.api.versions.v1.common.game.exceptions.InvalidGameNameRestException;
 import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.Game;
 import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.GameCategory;
+import de.timmi6790.mpstats.api.versions.v1.common.utilities.RestUtilities;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,7 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Optional;
 
 @Getter(AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,8 +30,8 @@ public abstract class GameController {
 
     @GetMapping("/{gameName}")
     @Operation(summary = "Find game by name")
-    public Optional<Game> getGame(@PathVariable final String gameName) {
-        return this.gameService.getGame(gameName);
+    public Game getGame(@PathVariable final String gameName) throws InvalidGameNameRestException {
+        return RestUtilities.getGameOrThrow(this.gameService, gameName);
     }
 
     @PutMapping("/{gameName}")
@@ -50,8 +52,16 @@ public abstract class GameController {
 
     @GetMapping("/category/{categoryName}")
     @Operation(summary = "Find game category by name")
-    public Optional<GameCategory> getCategory(@PathVariable final String categoryName) {
-        return this.gameService.getCategory(categoryName);
+    public GameCategory getCategory(@PathVariable final String categoryName) throws InvalidGameCategoryNameRestException {
+        return this.gameService.getCategory(categoryName).orElseThrow(() ->
+                new InvalidGameCategoryNameRestException(
+                        RestUtilities.getSimilarValues(
+                                categoryName,
+                                this.gameService.getCategories(),
+                                GameCategory::getCategoryName
+                        )
+                )
+        );
     }
 }
 

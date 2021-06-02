@@ -3,6 +3,7 @@ package de.timmi6790.mpstats.api.versions.v1.java.player_stats;
 import de.timmi6790.mpstats.api.versions.v1.common.player_stats.PlayerStatsController;
 import de.timmi6790.mpstats.api.versions.v1.java.board.JavaBoardService;
 import de.timmi6790.mpstats.api.versions.v1.java.game.JavaGameService;
+import de.timmi6790.mpstats.api.versions.v1.java.leaderboard.JavaLeaderboardService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.JavaPlayerService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
 import de.timmi6790.mpstats.api.versions.v1.java.stat.JavaStatService;
@@ -20,7 +21,8 @@ public class JavaPlayerStatsController extends PlayerStatsController<JavaPlayer,
                                      final JavaGameService gameService,
                                      final JavaStatService statService,
                                      final JavaBoardService boardService,
+                                     final JavaLeaderboardService leaderboardService,
                                      final JavaPlayerService playerService) {
-        super(playerStatsService, gameService, statService, boardService, playerService);
+        super(playerStatsService, gameService, statService, boardService, leaderboardService, playerService);
     }
 }

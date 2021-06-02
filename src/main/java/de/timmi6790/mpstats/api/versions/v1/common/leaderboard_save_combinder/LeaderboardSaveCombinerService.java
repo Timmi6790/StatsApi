@@ -19,9 +19,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class LeaderboardSaveCombinerService<P extends Player, S extends PlayerService<P>> {
     private final LeaderboardCacheService<P> leaderboardCacheService;
@@ -84,7 +84,7 @@ public class LeaderboardSaveCombinerService<P extends Player, S extends PlayerSe
 
     public Optional<LeaderboardPositionSave<P>> getLeaderboardSave(final Leaderboard leaderboard,
                                                                    final ZonedDateTime saveTime,
-                                                                   final Collection<Reason> filterReasons) {
+                                                                   final Set<Reason> filterReasons) {
         final Optional<LeaderboardSave<P>> saveOpt = this.getLeaderboardEntries(leaderboard, saveTime);
         if (saveOpt.isEmpty()) {
             return Optional.empty();

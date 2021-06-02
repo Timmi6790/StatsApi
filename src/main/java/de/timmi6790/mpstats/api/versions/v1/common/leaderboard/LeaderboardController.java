@@ -2,12 +2,17 @@ package de.timmi6790.mpstats.api.versions.v1.common.leaderboard;
 
 import de.timmi6790.mpstats.api.security.annontations.RequireAdminPerms;
 import de.timmi6790.mpstats.api.versions.v1.common.board.BoardService;
+import de.timmi6790.mpstats.api.versions.v1.common.board.exceptions.InvalidBoardNameRestException;
 import de.timmi6790.mpstats.api.versions.v1.common.board.repository.models.Board;
 import de.timmi6790.mpstats.api.versions.v1.common.game.GameService;
+import de.timmi6790.mpstats.api.versions.v1.common.game.exceptions.InvalidGameNameRestException;
 import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.Game;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.exceptions.InvalidLeaderboardCombinationRestException;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.StatService;
+import de.timmi6790.mpstats.api.versions.v1.common.stat.exceptions.InvalidStatNameRestException;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.repository.models.Stat;
+import de.timmi6790.mpstats.api.versions.v1.common.utilities.RestUtilities;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,7 +23,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Optional;
 
 @Getter(AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -36,33 +40,36 @@ public abstract class LeaderboardController {
 
     @GetMapping("/{gameName}/{statName}/{boardName}")
     @Operation(summary = "Find leaderboard by name")
-    public Optional<Leaderboard> getLeaderboard(@PathVariable final String gameName,
-                                                @PathVariable final String statName,
-                                                @PathVariable final String boardName) {
-        return this.leaderboardService.getLeaderboard(gameName, statName, boardName);
+    public Leaderboard getLeaderboard(@PathVariable final String gameName,
+                                      @PathVariable final String statName,
+                                      @PathVariable final String boardName) throws InvalidGameNameRestException, InvalidStatNameRestException, InvalidBoardNameRestException, InvalidLeaderboardCombinationRestException {
+        return RestUtilities.getLeaderboardOrThrow(
+                this.gameService,
+                gameName,
+                this.statService,
+                statName,
+                this.boardService,
+                boardName,
+                this.leaderboardService
+        );
     }
 
     @PutMapping("/{gameName}/{statName}/{boardName}")
     @Operation(summary = "Create a new leaderboard")
     @RequireAdminPerms
-    public Optional<Leaderboard> createdLeaderboard(@PathVariable final String gameName,
-                                                    @PathVariable final String statName,
-                                                    @PathVariable final String boardName,
-                                                    @RequestParam final boolean deprecated) {
-        final Optional<Game> gameOpt = this.gameService.getGame(gameName);
-        final Optional<Stat> statOpt = this.statService.getStat(statName);
-        final Optional<Board> boardOpt = this.boardService.getBoard(boardName);
+    public Leaderboard createdLeaderboard(@PathVariable final String gameName,
+                                          @PathVariable final String statName,
+                                          @PathVariable final String boardName,
+                                          @RequestParam final boolean deprecated) throws InvalidGameNameRestException, InvalidStatNameRestException, InvalidBoardNameRestException {
+        final Game game = RestUtilities.getGameOrThrow(this.gameService, gameName);
+        final Stat stat = RestUtilities.getStatOrThrow(this.statService, statName);
+        final Board board = RestUtilities.getBoardOrThrow(this.boardService, boardName);
 
-        if (gameOpt.isPresent() && statOpt.isPresent() && boardOpt.isPresent()) {
-            return Optional.of(
-                    this.leaderboardService.getLeaderboardOrCreate(
-                            gameOpt.get(),
-                            statOpt.get(),
-                            boardOpt.get(),
-                            deprecated
-                    )
-            );
-        }
-        return Optional.empty();
+        return this.leaderboardService.getLeaderboardOrCreate(
+                game,
+                stat,
+                board,
+                deprecated
+        );
     }
 }

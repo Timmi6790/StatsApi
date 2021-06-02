@@ -4,7 +4,6 @@ import de.timmi6790.mpstats.api.versions.v1.common.filter.models.Reason;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.player_stats.PlayerStatsService;
 import de.timmi6790.mpstats.api.versions.v1.common.player_stats.models.PlayerEntry;
-import de.timmi6790.mpstats.api.versions.v1.java.leaderboard.JavaLeaderboardService;
 import de.timmi6790.mpstats.api.versions.v1.java.leaderboard_save_combinder.JavaLeaderboardSaveCombinerService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.JavaPlayerService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
@@ -32,9 +31,8 @@ public class JavaPlayerStatsService extends PlayerStatsService<JavaPlayer, JavaP
 
     @Autowired
     public JavaPlayerStatsService(final JavaLeaderboardSaveCombinerService leaderboardSaveCombinerService,
-                                  final JavaLeaderboardService leaderboardService,
                                   final WebsiteService websiteService) {
-        super(leaderboardSaveCombinerService, leaderboardService);
+        super(leaderboardSaveCombinerService);
 
         this.websiteService = websiteService;
     }
@@ -82,6 +80,7 @@ public class JavaPlayerStatsService extends PlayerStatsService<JavaPlayer, JavaP
         if (websitePlayer.isPresent()) {
             final WebsitePlayer websiteStats = websitePlayer.get();
             for (final Leaderboard leaderboard : leaderboards) {
+                // The website stats are only All time stats
                 if (!WEBSITE_BOARD_NAME.equals(leaderboard.getBoard().getBoardName())) {
                     continue;
                 }

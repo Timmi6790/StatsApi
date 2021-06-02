@@ -27,10 +27,6 @@ public class LeaderboardService {
     @Getter(AccessLevel.PROTECTED)
     private final LeaderboardRepository leaderboardRepository;
 
-    private final GameService gameService;
-    private final StatService statService;
-    private final BoardService boardService;
-
     private final Striped<Lock> leaderboardLock = Striped.lock(32);
     private final Cache<String, Leaderboard> leaderboardCache = Caffeine.newBuilder()
             .expireAfterAccess(10, TimeUnit.SECONDS)
@@ -51,10 +47,6 @@ public class LeaderboardService {
                 statService,
                 boardService
         );
-
-        this.gameService = gameService;
-        this.statService = statService;
-        this.boardService = boardService;
     }
 
     private String getUniqName(final Game game, final Stat stat, final Board board) {
@@ -90,6 +82,10 @@ public class LeaderboardService {
         return this.leaderboardRepository.getLeaderboards(game);
     }
 
+    public List<Leaderboard> getLeaderboards(final Game game, final Stat stat) {
+        return this.leaderboardRepository.getLeaderboards(game, stat);
+    }
+
     public List<Leaderboard> getLeaderboards(final Game game, final Board board) {
         return this.leaderboardRepository.getLeaderboards(game, board);
     }
@@ -102,29 +98,13 @@ public class LeaderboardService {
         return this.leaderboardRepository.getLeaderboards(stat, board);
     }
 
+    public List<Leaderboard> getLeaderboards(final Board board) {
+        return this.leaderboardRepository.getLeaderboards(board);
+    }
+
     public Optional<Leaderboard> getLeaderboard(final int repositoryId) {
         return this.leaderboardRepository.getLeaderboard(repositoryId);
     }
-
-    public Optional<Leaderboard> getLeaderboard(final String gameName, final String statName, final String boardName) {
-        final Optional<Game> gameOpt = this.gameService.getGame(gameName);
-        if (gameOpt.isEmpty()) {
-            return Optional.empty();
-        }
-
-        final Optional<Stat> statOpt = this.statService.getStat(statName);
-        if (statOpt.isEmpty()) {
-            return Optional.empty();
-        }
-
-        final Optional<Board> boardOpt = this.boardService.getBoard(boardName);
-        if (boardOpt.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return this.getLeaderboard(gameOpt.get(), statOpt.get(), boardOpt.get());
-    }
-
 
     public Optional<Leaderboard> getLeaderboard(final Game game, final Stat stat, final Board board) {
         final Optional<Leaderboard> leaderboardCached = this.getLeaderboardFromCache(game, stat, board);

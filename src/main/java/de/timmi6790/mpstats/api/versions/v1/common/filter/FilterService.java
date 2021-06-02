@@ -136,7 +136,7 @@ public class FilterService<P extends Player, S extends PlayerService<P>> {
     public boolean isFiltered(final P player,
                               final Leaderboard leaderboard,
                               final ZonedDateTime timestamp,
-                              final Collection<Reason> allowedReasons) {
+                              final Set<Reason> allowedReasons) {
         return this.getFilterCache(player.getRepositoryId())
                 .map(cache -> cache.isFiltered(leaderboard, timestamp, allowedReasons))
                 .orElse(Boolean.FALSE);

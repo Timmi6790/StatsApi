@@ -19,9 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static de.timmi6790.mpstats.api.utilities.BoardUtilities.generateBoardName;
-import static de.timmi6790.mpstats.api.utilities.GameUtilities.generateGameName;
-import static de.timmi6790.mpstats.api.utilities.StatUtilities.generateStatName;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractLeaderboardServiceTest {
@@ -64,6 +61,10 @@ public abstract class AbstractLeaderboardServiceTest {
         return LeaderboardUtilities.generateLeaderboard(this.leaderboardService, this.statService, this.boardService, game);
     }
 
+    private Leaderboard generateLeaderboard(final Game game, final Stat stat) {
+        return LeaderboardUtilities.generateLeaderboard(this.leaderboardService, game, stat, this.generateBoard());
+    }
+
     private Leaderboard generateLeaderboard(final Game game, final Board board) {
         return LeaderboardUtilities.generateLeaderboard(
                 this.leaderboardService,
@@ -87,6 +88,15 @@ public abstract class AbstractLeaderboardServiceTest {
                 this.leaderboardService,
                 this.generateGame(),
                 stat,
+                board
+        );
+    }
+
+    private Leaderboard generateLeaderboard(final Board board) {
+        return LeaderboardUtilities.generateLeaderboard(
+                this.leaderboardService,
+                this.generateGame(),
+                this.generateStat(),
                 board
         );
     }
@@ -117,6 +127,25 @@ public abstract class AbstractLeaderboardServiceTest {
 
         final List<Leaderboard> foundLeaderboards = this.leaderboardService.getLeaderboards(requiredGame);
         assertThat(foundLeaderboards).containsOnly(requiredLeaderboards.toArray(new Leaderboard[0]));
+    }
+
+    @Test
+    void getLeaderboards_game_stat() {
+        final Game requiredGame = this.generateGame();
+        final Stat requiredStat = this.generateStat();
+        final List<Leaderboard> requiredLeaderboards = new ArrayList<>();
+        for (int count = 0; 10 > count; count++) {
+            requiredLeaderboards.add(this.generateLeaderboard(requiredGame, requiredStat));
+        }
+
+        // Generate more leaderboards that should not show up in the results
+        for (int count = 0; 1 > count; count++) {
+            this.generateLeaderboard();
+        }
+
+        final List<Leaderboard> foundLeaderboards = this.leaderboardService.getLeaderboards(requiredGame, requiredStat);
+        assertThat(foundLeaderboards).containsOnly(requiredLeaderboards.toArray(new Leaderboard[0]));
+
     }
 
     @Test
@@ -174,6 +203,23 @@ public abstract class AbstractLeaderboardServiceTest {
     }
 
     @Test
+    void getLeaderboards_board() {
+        final Board requiredBoard = this.generateBoard();
+        final List<Leaderboard> requiredLeaderboards = new ArrayList<>();
+        for (int count = 0; 10 > count; count++) {
+            requiredLeaderboards.add(this.generateLeaderboard(requiredBoard));
+        }
+
+        // Generate more leaderboards that should not show up in the results
+        for (int count = 0; 1 > count; count++) {
+            this.generateLeaderboard();
+        }
+
+        final List<Leaderboard> foundLeaderboards = this.leaderboardService.getLeaderboards(requiredBoard);
+        assertThat(foundLeaderboards).containsOnly(requiredLeaderboards.toArray(new Leaderboard[0]));
+    }
+
+    @Test
     void getLeaderboard() {
         final Game game = this.generateGame();
         final Stat stat = this.generateStat();
@@ -218,86 +264,6 @@ public abstract class AbstractLeaderboardServiceTest {
         assertThat(leaderboardFound)
                 .isPresent()
                 .contains(leaderboard);
-    }
-
-    @Test
-    void getLeaderboard_by_names() {
-        final Game game = this.generateGame();
-        final Stat stat = this.generateStat();
-        final Board board = this.generateBoard();
-        final boolean deprecated = true;
-
-        // Create leaderboard
-        final Leaderboard leaderboard = this.leaderboardService.getLeaderboardOrCreate(game, stat, board, deprecated);
-
-        final Optional<Leaderboard> leaderboardFound = this.leaderboardService.getLeaderboard(
-                game.getGameName(),
-                stat.getStatName(),
-                board.getBoardName()
-        );
-        assertThat(leaderboardFound)
-                .isPresent()
-                .contains(leaderboard);
-    }
-
-    @Test
-    void getLeaderboard_by_names_invalid_game_name() {
-        final Game game = this.generateGame();
-        final Stat stat = this.generateStat();
-        final Board board = this.generateBoard();
-        final boolean deprecated = true;
-
-        // Create leaderboard
-        this.leaderboardService.getLeaderboardOrCreate(game, stat, board, deprecated);
-
-        final String uniqGameName = generateGameName();
-        final Optional<Leaderboard> leaderboardNotFound = this.leaderboardService.getLeaderboard(
-                uniqGameName,
-                stat.getStatName(),
-                board.getBoardName()
-        );
-        assertThat(leaderboardNotFound)
-                .isNotPresent();
-    }
-
-    @Test
-    void getLeaderboard_by_names_invalid_stat_name() {
-        final Game game = this.generateGame();
-        final Stat stat = this.generateStat();
-        final Board board = this.generateBoard();
-        final boolean deprecated = true;
-
-        // Create leaderboard
-        this.leaderboardService.getLeaderboardOrCreate(game, stat, board, deprecated);
-
-        final String uniqStatName = generateStatName();
-        final Optional<Leaderboard> leaderboardNotFound = this.leaderboardService.getLeaderboard(
-                game.getGameName(),
-                uniqStatName,
-                board.getBoardName()
-        );
-        assertThat(leaderboardNotFound)
-                .isNotPresent();
-    }
-
-    @Test
-    void getLeaderboard_by_names_invalid_board_name() {
-        final Game game = this.generateGame();
-        final Stat stat = this.generateStat();
-        final Board board = this.generateBoard();
-        final boolean deprecated = true;
-
-        // Create leaderboard
-        this.leaderboardService.getLeaderboardOrCreate(game, stat, board, deprecated);
-
-        final String uniqBoardName = generateBoardName();
-        final Optional<Leaderboard> leaderboardNotFound = this.leaderboardService.getLeaderboard(
-                game.getGameName(),
-                stat.getStatName(),
-                uniqBoardName
-        );
-        assertThat(leaderboardNotFound)
-                .isNotPresent();
     }
 
     @Test

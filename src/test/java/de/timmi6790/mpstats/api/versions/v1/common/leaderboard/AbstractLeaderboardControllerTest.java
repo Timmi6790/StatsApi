@@ -24,9 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static de.timmi6790.mpstats.api.utilities.BoardUtilities.generateBoardName;
-import static de.timmi6790.mpstats.api.utilities.GameUtilities.generateGameName;
-import static de.timmi6790.mpstats.api.utilities.StatUtilities.generateStatName;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractLeaderboardControllerTest<L extends LeaderboardService, G extends GameService, S extends StatService, B extends BoardService> extends AbstractRestTest {
@@ -77,9 +74,9 @@ public abstract class AbstractLeaderboardControllerTest<L extends LeaderboardSer
     }
 
     protected MockMvcResponse getInsertResponse(final MockMvcRequestSpecification specification) {
-        final String gameName = generateGameName();
-        final String statName = generateStatName();
-        final String boardName = generateBoardName();
+        final String gameName = this.generateGame().getGameName();
+        final String statName = this.generateStat().getStatName();
+        final String boardName = this.generateBoard().getBoardName();
         final boolean deprecated = false;
 
         return this.getInsertResponse(
@@ -139,11 +136,7 @@ public abstract class AbstractLeaderboardControllerTest<L extends LeaderboardSer
                 .get(this.basePath + "/" + game.getGameName() + "/" + stat.getStatName() + "/" + board.getBoardName());
 
         // Assure that the leaderboard does not exist
-        final Leaderboard leaderboardNotFound = this.parseResponse(
-                responseSupplier.get(),
-                Leaderboard.class
-        );
-        assertThat(leaderboardNotFound).isNull();
+        this.assertStatus(responseSupplier.get(), HttpStatus.NOT_FOUND);
 
         // Create leaderboard
         final Leaderboard leaderboard = this.generateLeaderboard(game, stat, board);

@@ -94,11 +94,7 @@ public abstract class AbstractGameControllerTest<T extends GameService> extends 
                 .get(this.basePath + "/" + gameName);
 
         // Assure that the game does not exist
-        final Game gameNotFound = this.parseResponse(
-                responseSupplier.get(),
-                Game.class
-        );
-        assertThat(gameNotFound).isNull();
+        this.assertStatus(responseSupplier.get(), HttpStatus.NOT_FOUND);
 
         // Create game
         final Game game = this.generateGame(gameName);
@@ -196,11 +192,7 @@ public abstract class AbstractGameControllerTest<T extends GameService> extends 
                 .get(this.basePath + "/category/" + categoryName);
 
         // Assure that the category does not exist
-        final GameCategory categoryNotFound = this.parseResponse(
-                responseSupplier.get(),
-                GameCategory.class
-        );
-        assertThat(categoryNotFound).isNull();
+        this.assertStatus(responseSupplier.get(), HttpStatus.NOT_FOUND);
 
         // Create category
         final Game game = this.getGameService().getOrCreateGame(websiteName, gameName, cleanName, categoryName);

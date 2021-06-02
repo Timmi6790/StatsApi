@@ -1,7 +1,9 @@
 package de.timmi6790.mpstats.api.versions.v1.common.stat;
 
 import de.timmi6790.mpstats.api.security.annontations.RequireAdminPerms;
+import de.timmi6790.mpstats.api.versions.v1.common.stat.exceptions.InvalidStatNameRestException;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.repository.models.Stat;
+import de.timmi6790.mpstats.api.versions.v1.common.utilities.RestUtilities;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -12,13 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Optional;
 
 @Getter(AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class StatController {
     private final StatService statService;
-    
+
     @GetMapping
     @Operation(summary = "Find all available stats")
     public List<Stat> getStats() {
@@ -27,8 +28,8 @@ public abstract class StatController {
 
     @GetMapping("/{statName}")
     @Operation(summary = "Find stat by name")
-    public Optional<Stat> getStat(@PathVariable final String statName) {
-        return this.statService.getStat(statName);
+    public Stat getStat(@PathVariable final String statName) throws InvalidStatNameRestException {
+        return RestUtilities.getStatOrThrow(this.statService, statName);
     }
 
     @PutMapping("/{statName}")

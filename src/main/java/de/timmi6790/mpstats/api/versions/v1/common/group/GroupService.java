@@ -94,8 +94,6 @@ public class GroupService {
     }
 
     public Optional<Group> getGroup(final String groupName) {
-        // TODO: Check for group name and alias names. Add full alias support into the api
-
         final Optional<Group> groupCached = this.getGroupFromCache(groupName);
         if (groupCached.isPresent()) {
             return groupCached;

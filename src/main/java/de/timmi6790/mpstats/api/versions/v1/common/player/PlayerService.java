@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface PlayerService<P extends Player> {
+    boolean isValidPlayerName(final String playerName);
+
     boolean hasPlayer(final String playerName);
 
     Optional<P> getPlayer(final int repositoryId);

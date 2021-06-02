@@ -15,6 +15,7 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,6 +39,10 @@ public abstract class AbstractRestTest extends AbstractSpringBootTest {
     @Autowired
     protected RateLimitService rateLimitService;
 
+    protected MockMvcRequestSpecification getBaseRequest() {
+        return RestAssuredMockMvc.given().accept(MediaType.APPLICATION_JSON);
+    }
+
     protected MockMvcRequestSpecification getWithSuperAdminPrivileges() {
         return this.getWithApiKey(ApiKeyUtilities.getSuperAdminApiKey(this.apiKeyService));
     }
@@ -51,12 +56,12 @@ public abstract class AbstractRestTest extends AbstractSpringBootTest {
     }
 
     protected MockMvcRequestSpecification getWithApiKey(final UUID apiKey) {
-        return RestAssuredMockMvc.given()
+        return this.getBaseRequest()
                 .header(API_KEY_HEADER, apiKey);
     }
 
     protected MockMvcRequestSpecification getWithNoApiKey() {
-        return RestAssuredMockMvc.given();
+        return this.getBaseRequest();
     }
 
     protected <T> T parseResponse(final MockMvcResponse response, final Class<T> type) {
@@ -76,6 +81,7 @@ public abstract class AbstractRestTest extends AbstractSpringBootTest {
             return this.gson.fromJson(reader, type.getType());
         }
     }
+
 
     protected void assertStatus(final MockMvcResponse response, final HttpStatus requiredStatus) {
         response

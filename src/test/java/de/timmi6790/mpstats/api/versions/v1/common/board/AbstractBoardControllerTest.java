@@ -92,11 +92,7 @@ public abstract class AbstractBoardControllerTest<T extends BoardService> extend
                 .get(this.basePath + "/" + boardName);
 
         // Assure that the board does not exist
-        final Board boardNotFound = this.parseResponse(
-                responseSupplier.get(),
-                Board.class
-        );
-        assertThat(boardNotFound).isNull();
+        this.assertStatus(responseSupplier.get(), HttpStatus.NOT_FOUND);
 
         // Create board
         final Board board = this.generateBoard(boardName);

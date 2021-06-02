@@ -1,12 +1,20 @@
 package de.timmi6790.mpstats.api.versions.v1.java.filter;
 
 import de.timmi6790.mpstats.api.security.annontations.RequireAdminPerms;
+import de.timmi6790.mpstats.api.versions.v1.common.board.exceptions.InvalidBoardNameRestException;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.FilterController;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.models.Reason;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.Filter;
+import de.timmi6790.mpstats.api.versions.v1.common.game.exceptions.InvalidGameNameRestException;
+import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.exceptions.InvalidLeaderboardCombinationRestException;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
+import de.timmi6790.mpstats.api.versions.v1.common.stat.exceptions.InvalidStatNameRestException;
+import de.timmi6790.mpstats.api.versions.v1.common.utilities.RestUtilities;
+import de.timmi6790.mpstats.api.versions.v1.java.board.JavaBoardService;
+import de.timmi6790.mpstats.api.versions.v1.java.game.JavaGameService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.JavaPlayerService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
+import de.timmi6790.mpstats.api.versions.v1.java.stat.JavaStatService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +29,11 @@ import java.util.UUID;
 @Tag(name = "Java - Filter")
 public class JavaFilterController extends FilterController<JavaPlayer, JavaPlayerService> {
     @Autowired
-    public JavaFilterController(final JavaFilterService filterService) {
-        super(filterService);
+    public JavaFilterController(final JavaGameService gameService,
+                                final JavaStatService statService,
+                                final JavaBoardService boardService,
+                                final JavaFilterService filterService) {
+        super(gameService, statService, boardService, filterService);
     }
 
     @PostMapping("/{gameName}/{statName}/{boardName}/{playerUUID}")
@@ -34,11 +45,16 @@ public class JavaFilterController extends FilterController<JavaPlayer, JavaPlaye
                                                      @PathVariable final UUID playerUUID,
                                                      @RequestParam final Reason reason,
                                                      @RequestParam final ZonedDateTime filterStart,
-                                                     @RequestParam final ZonedDateTime filterEnd) {
-        final Optional<Leaderboard> leaderboardOpt = this.getLeaderboardService().getLeaderboard(gameName, statName, boardName);
-        if (leaderboardOpt.isEmpty()) {
-            return Optional.empty();
-        }
+                                                     @RequestParam final ZonedDateTime filterEnd) throws InvalidLeaderboardCombinationRestException, InvalidStatNameRestException, InvalidBoardNameRestException, InvalidGameNameRestException {
+        final Leaderboard leaderboard = RestUtilities.getLeaderboardOrThrow(
+                this.getGameService(),
+                gameName,
+                this.getStatService(),
+                statName,
+                this.getBoardService(),
+                boardName,
+                this.getLeaderboardService()
+        );
 
         final Optional<JavaPlayer> playerOpt = this.getPlayerService().getPlayer(playerUUID);
         if (playerOpt.isEmpty()) {
@@ -47,7 +63,7 @@ public class JavaFilterController extends FilterController<JavaPlayer, JavaPlaye
 
         final Filter<JavaPlayer> filter = this.getFilterService().addFilter(
                 playerOpt.get(),
-                leaderboardOpt.get(),
+                leaderboard,
                 reason,
                 filterStart,
                 filterEnd

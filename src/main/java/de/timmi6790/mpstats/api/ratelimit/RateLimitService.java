@@ -9,8 +9,8 @@ import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
 import io.github.bucket4j.Refill;
+import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -18,17 +18,13 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@RequiredArgsConstructor
 public class RateLimitService {
     private final Cache<String, Bucket> cache = Caffeine.newBuilder()
             .expireAfterAccess(1, TimeUnit.DAYS)
             .build();
 
     private final ApiKeyService apiKeyService;
-
-    @Autowired
-    public RateLimitService(final ApiKeyService apiKeyService) {
-        this.apiKeyService = apiKeyService;
-    }
 
     private Bucket createBucket(final int minuteLimit, final int dayLimit) {
         return Bucket4j.builder()
@@ -61,7 +57,7 @@ public class RateLimitService {
         return this.getApiKey(apiKey).map(key -> {
             final RateLimit rateLimit = key.getRateLimit();
             return this.cache.get(
-                    apiKey,
+                    key.getKey().toString(),
                     k -> this.createBucket(rateLimit.getMinute(), rateLimit.getDaily())
             );
         }).orElseGet(() -> this.cache.get(ipAddress, key -> this.newDefaultBucket()));

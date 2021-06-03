@@ -1,6 +1,8 @@
 package de.timmi6790.mpstats.api.security;
 
 import de.timmi6790.mpstats.api.apikey.ApiKeyService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -10,12 +12,9 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 
 import java.util.function.Supplier;
 
-public class ApiKeyAuthenticationProvider implements org.springframework.security.authentication.AuthenticationProvider {
+@RequiredArgsConstructor
+public class ApiKeyAuthenticationProvider implements AuthenticationProvider {
     private final ApiKeyService tokenService;
-
-    public ApiKeyAuthenticationProvider(final ApiKeyService tokenService) {
-        this.tokenService = tokenService;
-    }
 
     @Override
     public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
@@ -25,7 +24,7 @@ public class ApiKeyAuthenticationProvider implements org.springframework.securit
                         new UsernamePasswordAuthenticationToken(
                                 token,
                                 null,
-                                AuthorityUtils.createAuthorityList(apiKey.getAuthorities().toArray(new String[0]))
+                                AuthorityUtils.createAuthorityList(apiKey.getAuthorities())
                         )
                 ).orElseThrow((Supplier<RuntimeException>) () -> new BadCredentialsException("Invalid token"));
     }

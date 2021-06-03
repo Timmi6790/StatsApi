@@ -1,7 +1,9 @@
 package de.timmi6790.mpstats.api.security;
 
 import de.timmi6790.mpstats.api.apikey.ApiKeyService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -19,13 +21,10 @@ import javax.servlet.http.HttpServletResponse;
         securedEnabled = true,
         jsr250Enabled = true
 )
+@RequiredArgsConstructor
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final ApiKeyService apiKeyService;
-
-    @Autowired
-    public SecurityConfig(final ApiKeyService apiKeyService) {
-        this.apiKeyService = apiKeyService;
-    }
 
     private AuthenticationProvider tokenAuthenticationProvider() {
         return new ApiKeyAuthenticationProvider(this.apiKeyService);

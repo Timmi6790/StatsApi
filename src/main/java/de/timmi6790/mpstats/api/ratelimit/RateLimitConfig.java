@@ -1,22 +1,25 @@
 package de.timmi6790.mpstats.api.ratelimit;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
-public class RateLimitConfig implements WebMvcConfigurer {
-    private final RateLimitInterceptor interceptor;
-
-    @Autowired
-    public RateLimitConfig(final RateLimitInterceptor interceptor) {
-        this.interceptor = interceptor;
-    }
+@RequiredArgsConstructor
+@Order(101)
+public class RateLimitConfig extends WebSecurityConfigurerAdapter {
+    private final RateLimitFilter rateLimitFilter;
 
     @Override
-    public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(this.interceptor)
-                .addPathPatterns("/**");
+    protected void configure(final HttpSecurity http) {
+        // Registering after the ApiKeyAuthenticationFilter is currently broken
+        // https://github.com/spring-projects/spring-security/issues/9787
+        http.addFilterAfter(
+                this.rateLimitFilter,
+                BasicAuthenticationFilter.class
+        );
     }
 }

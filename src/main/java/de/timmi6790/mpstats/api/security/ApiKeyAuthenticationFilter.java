@@ -1,35 +1,34 @@
 package de.timmi6790.mpstats.api.security;
 
 import io.sentry.Sentry;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
-import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Log4j2
-public class ApiKeyAuthenticationFilter extends GenericFilterBean {
+@RequiredArgsConstructor
+public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
     private final AuthenticationManager authenticationManager;
 
-    public ApiKeyAuthenticationFilter(final AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
-
     @Override
-    public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
-        final String token = ((HttpServletRequest) request).getHeader("X-Api-Key");
-
+    protected void doFilterInternal(final HttpServletRequest request,
+                                    @NotNull final HttpServletResponse response,
+                                    @NotNull final FilterChain chain) throws ServletException, IOException {
+        // TODO: ignore AuthenticationException in sentry
+        final String token = request.getHeader("X-Api-Key");
         try {
             if (token != null) {
                 final PreAuthenticatedAuthenticationToken requestAuthentication = new PreAuthenticatedAuthenticationToken(token, null);
@@ -44,13 +43,13 @@ public class ApiKeyAuthenticationFilter extends GenericFilterBean {
             chain.doFilter(request, response);
         } catch (final InternalAuthenticationServiceException exception) {
             SecurityContextHolder.clearContext();
-            ((HttpServletResponse) response).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
             this.logger.error("Internal authentication service exception", exception);
             Sentry.captureException(exception);
         } catch (final AuthenticationException exception) {
             SecurityContextHolder.clearContext();
-            ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, exception.getMessage());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, exception.getMessage());
         }
     }
 }

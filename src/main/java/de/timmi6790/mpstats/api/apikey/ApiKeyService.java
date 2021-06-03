@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,7 +39,7 @@ public class ApiKeyService {
                             new ApiKey(
                                     UUID.randomUUID(),
                                     new RateLimit(1_000_000, 1_000_000),
-                                    Collections.singletonList("SUPERADMIN")
+                                    new String[]{"SUPERADMIN"}
                             )
                     )
             );

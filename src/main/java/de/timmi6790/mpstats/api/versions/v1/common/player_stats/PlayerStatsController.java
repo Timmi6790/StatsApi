@@ -19,7 +19,9 @@ import de.timmi6790.mpstats.api.versions.v1.common.stat.exceptions.InvalidStatNa
 import de.timmi6790.mpstats.api.versions.v1.common.stat.repository.models.Stat;
 import de.timmi6790.mpstats.api.versions.v1.common.utilities.RestUtilities;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +35,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 @AllArgsConstructor
+@Getter(AccessLevel.PROTECTED)
 public class PlayerStatsController<P extends Player, S extends PlayerService<P>> {
     private final PlayerStatsService<P, S> playerStatsService;
     private final GameService gameService;
@@ -41,11 +44,11 @@ public class PlayerStatsController<P extends Player, S extends PlayerService<P>>
     private final LeaderboardService leaderboardService;
     private final S playerService;
 
-    private Optional<PlayerStats<P>> getPlayerStats(final List<Leaderboard> leaderboards,
-                                                    final String playerName,
-                                                    final ZonedDateTime saveTime,
-                                                    final Set<Reason> filterReasons,
-                                                    final boolean includeEmptyEntries) {
+    protected Optional<PlayerStats<P>> getPlayerStats(final List<Leaderboard> leaderboards,
+                                                      final String playerName,
+                                                      final ZonedDateTime saveTime,
+                                                      final Set<Reason> filterReasons,
+                                                      final boolean includeEmptyEntries) {
         return this.playerService.getPlayer(playerName).flatMap(player ->
                 this.playerStatsService.getPlayerStats(
                         leaderboards,
@@ -57,10 +60,10 @@ public class PlayerStatsController<P extends Player, S extends PlayerService<P>>
         );
     }
 
-    private InvalidLeaderboardCombinationRestException getLeaderboardCombinationRestException(final List<Leaderboard> firstLeaderboards,
-                                                                                              final Board board,
-                                                                                              final String secondCompareValue,
-                                                                                              final Function<Leaderboard, String> secondToStringFunction) {
+    protected InvalidLeaderboardCombinationRestException getLeaderboardCombinationRestException(final List<Leaderboard> firstLeaderboards,
+                                                                                                final Board board,
+                                                                                                final String secondCompareValue,
+                                                                                                final Function<Leaderboard, String> secondToStringFunction) {
         if (!firstLeaderboards.isEmpty()) {
             return new InvalidLeaderboardCombinationRestException(
                     RestUtilities.getSimilarValues(

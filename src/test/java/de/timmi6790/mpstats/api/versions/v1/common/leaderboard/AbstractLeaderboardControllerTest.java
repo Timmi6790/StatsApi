@@ -126,6 +126,88 @@ public abstract class AbstractLeaderboardControllerTest<L extends LeaderboardSer
     }
 
     @Test
+    void getLeaderboards_by_game() {
+        final Game game = this.generateGame();
+        final List<Leaderboard> expectedLeaderboards = new ArrayList<>();
+        for (int count = 0; 3 > count; count++) {
+            final Stat stat = this.generateStat();
+            final Board board = this.generateBoard();
+
+            expectedLeaderboards.add(this.generateLeaderboard(game, stat, board));
+        }
+
+        final List<Leaderboard> foundLeaderboards = this.parseResponse(
+                this.getWithNoApiKey()
+                        .when()
+                        .get(this.basePath + "/" + game.getGameName()),
+                new TypeToken<ArrayList<Leaderboard>>() {
+                }
+        );
+
+        assertThat(foundLeaderboards).hasSameSizeAs(expectedLeaderboards);
+    }
+
+    @Test
+    void getLeaderboards_by_game_invalid_game_name() {
+        final String gameName = GameUtilities.generateGameName();
+
+        this.assertStatus(
+                this.getWithNoApiKey()
+                        .when()
+                        .get(this.basePath + "/" + gameName),
+                HttpStatus.NOT_FOUND
+        );
+    }
+
+    @Test
+    void getLeaderboards_by_game_stat() {
+        final Game game = this.generateGame();
+        final Stat stat = this.generateStat();
+        final List<Leaderboard> expectedLeaderboards = new ArrayList<>();
+        for (int count = 0; 3 > count; count++) {
+            final Board board = this.generateBoard();
+
+            expectedLeaderboards.add(this.generateLeaderboard(game, stat, board));
+        }
+
+        final List<Leaderboard> foundLeaderboards = this.parseResponse(
+                this.getWithNoApiKey()
+                        .when()
+                        .get(this.basePath + "/" + game.getGameName() + "/" + stat.getStatName()),
+                new TypeToken<ArrayList<Leaderboard>>() {
+                }
+        );
+
+        assertThat(foundLeaderboards).hasSameSizeAs(expectedLeaderboards);
+    }
+
+    @Test
+    void getLeaderboards_by_game_stat_invalid_game_name() {
+        final String gameName = GameUtilities.generateGameName();
+        final Stat stat = this.generateStat();
+
+        this.assertStatus(
+                this.getWithNoApiKey()
+                        .when()
+                        .get(this.basePath + "/" + gameName + "/" + stat.getStatName()),
+                HttpStatus.NOT_FOUND
+        );
+    }
+
+    @Test
+    void getLeaderboards_by_game_stat_invalid_stat_name() {
+        final Game game = this.generateGame();
+        final String statName = StatUtilities.generateStatName();
+
+        this.assertStatus(
+                this.getWithNoApiKey()
+                        .when()
+                        .get(this.basePath + "/" + game.getGameName() + "/" + statName),
+                HttpStatus.NOT_FOUND
+        );
+    }
+
+    @Test
     void getLeaderboard() {
         final Game game = this.generateGame();
         final Stat stat = this.generateStat();

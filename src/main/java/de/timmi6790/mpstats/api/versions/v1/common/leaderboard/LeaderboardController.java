@@ -38,6 +38,22 @@ public abstract class LeaderboardController {
         return this.leaderboardService.getLeaderboards();
     }
 
+    @GetMapping("/{gameName}")
+    @Operation(summary = "Find leaderboard by game name")
+    public List<Leaderboard> getLeaderboards(@PathVariable final String gameName) throws InvalidGameNameRestException {
+        final Game game = RestUtilities.getGameOrThrow(this.gameService, gameName);
+        return this.leaderboardService.getLeaderboards(game);
+    }
+
+    @GetMapping("/{gameName}/{statName}")
+    @Operation(summary = "Find leaderboard by game and stat name")
+    public List<Leaderboard> getLeaderboards(@PathVariable final String gameName,
+                                             @PathVariable final String statName) throws InvalidGameNameRestException, InvalidStatNameRestException {
+        final Game game = RestUtilities.getGameOrThrow(this.gameService, gameName);
+        final Stat stat = RestUtilities.getStatOrThrow(this.statService, statName);
+        return this.leaderboardService.getLeaderboards(game, stat);
+    }
+
     @GetMapping("/{gameName}/{statName}/{boardName}")
     @Operation(summary = "Find leaderboard by name")
     public Leaderboard getLeaderboard(@PathVariable final String gameName,

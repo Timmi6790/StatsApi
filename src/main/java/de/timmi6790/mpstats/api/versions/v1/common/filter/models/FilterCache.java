@@ -30,7 +30,7 @@ public class FilterCache {
 
     private Optional<FilterData> getFilterData(final Leaderboard leaderboard, final ZonedDateTime timestamp) {
         final List<FilterData> filterDurations = this.getFilterDataList(leaderboard);
-        if (filterDurations.isEmpty()) {
+        if (filterDurations == null || filterDurations.isEmpty()) {
             return Optional.empty();
         }
 

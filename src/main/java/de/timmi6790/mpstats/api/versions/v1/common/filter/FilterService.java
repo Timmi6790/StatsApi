@@ -17,11 +17,17 @@ import lombok.extern.log4j.Log4j2;
 import org.jdbi.v3.core.Jdbi;
 
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 
 @Getter(AccessLevel.PROTECTED)
 @Log4j2
+// TODO: Add permanent filter option, as boolean
 public class FilterService<P extends Player, S extends PlayerService<P>> {
     private final S playerService;
     private final LeaderboardService leaderboardService;
@@ -29,7 +35,7 @@ public class FilterService<P extends Player, S extends PlayerService<P>> {
     private final FilterRepository<P> filterRepository;
 
     private final Striped<Lock> filterCacheLock = Striped.lock(64);
-    private final Map<Integer, FilterCache> filterCache = new HashMap<>();
+    private final Map<Integer, FilterCache> filterCache = new ConcurrentHashMap<>();
 
     private final String schema;
 
@@ -51,12 +57,16 @@ public class FilterService<P extends Player, S extends PlayerService<P>> {
     }
 
     protected void loadRepositoryEntriesIntoCache() {
-        log.info("[{}] Load filters from repository", this.schema);
-        final List<Filter<P>> filters = this.getFilters();
-        for (final Filter<P> filter : filters) {
-            this.addFilterToCache(filter);
-        }
-        log.info("[{}] Loaded {} filters from repository", this.schema, filters.size());
+        // We need to load it on a different thread, it can take a bit time because of the locks.
+        // Also invest the locks and separate them into read and write locks
+        Executors.newSingleThreadExecutor().submit(() -> {
+            log.info("[{}] Load filters from repository", this.schema);
+            final List<Filter<P>> filters = this.getFilters();
+            for (final Filter<P> filter : filters) {
+                this.addFilterToCache(filter);
+            }
+            log.info("[{}] Loaded {} filters from repository", this.schema, filters.size());
+        });
     }
 
     protected Lock getFilterCacheLock(final int playerId) {

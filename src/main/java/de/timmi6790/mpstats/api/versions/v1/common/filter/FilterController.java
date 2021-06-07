@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
@@ -56,7 +57,9 @@ public class FilterController<P extends Player, S extends PlayerService<P>> {
                                             @PathVariable final String boardName,
                                             @PathVariable final String playerName,
                                             @RequestParam final Reason reason,
+                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                             @RequestParam final ZonedDateTime filterStart,
+                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                             @RequestParam final ZonedDateTime filterEnd) throws InvalidPlayerNameRestException, InvalidLeaderboardCombinationRestException, InvalidStatNameRestException, InvalidBoardNameRestException, InvalidGameNameRestException {
         RestUtilities.verifyPlayerName(this.getPlayerService(), playerName);
 

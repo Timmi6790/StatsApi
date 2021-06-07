@@ -18,6 +18,7 @@ import de.timmi6790.mpstats.api.versions.v1.java.stat.JavaStatService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
@@ -36,7 +37,7 @@ public class JavaFilterController extends FilterController<JavaPlayer, JavaPlaye
         super(gameService, statService, boardService, filterService);
     }
 
-    @PostMapping("/{gameName}/{statName}/{boardName}/{playerUUID}")
+    @PostMapping("/{gameName}/{statName}/{boardName}/uuid/{playerUUID}")
     @Operation(summary = "Create a new filter")
     @RequireAdminPerms
     public Optional<Filter<JavaPlayer>> createFilter(@PathVariable final String gameName,
@@ -44,7 +45,9 @@ public class JavaFilterController extends FilterController<JavaPlayer, JavaPlaye
                                                      @PathVariable final String boardName,
                                                      @PathVariable final UUID playerUUID,
                                                      @RequestParam final Reason reason,
+                                                     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                      @RequestParam final ZonedDateTime filterStart,
+                                                     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                      @RequestParam final ZonedDateTime filterEnd) throws InvalidLeaderboardCombinationRestException, InvalidStatNameRestException, InvalidBoardNameRestException, InvalidGameNameRestException {
         final Leaderboard leaderboard = RestUtilities.getLeaderboardOrThrow(
                 this.getGameService(),

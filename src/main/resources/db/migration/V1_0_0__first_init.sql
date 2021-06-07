@@ -118,14 +118,24 @@ CREATE TABLE "bedrock"."stat_alias"
     CONSTRAINT "stat_alias-alias_name" UNIQUE ("alias_name")
 );
 
+CREATE TABLE "bedrock"."stat_types"
+(
+    "id"        serial4,
+    "type_name" text NOT NULL,
+    PRIMARY KEY ("id"),
+    CONSTRAINT "stat_types-type" UNIQUE ("type_name")
+);
+
 CREATE TABLE "bedrock"."stats"
 (
-    "id"           serial4,
-    "website_name" varchar(255) NOT NULL,
-    "stat_name"    varchar(255) NOT NULL,
-    "clean_name"   varchar(255) NOT NULL,
-    "description"  text,
-    "achievement"  bool         NOT NULL,
+    "id"               serial4,
+    "website_name"     varchar(255) NOT NULL,
+    "stat_name"        varchar(255) NOT NULL,
+    "clean_name"       varchar(255) NOT NULL,
+    "description"      text,
+    "achievement"      bool         NOT NULL,
+    "type_id"          int4         NOT NULL DEFAULT 1,
+    "sorting_priority" int4         NOT NULL DEFAULT 0,
     PRIMARY KEY ("id"),
     CONSTRAINT "stats-stat_name" UNIQUE ("stat_name")
 );
@@ -251,14 +261,24 @@ CREATE TABLE "java"."stat_alias"
     CONSTRAINT "stat_alias-alias_name" UNIQUE ("alias_name")
 );
 
+CREATE TABLE "java"."stat_types"
+(
+    "id"        serial4,
+    "type_name" text NOT NULL,
+    PRIMARY KEY ("id"),
+    CONSTRAINT "stat_types-type" UNIQUE ("type_name")
+);
+
 CREATE TABLE "java"."stats"
 (
-    "id"           serial4,
-    "website_name" varchar(255) NOT NULL,
-    "stat_name"    varchar(255) NOT NULL,
-    "clean_name"   varchar(255) NOT NULL,
-    "description"  text,
-    "achievement"  bool         NOT NULL,
+    "id"               serial4,
+    "website_name"     varchar(255) NOT NULL,
+    "stat_name"        varchar(255) NOT NULL,
+    "clean_name"       varchar(255) NOT NULL,
+    "description"      text,
+    "achievement"      bool         NOT NULL,
+    "type_id"          int4         NOT NULL DEFAULT 1,
+    "sorting_priority" int4         NOT NULL DEFAULT 0,
     PRIMARY KEY ("id"),
     CONSTRAINT "stats-stat_name" UNIQUE ("stat_name")
 );
@@ -334,6 +354,8 @@ CREATE UNIQUE INDEX "players-player_name_lower" ON "bedrock"."players" (
 ALTER TABLE "bedrock"."stat_alias"
     ADD CONSTRAINT "stat_alias-stat_id-stats-id" FOREIGN KEY ("stat_id") REFERENCES "bedrock"."stats" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 DROP INDEX "bedrock"."stats-stat_name_lower";
+ALTER TABLE "bedrock"."stats"
+    ADD CONSTRAINT "stats-type-stat_types-id" FOREIGN KEY ("type_id") REFERENCES "bedrock"."stat_types" ("id") ON DELETE SET DEFAULT ON UPDATE NO ACTION;
 CREATE UNIQUE INDEX "stats-stat_name_lower" ON "bedrock"."stats" USING btree (
                                                                               LOWER(stat_name)
     );
@@ -377,6 +399,8 @@ ALTER TABLE "java"."leaderboards"
 ALTER TABLE "java"."stat_alias"
     ADD CONSTRAINT "stat_alias-stat_id-stats-id" FOREIGN KEY ("stat_id") REFERENCES "java"."stats" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 DROP INDEX "java"."stats-stat_name_lower";
+ALTER TABLE "java"."stats"
+    ADD CONSTRAINT "stats-type-stat_types-id" FOREIGN KEY ("type_id") REFERENCES "java"."stat_types" ("id") ON DELETE SET DEFAULT ON UPDATE NO ACTION;
 CREATE UNIQUE INDEX "stats-stat_name_lower" ON "java"."stats" USING btree (
                                                                            LOWER(stat_name)
     );

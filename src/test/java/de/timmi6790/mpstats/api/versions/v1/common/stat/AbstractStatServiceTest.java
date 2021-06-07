@@ -21,7 +21,7 @@ public abstract class AbstractStatServiceTest {
     public AbstractStatServiceTest(final Supplier<StatService> statServiceSupplier) {
         this.statServiceSupplier = statServiceSupplier;
         this.statService = statServiceSupplier.get();
-        this.statRepository = this.statService.getJavaStatRepository();
+        this.statRepository = this.statService.getStatRepository();
     }
 
     protected Stat generateStat(final String boardName) {

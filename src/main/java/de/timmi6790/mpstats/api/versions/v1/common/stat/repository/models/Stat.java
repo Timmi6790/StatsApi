@@ -16,4 +16,6 @@ public class Stat {
     private final String description;
     private final boolean achievement;
     private final Set<String> aliasNames;
+    private final int sortingPriority;
+    private final StatType type;
 }

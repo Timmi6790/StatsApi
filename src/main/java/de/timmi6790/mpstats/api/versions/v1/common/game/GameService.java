@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 
 @Log4j2
+// TODO: Add tests
 public class GameService {
     @Getter(AccessLevel.PROTECTED)
     private final GameRepository gameRepository;
@@ -27,6 +28,7 @@ public class GameService {
 
     private final Striped<Lock> gameLock = Striped.lock(32);
     private final Map<String, Game> games;
+    private final Map<String, String> gameAliasNames;
 
     private final String schema;
 
@@ -47,10 +49,16 @@ public class GameService {
         log.info("[{}] Load games from repository", schema);
         final List<Game> existingGames = this.gameRepository.getGames();
         this.games = new LinkedCaseInsensitiveMap<>(existingGames.size());
+        this.gameAliasNames = new LinkedCaseInsensitiveMap<>();
         for (final Game game : existingGames) {
             this.games.put(game.getGameName(), game);
+
+            for (final String aliasName : game.getAliasNames()) {
+                this.gameAliasNames.put(aliasName, game.getGameName());
+            }
         }
         log.info("[{}] Loaded {} games from repository", schema, this.games.size());
+        log.info("[{}] Loaded {} game alias names from repository", schema, this.gameAliasNames.size());
     }
 
     private Lock getGameLock(final String gameName) {
@@ -59,6 +67,10 @@ public class GameService {
 
     private Lock getCategoryLock(final String categoryName) {
         return this.categoryLock.get(categoryName.toLowerCase());
+    }
+
+    private String getGameName(final String gameName) {
+        return this.gameAliasNames.getOrDefault(gameName, gameName);
     }
 
     public boolean hasCategory(final String categoryName) {
@@ -91,7 +103,7 @@ public class GameService {
     }
 
     public boolean hasGame(final String gameName) {
-        return this.games.containsKey(gameName);
+        return this.games.containsKey(this.getGameName(gameName));
     }
 
     public List<Game> getGames() {
@@ -99,7 +111,7 @@ public class GameService {
     }
 
     public Optional<Game> getGame(final String gameName) {
-        return Optional.ofNullable(this.games.get(gameName));
+        return Optional.ofNullable(this.games.get(this.getGameName(gameName)));
     }
 
     public Game getOrCreateGame(final String websiteName,
@@ -123,7 +135,8 @@ public class GameService {
         }
     }
 
-    public void deleteGame(final String gameName) {
+    public void deleteGame(String gameName) {
+        gameName = this.getGameName(gameName);
         final Lock lock = this.getGameLock(gameName);
         lock.lock();
         try {

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -37,15 +38,6 @@ public class JavaPlayerStatsService extends PlayerStatsService<JavaPlayer, JavaP
         this.websiteService = websiteService;
     }
 
-    private Optional<PlayerEntry> getPlayerEntry(final Leaderboard leaderboard, final Set<PlayerEntry> entries) {
-        for (final PlayerEntry entry : entries) {
-            if (entry.getLeaderboard().equals(leaderboard)) {
-                return Optional.of(entry);
-            }
-        }
-        return Optional.empty();
-    }
-
     private Optional<Long> getWebsiteScore(final Leaderboard leaderboard, final WebsitePlayer websitePlayer) {
         final GameStat gameStat = websitePlayer.getGameStats().get(leaderboard.getGame());
         if (gameStat != null) {
@@ -56,18 +48,16 @@ public class JavaPlayerStatsService extends PlayerStatsService<JavaPlayer, JavaP
 
     @SneakyThrows
     @Override
-    protected Set<PlayerEntry> getPlayerEntries(final List<Leaderboard> leaderboards,
-                                                final JavaPlayer player,
-                                                final ZonedDateTime time,
-                                                final Set<Reason> filterReasons,
-                                                final boolean includeEmptyEntries) {
+    protected Map<Leaderboard, PlayerEntry> getPlayerEntries(final List<Leaderboard> leaderboards,
+                                                             final JavaPlayer player,
+                                                             final ZonedDateTime time,
+                                                             final Set<Reason> filterReasons) {
         final CompletableFuture<Optional<WebsitePlayer>> websitePlayerOpt = this.websiteService.retrievePlayer(player.getName());
-        final Set<PlayerEntry> entries = super.getPlayerEntries(
+        final Map<Leaderboard, PlayerEntry> entries = super.getPlayerEntries(
                 leaderboards,
                 player,
                 time,
-                filterReasons,
-                includeEmptyEntries
+                filterReasons
         );
 
         final Optional<WebsitePlayer> websitePlayer;
@@ -85,23 +75,23 @@ public class JavaPlayerStatsService extends PlayerStatsService<JavaPlayer, JavaP
                     continue;
                 }
 
-                final Optional<Long> websiteScoreOpt = this.getWebsiteScore(leaderboard, websiteStats);
-                if (websiteScoreOpt.isPresent()) {
-                    // Remove an existing entry if it has no score
-                    final Optional<PlayerEntry> entryOpt = this.getPlayerEntry(leaderboard, entries);
-                    if (entryOpt.isPresent() && !entryOpt.get().isPresent()) {
-                        entries.remove(entryOpt.get());
-                    }
-
-                    entries.add(
-                            new PlayerEntry(
-                                    leaderboard,
-                                    ZonedDateTime.now(),
-                                    websiteScoreOpt.get(),
-                                    -1
-                            )
-                    );
+                // Assure that we don't have an entry of it already
+                if (entries.containsKey(leaderboard)) {
+                    continue;
                 }
+
+                this.getWebsiteScore(leaderboard, websiteStats)
+                        .ifPresent(score ->
+                                entries.put(
+                                        leaderboard,
+                                        new PlayerEntry(
+                                                leaderboard,
+                                                ZonedDateTime.now(),
+                                                score,
+                                                -1
+                                        )
+                                )
+                        );
             }
         }
 

@@ -1,5 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.common.player_stats;
 
+import com.google.common.collect.Sets;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.models.Reason;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save_combinder.LeaderboardSaveCombinerService;
@@ -14,6 +15,8 @@ import de.timmi6790.mpstats.api.versions.v1.common.player_stats.models.Generated
 import de.timmi6790.mpstats.api.versions.v1.common.player_stats.models.PlayerEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.player_stats.models.PlayerStats;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,6 +40,15 @@ public class PlayerStatsService<P extends Player, S extends PlayerService<P>> {
         };
     }
 
+    protected PlayerEntry getEmptyPlayerEntry(final Leaderboard leaderboard) {
+        return new PlayerEntry(
+                leaderboard,
+                LocalDate.EPOCH.atStartOfDay(ZoneId.systemDefault()),
+                -1,
+                -1
+        );
+    }
+
     protected Set<GeneratedPlayerEntry> generateStats(final Set<PlayerEntry> playerStats) {
         final StatGeneratorData generatorData = new StatGeneratorData(playerStats);
         final Set<GeneratedPlayerEntry> generatedStats = new HashSet<>();
@@ -47,11 +59,10 @@ public class PlayerStatsService<P extends Player, S extends PlayerService<P>> {
         return generatedStats;
     }
 
-    protected Set<PlayerEntry> getPlayerEntries(final List<Leaderboard> leaderboards,
-                                                final P player,
-                                                final ZonedDateTime time,
-                                                final Set<Reason> filterReasons,
-                                                final boolean includeEmptyEntries) {
+    protected Map<Leaderboard, PlayerEntry> getPlayerEntries(final List<Leaderboard> leaderboards,
+                                                             final P player,
+                                                             final ZonedDateTime time,
+                                                             final Set<Reason> filterReasons) {
         return leaderboards.parallelStream()
                 .map(leaderboard -> this.leaderboardSaveCombinerService.getLeaderboardSave(leaderboard, time, filterReasons))
                 .filter(Optional::isPresent)
@@ -67,19 +78,10 @@ public class PlayerStatsService<P extends Player, S extends PlayerService<P>> {
                             );
                         }
                     }
-
-                    if (includeEmptyEntries) {
-                        return new PlayerEntry(
-                                save.getLeaderboard(),
-                                save.getSaveTime(),
-                                -1,
-                                -1
-                        );
-                    }
                     return null;
                 })
                 .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toMap(PlayerEntry::getLeaderboard, entry -> entry));
     }
 
     public Optional<PlayerStats<P>> getPlayerStats(final List<Leaderboard> leaderboards,
@@ -87,9 +89,24 @@ public class PlayerStatsService<P extends Player, S extends PlayerService<P>> {
                                                    final ZonedDateTime time,
                                                    final Set<Reason> filterReasons,
                                                    final boolean includeEmptyEntries) {
-        final Set<PlayerEntry> stats = this.getPlayerEntries(leaderboards, player, time, filterReasons, includeEmptyEntries);
-        if (stats.isEmpty()) {
+        final Map<Leaderboard, PlayerEntry> statMap = this.getPlayerEntries(leaderboards, player, time, filterReasons);
+        if (statMap.isEmpty()) {
             return Optional.empty();
+        }
+
+        final Set<PlayerEntry> stats;
+        if (includeEmptyEntries) {
+            stats = Sets.newHashSetWithExpectedSize(leaderboards.size());
+            for (final Leaderboard leaderboard : leaderboards) {
+                final PlayerEntry foundEntry = statMap.get(leaderboard);
+                if (foundEntry == null) {
+                    stats.add(this.getEmptyPlayerEntry(leaderboard));
+                } else {
+                    stats.add(foundEntry);
+                }
+            }
+        } else {
+            stats = new HashSet<>(statMap.values());
         }
 
         return Optional.of(

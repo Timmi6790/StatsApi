@@ -17,7 +17,9 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.jdbi.v3.core.Jdbi;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -72,6 +74,10 @@ public class LeaderboardService {
         final String uniqName = this.getUniqName(leaderboard.getGame(), leaderboard.getStat(), leaderboard.getBoard());
         this.leaderboardCache.put(uniqName, leaderboard);
         log.debug("[{}] Add leaderboard to cache {}", this.schema, leaderboard);
+    }
+
+    public Map<Integer, Leaderboard> getLeaderboards(final Collection<Integer> repositoryIds) {
+        return this.leaderboardRepository.getLeaderboards(repositoryIds);
     }
 
     public List<Leaderboard> getLeaderboards() {

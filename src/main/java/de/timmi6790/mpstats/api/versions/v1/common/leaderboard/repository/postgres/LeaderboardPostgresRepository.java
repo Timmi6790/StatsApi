@@ -13,8 +13,8 @@ import de.timmi6790.mpstats.api.versions.v1.common.utilities.PostgresRepository;
 import org.jdbi.v3.core.Jdbi;
 
 import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class LeaderboardPostgresRepository extends PostgresRepository implements LeaderboardRepository {
     private static final String GAME_ID = "gameId";
@@ -22,6 +22,7 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
     private static final String BOARD_ID = "boardId";
     private static final String REPOSITORY_ID = "repositoryId";
 
+    private final String getLeaderboardsById;
     private final String getLeaderboard;
     private final String getLeaderboards;
     private final String getLeaderboardByRepositoryId;
@@ -50,6 +51,7 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
         this.leaderboardMapper = new LeaderboardMapper(this, gameService, statService, boardService);
 
         // Create queries
+        this.getLeaderboardsById = this.formatQuery(QueryTemplates.GET_LEADERBOARDS_BY_ID);
         this.getLeaderboard = this.formatQuery(QueryTemplates.GET_LEADERBOARD);
         this.getLeaderboards = this.formatQuery(QueryTemplates.GET_LEADERBOARDS);
         this.getLeaderboardByRepositoryId = this.formatQuery(QueryTemplates.GET_LEADERBOARDS_BY_REPOSITORY_ID);
@@ -65,6 +67,21 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
         this.updateLeaderboardLastUpdate = this.formatQuery(QueryTemplates.UPDATE_LEADERBOARD_LAST_UPDATE);
         this.updateLeaderboardLastCacheUpdate = this.formatQuery(QueryTemplates.UPDATE_LEADERBOARD_LAST_CACHE_UPDATE);
         this.updateLeaderboardDeprecated = this.formatQuery(QueryTemplates.UPDATE_LEADERBOARD_DEPRECATED);
+    }
+
+    @Override
+    public Map<Integer, Leaderboard> getLeaderboards(final Collection<Integer> repositoryIds) {
+        if (repositoryIds.isEmpty()) {
+            return new HashMap<>();
+        }
+
+        return this.getDatabase().withHandle(handle ->
+                handle.createQuery(this.getLeaderboardsById)
+                        .bindList("repositoryIds", repositoryIds)
+                        .map(this.leaderboardMapper)
+                        .stream()
+                        .collect(Collectors.toMap(Leaderboard::getRepositoryId, lb -> lb))
+        );
     }
 
     @Override
@@ -212,6 +229,7 @@ public class LeaderboardPostgresRepository extends PostgresRepository implements
                 "INNER JOIN $schema$.stats stat ON stat.\"id\" = leaderboard.stat_id " +
                 "INNER JOIN $schema$.boards board ON board.\"id\" = leaderboard.board_id " +
                 "%s;";
+        private static final String GET_LEADERBOARDS_BY_ID = String.format(GET_LEADERBOARD_BASE, "WHERE leaderboard.id IN (<repositoryIds>)");
         private static final String GET_LEADERBOARD = String.format(GET_LEADERBOARD_BASE, "WHERE game_id = :gameId AND stat_id = :statId AND board_id = :boardId LIMIT 1");
         private static final String GET_LEADERBOARDS = String.format(GET_LEADERBOARD_BASE, "");
         private static final String GET_LEADERBOARDS_BY_REPOSITORY_ID = String.format(GET_LEADERBOARD_BASE, "WHERE leaderboard.\"id\" = :repositoryId");

@@ -6,10 +6,14 @@ import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models
 import de.timmi6790.mpstats.api.versions.v1.common.stat.repository.models.Stat;
 
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface LeaderboardRepository {
+    Map<Integer, Leaderboard> getLeaderboards(final Collection<Integer> repositoryIds);
+
     List<Leaderboard> getLeaderboards();
 
     List<Leaderboard> getLeaderboards(Game game);

@@ -115,6 +115,10 @@ public class BedrockPlayerPostgresRepository implements BedrockPlayerRepository 
 
     @Override
     public Map<Integer, BedrockPlayer> getPlayers(final Collection<Integer> repositoryIds) {
+        if (repositoryIds.isEmpty()) {
+            return new HashMap<>();
+        }
+
         return this.database.withHandle(handle ->
                 handle.createQuery(SELECT_PLAYER_BY_IDS)
                         .bindList("repositoryIds", repositoryIds)

@@ -14,9 +14,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.stat.StatService;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.repository.models.Stat;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -110,6 +108,19 @@ public abstract class AbstractLeaderboardServiceTest {
 
         final List<Leaderboard> foundLeaderboards = this.leaderboardService.getLeaderboards();
         assertThat(foundLeaderboards).containsAll(requiredLeaderboards);
+    }
+
+    @Test
+    void getLeaderboards_by_ids() {
+        final Map<Integer, Leaderboard> requiredLeaderboards = new HashMap<>();
+        for (int count = 0; 10 > count; count++) {
+            final Leaderboard leaderboard = this.generateLeaderboard();
+            requiredLeaderboards.put(leaderboard.getRepositoryId(), leaderboard);
+        }
+
+        final Map<Integer, Leaderboard> foundLeaderboards = this.leaderboardService.getLeaderboards(requiredLeaderboards.keySet());
+        assertThat(foundLeaderboards)
+                .containsExactlyInAnyOrderEntriesOf(requiredLeaderboards);
     }
 
     @Test

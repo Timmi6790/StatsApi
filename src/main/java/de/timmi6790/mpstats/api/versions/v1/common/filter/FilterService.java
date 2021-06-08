@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 
 @Getter(AccessLevel.PROTECTED)
@@ -57,16 +56,12 @@ public class FilterService<P extends Player, S extends PlayerService<P>> {
     }
 
     protected void loadRepositoryEntriesIntoCache() {
-        // We need to load it on a different thread, it can take a bit time because of the locks.
-        // Also invest the locks and separate them into read and write locks
-        Executors.newSingleThreadExecutor().submit(() -> {
-            log.info("[{}] Load filters from repository", this.schema);
-            final List<Filter<P>> filters = this.getFilters();
-            for (final Filter<P> filter : filters) {
-                this.addFilterToCache(filter);
-            }
-            log.info("[{}] Loaded {} filters from repository", this.schema, filters.size());
-        });
+        log.info("[{}] Load filters from repository", this.schema);
+        final List<Filter<P>> filters = this.getFilters();
+        for (final Filter<P> filter : filters) {
+            this.addFilterToCache(filter);
+        }
+        log.info("[{}] Loaded {} filters from repository", this.schema, filters.size());
     }
 
     protected Lock getFilterCacheLock(final int playerId) {

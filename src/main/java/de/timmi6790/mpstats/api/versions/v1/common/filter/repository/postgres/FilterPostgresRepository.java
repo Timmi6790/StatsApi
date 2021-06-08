@@ -70,8 +70,7 @@ public class FilterPostgresRepository<P extends Player> extends PostgresReposito
     public List<Filter<P>> getFilters() {
         return this.getDatabase().withHandle(handler ->
                 handler.createQuery(this.getFilters)
-                        .map(this.filterMapper)
-                        .list()
+                        .scanResultSet(this.filterMapper)
         );
     }
 
@@ -80,8 +79,7 @@ public class FilterPostgresRepository<P extends Player> extends PostgresReposito
         return this.getDatabase().withHandle(handler ->
                 handler.createQuery(this.getFiltersByPlayerId)
                         .bind(PLAYER_ID, player.getRepositoryId())
-                        .map(this.filterMapper)
-                        .list()
+                        .scanResultSet(this.filterMapper)
         );
     }
 
@@ -90,8 +88,7 @@ public class FilterPostgresRepository<P extends Player> extends PostgresReposito
         return this.getDatabase().withHandle(handler ->
                 handler.createQuery(this.getFiltersByLeaderboardId)
                         .bind(LEADERBOARD_ID, leaderboard.getRepositoryId())
-                        .map(this.filterMapper)
-                        .list()
+                        .scanResultSet(this.filterMapper)
         );
     }
 
@@ -101,8 +98,7 @@ public class FilterPostgresRepository<P extends Player> extends PostgresReposito
                 handler.createQuery(this.getFiltersByPlayerLeaderboard)
                         .bind(PLAYER_ID, player.getRepositoryId())
                         .bind(LEADERBOARD_ID, leaderboard.getRepositoryId())
-                        .map(this.filterMapper)
-                        .list()
+                        .scanResultSet(this.filterMapper)
         );
     }
 
@@ -115,8 +111,7 @@ public class FilterPostgresRepository<P extends Player> extends PostgresReposito
                         .bind(PLAYER_ID, player.getRepositoryId())
                         .bind(LEADERBOARD_ID, leaderboard.getRepositoryId())
                         .bind("timestamp", timestamp)
-                        .map(this.filterMapper)
-                        .list()
+                        .scanResultSet(this.filterMapper)
         );
     }
 
@@ -133,8 +128,8 @@ public class FilterPostgresRepository<P extends Player> extends PostgresReposito
                         .bind("filterReason", reason)
                         .bind("filterStart", filterStart)
                         .bind("filterEnd", filterEnd)
-                        .map(this.filterMapper)
-                        .first()
+                        .scanResultSet(this.filterMapper)
+                        .get(0)
         );
     }
 

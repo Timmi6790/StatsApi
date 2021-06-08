@@ -14,8 +14,9 @@ public class GameReducer implements LinkedHashMapRowReducer<Integer, Game> {
                 id -> rowView.getRow(Game.class)
         );
 
-        if (rowView.getColumn("alias_name", String.class) != null) {
-            game.getAliasNames().add(rowView.getColumn("alias_name", String.class));
+        final String aliasName = rowView.getColumn("alias_name", String.class);
+        if (aliasName != null) {
+            game.getAliasNames().add(aliasName);
         }
     }
 }

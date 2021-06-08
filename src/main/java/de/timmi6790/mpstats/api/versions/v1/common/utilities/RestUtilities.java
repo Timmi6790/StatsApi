@@ -7,6 +7,9 @@ import de.timmi6790.mpstats.api.versions.v1.common.board.repository.models.Board
 import de.timmi6790.mpstats.api.versions.v1.common.game.GameService;
 import de.timmi6790.mpstats.api.versions.v1.common.game.exceptions.InvalidGameNameRestException;
 import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.Game;
+import de.timmi6790.mpstats.api.versions.v1.common.group.GroupService;
+import de.timmi6790.mpstats.api.versions.v1.common.group.exceptions.InvalidGroupNameRestException;
+import de.timmi6790.mpstats.api.versions.v1.common.group.repository.models.Group;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.LeaderboardService;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.exceptions.InvalidLeaderboardCombinationRestException;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
@@ -107,6 +110,12 @@ public class RestUtilities {
         // Add suggestions
         return leaderboardService.getLeaderboard(game, stat, board).orElseThrow(() ->
                 new InvalidLeaderboardCombinationRestException(getSimilarLeaderboards(leaderboardService, game, stat, board))
+        );
+    }
+
+    public Group getGroupOrThrow(final GroupService groupService, final String groupName) throws InvalidGroupNameRestException {
+        return groupService.getGroup(groupName).orElseThrow(() ->
+                new InvalidGroupNameRestException(getSimilarValues(groupName, groupService.getGroups(), Group::getGroupName))
         );
     }
 

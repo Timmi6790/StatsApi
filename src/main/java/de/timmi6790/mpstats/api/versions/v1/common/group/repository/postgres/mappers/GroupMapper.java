@@ -6,7 +6,7 @@ import org.jdbi.v3.core.statement.StatementContext;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.HashSet;
 
 public class GroupMapper implements RowMapper<Group> {
     @Override
@@ -18,8 +18,8 @@ public class GroupMapper implements RowMapper<Group> {
                 rs.getString("group_name"),
                 rs.getString("clean_name"),
                 description == null ? "" : description,
-                new ArrayList<>(),
-                new ArrayList<>()
+                new HashSet<>(),
+                new HashSet<>()
         );
     }
 }

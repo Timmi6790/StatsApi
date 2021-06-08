@@ -305,8 +305,7 @@ CREATE UNIQUE INDEX "stats-stat_name_lower" ON "java"."stats" USING btree (
 CREATE TABLE "java_group"."group_alias_names"
 (
     "group_id"   int4         NOT NULL,
-    "alias_name" varchar(255) NOT NULL,
-    PRIMARY KEY ("group_id")
+    "alias_name" varchar(255) NOT NULL
 );
 CREATE UNIQUE INDEX "group_alias_names-alias_name-lower" ON "java_group"."group_alias_names" USING btree (
                                                                                                           LOWER(alias_name)

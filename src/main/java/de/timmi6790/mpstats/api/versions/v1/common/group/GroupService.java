@@ -3,6 +3,7 @@ package de.timmi6790.mpstats.api.versions.v1.common.group;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.util.concurrent.Striped;
+import de.timmi6790.mpstats.api.versions.v1.common.game.GameService;
 import de.timmi6790.mpstats.api.versions.v1.common.group.repository.GroupRepository;
 import de.timmi6790.mpstats.api.versions.v1.common.group.repository.models.Group;
 import de.timmi6790.mpstats.api.versions.v1.common.group.repository.postgres.GroupPostgresRepository;
@@ -10,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.jdbi.v3.core.Jdbi;
+import org.springframework.util.LinkedCaseInsensitiveMap;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -23,16 +25,21 @@ public class GroupService {
     private final Striped<Lock> groupLock = Striped.lock(32);
 
     private final Set<String> groupNames = Collections.synchronizedSet(new TreeSet<>(String.CASE_INSENSITIVE_ORDER));
+    private final Map<String, String> aliasNames = new LinkedCaseInsensitiveMap<>();
 
     private final Cache<String, Group> groupCache = Caffeine.newBuilder()
             .expireAfterAccess(5, TimeUnit.SECONDS)
             .build();
 
-    protected GroupService(final Jdbi database, final String schema) {
-        this.groupRepository = new GroupPostgresRepository(database, schema);
+    protected GroupService(final Jdbi database, final String schema, final GameService gameService) {
+        this.groupRepository = new GroupPostgresRepository(database, schema, gameService);
 
         for (final Group group : this.groupRepository.getGroups()) {
             this.groupNames.add(group.getGroupName());
+
+            for (final String aliasName : group.getAliasNames()) {
+                this.aliasNames.put(aliasName, group.getGroupName());
+            }
         }
     }
 
@@ -42,6 +49,10 @@ public class GroupService {
 
     private Optional<Group> getGroupFromCache(final String groupName) {
         return Optional.ofNullable(this.groupCache.getIfPresent(groupName.toLowerCase()));
+    }
+
+    private String getGroupName(final String groupName) {
+        return this.aliasNames.getOrDefault(groupName, groupName);
     }
 
     private void insertGroupIntoCache(final Group group) {
@@ -54,10 +65,11 @@ public class GroupService {
     }
 
     public boolean hasGroup(final String groupName) {
-        return this.groupNames.contains(groupName);
+        return this.groupNames.contains(this.getGroupName(groupName));
     }
 
-    public Group createGroup(final String groupName, final String cleanName) {
+    public Group createGroup(String groupName, final String cleanName) {
+        groupName = this.getGroupName(groupName);
         final Lock lock = this.getGroupLock(groupName);
         lock.lock();
 
@@ -76,7 +88,8 @@ public class GroupService {
         }
     }
 
-    public void deleteGroup(final String groupName) {
+    public void deleteGroup(String groupName) {
+        groupName = this.getGroupName(groupName);
         final Lock lock = this.getGroupLock(groupName);
         lock.lock();
 
@@ -93,7 +106,8 @@ public class GroupService {
         }
     }
 
-    public Optional<Group> getGroup(final String groupName) {
+    public Optional<Group> getGroup(String groupName) {
+        groupName = this.getGroupName(groupName);
         final Optional<Group> groupCached = this.getGroupFromCache(groupName);
         if (groupCached.isPresent()) {
             return groupCached;

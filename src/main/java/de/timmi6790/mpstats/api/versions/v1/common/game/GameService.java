@@ -110,6 +110,16 @@ public class GameService {
         return new ArrayList<>(this.games.values());
     }
 
+    public Optional<Game> getGame(final int repositoryId) {
+        // We only have ~100 games
+        for (final Game game : this.getGames()) {
+            if (game.getRepositoryId() == repositoryId) {
+                return Optional.of(game);
+            }
+        }
+        return Optional.empty();
+    }
+
     public Optional<Game> getGame(final String gameName) {
         return Optional.ofNullable(this.games.get(this.getGameName(gameName)));
     }

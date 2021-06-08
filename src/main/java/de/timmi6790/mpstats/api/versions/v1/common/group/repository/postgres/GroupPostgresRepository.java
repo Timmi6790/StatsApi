@@ -1,5 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.common.group.repository.postgres;
 
+import de.timmi6790.mpstats.api.versions.v1.common.game.GameService;
 import de.timmi6790.mpstats.api.versions.v1.common.group.repository.GroupRepository;
 import de.timmi6790.mpstats.api.versions.v1.common.group.repository.models.Group;
 import de.timmi6790.mpstats.api.versions.v1.common.group.repository.postgres.mappers.GroupMapper;
@@ -18,13 +19,14 @@ public class GroupPostgresRepository extends PostgresRepository implements Group
     private final String getGroups;
     private final String getGroup;
 
-    private final Jdbi database;
+    private final GameService gameService;
 
-    public GroupPostgresRepository(final Jdbi jdbi, final String schema) {
+    public GroupPostgresRepository(final Jdbi jdbi, final String schema, final GameService gameService) {
         super(jdbi, schema);
-        this.database = jdbi;
 
-        this.database.registerRowMapper(new GroupMapper());
+        this.gameService = gameService;
+
+        this.getDatabase().registerRowMapper(new GroupMapper());
 
         // Create queries
         this.insertGroup = this.formatQuery(QueryTemplates.INSERT_GROUP);
@@ -34,28 +36,32 @@ public class GroupPostgresRepository extends PostgresRepository implements Group
         this.getGroup = this.formatQuery(QueryTemplates.GET_GROUP);
     }
 
+    protected GroupReducer constructGroupReducer() {
+        return new GroupReducer(this.gameService);
+    }
+
     @Override
     public List<Group> getGroups() {
-        return this.database.withHandle(handle ->
+        return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getGroups)
-                        .reduceRows(new GroupReducer())
+                        .reduceRows(this.constructGroupReducer())
                         .collect(Collectors.toList())
         );
     }
 
     @Override
     public Optional<Group> getGroup(final String groupName) {
-        return this.database.withHandle(handle ->
+        return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getGroup)
                         .bind("groupName", groupName)
-                        .reduceRows(new GroupReducer())
+                        .reduceRows(this.constructGroupReducer())
                         .findFirst()
         );
     }
 
     @Override
     public Group createGroup(final String groupName, final String cleanName) {
-        return this.database.withHandle(handle ->
+        return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.insertGroup)
                         .bind("groupName", groupName)
                         .bind("cleanName", cleanName)
@@ -66,7 +72,7 @@ public class GroupPostgresRepository extends PostgresRepository implements Group
 
     @Override
     public void deleteGroup(final int groupId) {
-        this.database.useHandle(handle ->
+        this.getDatabase().useHandle(handle ->
                 handle.createUpdate(this.deleteGroup)
                         .bind("groupId", groupId)
                         .execute()
@@ -107,8 +113,10 @@ public class GroupPostgresRepository extends PostgresRepository implements Group
         private static final String INSERT_GROUP = "INSERT INTO $schema$.groups(group_name, clean_name) VALUES(:groupName, :cleanName) RETURNING id group_id, group_name, clean_name, group_description;";
         private static final String DELETE_GROUP = "DELETE FROM $schema$.groups WHERE id = :groupId;";
 
-        private static final String GET_GROUPS_BASE = "SELECT id group_id, group_name, clean_name, group_description " +
-                "FROM $schema$.groups " +
+        private static final String GET_GROUPS_BASE = "SELECT g.id group_id, group_name, clean_name, group_description, name.alias_name alias_name, game.game_id game_id " +
+                "FROM $schema$.groups g " +
+                "LEFT JOIN $schema$.group_alias_names name ON name.group_id = g.id " +
+                "LEFT JOIN $schema$.group_games game ON game.group_id = g.id " +
                 "%s;";
 
         private static final String GET_GROUPS = String.format(GET_GROUPS_BASE, "");

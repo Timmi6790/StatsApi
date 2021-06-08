@@ -97,7 +97,8 @@ CREATE TABLE "bedrock"."leaderboards"
     "deprecated"        boolean     NOT NULL,
     "last_update"       timestamptz NOT NULL DEFAULT TO_TIMESTAMP(0),
     "last_cache_update" timestamptz NOT NULL DEFAULT TO_TIMESTAMP(0),
-    PRIMARY KEY ("id")
+    PRIMARY KEY ("id"),
+    CONSTRAINT "leaderboards-game-stat-board" UNIQUE ("game_id", "stat_id", "board_id")
 );
 
 CREATE TABLE "bedrock"."players"
@@ -242,7 +243,8 @@ CREATE TABLE "java"."leaderboards"
     "deprecated"        boolean     NOT NULL,
     "last_update"       timestamptz NOT NULL DEFAULT TO_TIMESTAMP(0),
     "last_cache_update" timestamptz NOT NULL DEFAULT TO_TIMESTAMP(0),
-    PRIMARY KEY ("id")
+    PRIMARY KEY ("id"),
+    CONSTRAINT "leaderboards-game-stat-board" UNIQUE ("game_id", "stat_id", "board_id")
 );
 
 CREATE TABLE "java"."players"

@@ -177,6 +177,11 @@
             <artifactId>springdoc-openapi-security</artifactId>
             <version>1.5.9</version>
         </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-data-rest</artifactId>
+            <version>1.5.9</version>
+        </dependency>
 
         <!-- Spring Dependencies -->
         <dependency>
@@ -364,6 +369,47 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>2.8.0</version>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>com.google.cloud.tools</groupId>
+                        <artifactId>jib-spring-boot-extension-maven</artifactId>
+                        <version>0.1.0</version>
+                    </dependency>
+                </dependencies>
+
+                <configuration>
+                    <pluginExtensions>
+                        <pluginExtension>
+                            <implementation>
+                                com.google.cloud.tools.jib.maven.extension.springboot.JibSpringBootExtension
+                            </implementation>
+                        </pluginExtension>
+                    </pluginExtensions>
+                    <from>
+                        <image>adoptopenjdk/openjdk16:alpine-jre</image>
+                    </from>
+                    <to>
+                        <image>timmi6790/mpstatsapi</image>
+                        <tags>
+                            <tag>${project.version}</tag>
+                        </tags>
+                    </to>
+                    <container>
+                        <jvmFlags>
+                            <jvmFlag>-XX:+UnlockExperimentalVMOptions</jvmFlag>
+                            <jvmFlag>-Djava.security.egd=file:/dev/./urandom</jvmFlag>
+                            <jvmFlag>-Dspring.profiles.active=prod</jvmFlag>
+                        </jvmFlags>
+                        <mainClass>de.timmi6790.mpstats.api.MineplexStatsApiApplication</mainClass>
+                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
+                    </container>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

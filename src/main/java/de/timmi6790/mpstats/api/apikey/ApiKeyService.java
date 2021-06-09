@@ -21,7 +21,7 @@ public class ApiKeyService {
     private final Path apiKeyPath;
 
     public ApiKeyService() {
-        this.apiKeyPath = Paths.get("./apiKeys.json");
+        this.apiKeyPath = Paths.get("./configs/apiKeys.json");
 
         this.setUpStorage();
         this.loadKeysFromStorage();

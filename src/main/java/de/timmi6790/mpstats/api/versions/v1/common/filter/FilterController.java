@@ -24,11 +24,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter(AccessLevel.PROTECTED)
+// TODO: Add tests
 public class FilterController<P extends Player, S extends PlayerService<P>> {
     private final GameService gameService;
     private final StatService statService;
@@ -47,6 +50,12 @@ public class FilterController<P extends Player, S extends PlayerService<P>> {
     @Operation(summary = "Find all available filters")
     public List<Filter<P>> getFilters() {
         return this.filterService.getFilters();
+    }
+
+    @GetMapping("/reasons")
+    @Operation(summary = "Find all available filter reasons")
+    public Set<Reason> getFilterReasons() {
+        return EnumSet.allOf(Reason.class);
     }
 
     @PostMapping("/{gameName}/{statName}/{boardName}/{playerName}")
@@ -79,6 +88,35 @@ public class FilterController<P extends Player, S extends PlayerService<P>> {
         }
 
         final Filter<P> filter = this.filterService.addFilter(playerOpt.get(), leaderboard, reason, filterStart, filterEnd);
+        return Optional.of(filter);
+    }
+
+    @PostMapping("/permanent/{gameName}/{statName}/{boardName}/{playerName}")
+    @Operation(summary = "Create a new permanent filter")
+    @RequireAdminPerms
+    public Optional<Filter<P>> createPermanentFilter(@PathVariable final String gameName,
+                                                     @PathVariable final String statName,
+                                                     @PathVariable final String boardName,
+                                                     @PathVariable final String playerName,
+                                                     @RequestParam final Reason reason) throws InvalidPlayerNameRestException, InvalidLeaderboardCombinationRestException, InvalidStatNameRestException, InvalidBoardNameRestException, InvalidGameNameRestException {
+        RestUtilities.verifyPlayerName(this.getPlayerService(), playerName);
+
+        final Leaderboard leaderboard = RestUtilities.getLeaderboardOrThrow(
+                this.gameService,
+                gameName,
+                this.statService,
+                statName,
+                this.boardService,
+                boardName,
+                this.getLeaderboardService()
+        );
+
+        final Optional<P> playerOpt = this.getPlayerService().getPlayer(playerName);
+        if (playerOpt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        final Filter<P> filter = this.filterService.addPermanentFilter(playerOpt.get(), leaderboard, reason);
         return Optional.of(filter);
     }
 

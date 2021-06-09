@@ -3,6 +3,7 @@ package de.timmi6790.mpstats.api.versions.v1.common.filter.repository.postgres.m
 import com.google.common.collect.Lists;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.models.Reason;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.Filter;
+import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.FilterDuration;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.LeaderboardService;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
@@ -12,13 +13,18 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.jdbi.v3.core.result.ResultSetScanner;
 import org.jdbi.v3.core.statement.StatementContext;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 @AllArgsConstructor
@@ -26,6 +32,14 @@ import java.util.function.Supplier;
 public class FilterMapper<P extends Player> implements ResultSetScanner<List<Filter<P>>> {
     private final PlayerService<P> playerService;
     private final LeaderboardService leaderboardService;
+
+    private Optional<ZonedDateTime> getZonedDate(@Nullable final Timestamp timeStamp) {
+        if (timeStamp == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(timeStamp.toLocalDateTime().atZone(ZoneId.systemDefault()));
+    }
 
     @Override
     public List<Filter<P>> scanResultSet(final Supplier<ResultSet> resultSetSupplier, final StatementContext ctx) throws SQLException {
@@ -48,6 +62,8 @@ public class FilterMapper<P extends Player> implements ResultSetScanner<List<Fil
                     reason = Reason.GLITCHED;
                 }
 
+                ZonedDateTime startDate;
+
                 playerIds.add(playerId);
                 leaderboardIds.add(leaderboardId);
                 preParsedFilters.add(
@@ -56,8 +72,8 @@ public class FilterMapper<P extends Player> implements ResultSetScanner<List<Fil
                                 leaderboardId,
                                 resultSet.getInt("id"),
                                 reason,
-                                resultSet.getTimestamp("filter_start").toLocalDateTime().atZone(ZoneId.systemDefault()),
-                                resultSet.getTimestamp("filter_end").toLocalDateTime().atZone(ZoneId.systemDefault())
+                                this.getZonedDate(resultSet.getTimestamp("filter_start")).orElse(null),
+                                this.getZonedDate(resultSet.getTimestamp("filter_end")).orElse(null)
                         )
                 );
             }
@@ -81,6 +97,15 @@ public class FilterMapper<P extends Player> implements ResultSetScanner<List<Fil
                     continue;
                 }
 
+                final FilterDuration filterDuration;
+                if (preValue.isPermanent()) {
+                    filterDuration = null;
+                } else {
+                    filterDuration = new FilterDuration(
+                            preValue.getStartDate(),
+                            preValue.getEndDate()
+                    );
+                }
 
                 entries.add(
                         new Filter<>(
@@ -88,8 +113,8 @@ public class FilterMapper<P extends Player> implements ResultSetScanner<List<Fil
                                 player,
                                 leaderboard,
                                 preValue.getReason(),
-                                preValue.getStartDate(),
-                                preValue.getEndDate()
+                                preValue.isPermanent(),
+                                filterDuration
                         )
                 );
             }
@@ -104,8 +129,27 @@ public class FilterMapper<P extends Player> implements ResultSetScanner<List<Fil
 
         private final int filterId;
         private final Reason reason;
+        @Nullable
         private final ZonedDateTime startDate;
+        @Nullable
         private final ZonedDateTime endDate;
+
+        public boolean isPermanent() {
+            return this.endDate == null;
+        }
+
+        public ZonedDateTime getStartDate() {
+            // We don't have a start date if no end date is found
+            if (this.endDate == null) {
+                return null;
+            }
+
+            // Return utc 0 if no start date is found but an end date
+            return Objects.requireNonNullElseGet(
+                    this.startDate,
+                    () -> ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC"))
+            );
+        }
     }
 }
 

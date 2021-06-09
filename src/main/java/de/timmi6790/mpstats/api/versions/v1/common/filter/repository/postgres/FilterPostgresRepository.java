@@ -11,6 +11,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import de.timmi6790.mpstats.api.versions.v1.common.utilities.PostgresRepository;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.PreparedBatch;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.ZonedDateTime;
 import java.util.Collection;
@@ -119,8 +120,8 @@ public class FilterPostgresRepository<P extends Player> extends PostgresReposito
     public Filter<P> addFilter(final P player,
                                final Leaderboard leaderboard,
                                final Reason reason,
-                               final ZonedDateTime filterStart,
-                               final ZonedDateTime filterEnd) {
+                               @Nullable final ZonedDateTime filterStart,
+                               @Nullable final ZonedDateTime filterEnd) {
         return this.getDatabase().withHandle(handler ->
                 handler.createQuery(this.insertFilter)
                         .bind(PLAYER_ID, player.getRepositoryId())

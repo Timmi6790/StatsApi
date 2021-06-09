@@ -125,7 +125,7 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
         final List<Filter<P>> foundFilters = this.filterService.getFilters(
                 filter.getPlayer(),
                 filter.getLeaderboard(),
-                filter.getStart()
+                filter.getFilterDuration().getStart()
         );
         assertThat(foundFilters).containsOnly(filter);
     }
@@ -137,7 +137,7 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
         final boolean found = this.filterService.isFiltered(
                 filter.getPlayer(),
                 filter.getLeaderboard(),
-                filter.getStart()
+                filter.getFilterDuration().getStart()
         );
         assertThat(found).isTrue();
     }
@@ -149,7 +149,7 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
         final boolean found = this.filterService.isFiltered(
                 filter.getPlayer(),
                 filter.getLeaderboard(),
-                filter.getEnd()
+                filter.getFilterDuration().getEnd()
         );
         assertThat(found).isTrue();
     }
@@ -162,7 +162,7 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
         final boolean found = this.filterService.isFiltered(
                 filter.getPlayer(),
                 filter.getLeaderboard(),
-                filter.getEnd(),
+                filter.getFilterDuration().getEnd(),
                 Collections.singleton(reason)
         );
         assertThat(found).isTrue();
@@ -178,7 +178,7 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
         final boolean notFound = this.filterService.isFiltered(
                 filter.getPlayer(),
                 filter.getLeaderboard(),
-                filter.getEnd(),
+                filter.getFilterDuration().getEnd(),
                 reasons
         );
         assertThat(notFound).isFalse();
@@ -226,8 +226,28 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
         assertThat(filter.getPlayer()).isEqualTo(player);
         assertThat(filter.getLeaderboard()).isEqualTo(leaderboard);
         assertThat(filter.getReason()).isEqualTo(reason);
-        assertThat(filter.getStart()).isEqualToIgnoringNanos(filterStart);
-        assertThat(filter.getEnd()).isEqualToIgnoringNanos(filterEnd);
+        assertThat(filter.getFilterDuration().getStart()).isEqualToIgnoringNanos(filterStart);
+        assertThat(filter.getFilterDuration().getEnd()).isEqualToIgnoringNanos(filterEnd);
+    }
+
+    @Test
+    void addFilter_permanent() {
+        final P player = this.generatePlayer();
+        final Leaderboard leaderboard = this.generateLeaderboard();
+        final Reason reason = Reason.BOOSTED;
+
+        final Filter<P> filter = this.filterService.addPermanentFilter(player, leaderboard, reason);
+        assertThat(filter.getPlayer()).isEqualTo(player);
+        assertThat(filter.getLeaderboard()).isEqualTo(leaderboard);
+        assertThat(filter.getReason()).isEqualTo(reason);
+        assertThat(filter.isPermanent()).isTrue();
+        assertThat(filter.getFilterDuration()).isNull();
+
+        final boolean isFilteredBoard = this.filterService.isFiltered(player, leaderboard);
+        assertThat(isFilteredBoard).isTrue();
+
+        final boolean isFilteredBoardTime = this.filterService.isFiltered(player, leaderboard, ZonedDateTime.now().minusMonths(99));
+        assertThat(isFilteredBoardTime).isTrue();
     }
 
     @Test
@@ -249,7 +269,7 @@ public abstract class AbstractFilterServiceTest<P extends Player, S extends Play
         final F newFilterService = this.filterServiceSupplier.get();
 
         // Check that filter is loaded correctly from the repository
-        final boolean filterFound = newFilterService.isFiltered(filter.getPlayer(), filter.getLeaderboard(), filter.getStart());
+        final boolean filterFound = newFilterService.isFiltered(filter.getPlayer(), filter.getLeaderboard(), filter.getFilterDuration().getStart());
         assertThat(filterFound).isTrue();
     }
 }

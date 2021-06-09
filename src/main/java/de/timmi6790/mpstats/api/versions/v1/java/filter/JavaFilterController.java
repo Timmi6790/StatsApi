@@ -73,4 +73,35 @@ public class JavaFilterController extends FilterController<JavaPlayer, JavaPlaye
         );
         return Optional.of(filter);
     }
+
+    @PostMapping("/permanent{gameName}/{statName}/{boardName}/uuid/{playerUUID}")
+    @Operation(summary = "Create a new filter")
+    @RequireAdminPerms
+    public Optional<Filter<JavaPlayer>> createPermanentFilter(@PathVariable final String gameName,
+                                                              @PathVariable final String statName,
+                                                              @PathVariable final String boardName,
+                                                              @PathVariable final UUID playerUUID,
+                                                              @RequestParam final Reason reason) throws InvalidLeaderboardCombinationRestException, InvalidStatNameRestException, InvalidBoardNameRestException, InvalidGameNameRestException {
+        final Leaderboard leaderboard = RestUtilities.getLeaderboardOrThrow(
+                this.getGameService(),
+                gameName,
+                this.getStatService(),
+                statName,
+                this.getBoardService(),
+                boardName,
+                this.getLeaderboardService()
+        );
+
+        final Optional<JavaPlayer> playerOpt = this.getPlayerService().getPlayer(playerUUID);
+        if (playerOpt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        final Filter<JavaPlayer> filter = this.getFilterService().addPermanentFilter(
+                playerOpt.get(),
+                leaderboard,
+                reason
+        );
+        return Optional.of(filter);
+    }
 }

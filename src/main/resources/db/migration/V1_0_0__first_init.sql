@@ -35,11 +35,11 @@ CREATE TABLE "bedrock"."filter_reasons"
 CREATE TABLE "bedrock"."filters"
 (
     "id"             serial4,
-    "player_id"      int4        NOT NULL,
-    "leaderboard_id" int4        NOT NULL,
-    "reason_id"      int4        NOT NULL,
-    "filter_start"   timestamptz NOT NULL,
-    "filter_end"     timestamptz NOT NULL,
+    "player_id"      int4 NOT NULL,
+    "leaderboard_id" int4 NOT NULL,
+    "reason_id"      int4 NOT NULL,
+    "filter_start"   timestamptz,
+    "filter_end"     timestamptz,
     PRIMARY KEY ("id")
 );
 
@@ -186,11 +186,11 @@ CREATE TABLE "java"."filter_reasons"
 CREATE TABLE "java"."filters"
 (
     "id"             serial4,
-    "player_id"      int4        NOT NULL,
-    "leaderboard_id" int4        NOT NULL,
-    "reason_id"      int4        NOT NULL,
-    "filter_start"   timestamptz NOT NULL,
-    "filter_end"     timestamptz NOT NULL,
+    "player_id"      int4 NOT NULL,
+    "leaderboard_id" int4 NOT NULL,
+    "reason_id"      int4 NOT NULL,
+    "filter_start"   timestamptz,
+    "filter_end"     timestamptz,
     PRIMARY KEY ("id")
 );
 

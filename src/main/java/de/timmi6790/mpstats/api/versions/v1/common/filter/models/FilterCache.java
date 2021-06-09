@@ -1,8 +1,10 @@
 package de.timmi6790.mpstats.api.versions.v1.common.filter.models;
 
 import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.Filter;
+import de.timmi6790.mpstats.api.versions.v1.common.filter.repository.models.FilterDuration;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import lombok.Data;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -18,8 +20,7 @@ public class FilterCache {
                         new FilterData(
                                 filter.getRepositoryId(),
                                 filter.getReason(),
-                                filter.getStart(),
-                                filter.getEnd()
+                                filter.getFilterDuration()
                         )
                 );
     }
@@ -82,11 +83,16 @@ public class FilterCache {
     private static class FilterData {
         private final int filterId;
         private final Reason reason;
-        private final ZonedDateTime filterStart;
-        private final ZonedDateTime filterEnd;
+        @Nullable
+        private final FilterDuration filterDuration;
 
         public boolean betweenDate(final ZonedDateTime timestamp) {
-            return this.filterStart.compareTo(timestamp) <= 0 && this.filterEnd.compareTo(timestamp) >= 0;
+            // No filter duration indicates a permanent filter
+            if (this.filterDuration == null) {
+                return true;
+            }
+
+            return this.filterDuration.getStart().compareTo(timestamp) <= 0 && this.filterDuration.getEnd().compareTo(timestamp) >= 0;
         }
     }
 }

@@ -15,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.jdbi.v3.core.Jdbi;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -72,6 +73,7 @@ public class FilterService<P extends Player, S extends PlayerService<P>> {
         final Lock lock = this.getFilterCacheLock(filter.getPlayer().getRepositoryId());
         lock.lock();
 
+        // TODO: Add new permanent option
         try {
             log.debug("[{}] Add {} to cache", this.schema, filter);
             this.filterCache.computeIfAbsent(filter.getPlayer().getRepositoryId(), k -> new FilterCache())
@@ -153,11 +155,20 @@ public class FilterService<P extends Player, S extends PlayerService<P>> {
                 .orElse(Boolean.FALSE);
     }
 
+    public Filter<P> addPermanentFilter(final P player,
+                                        final Leaderboard leaderboard,
+                                        final Reason reason) {
+        final Filter<P> filter = this.filterRepository.addFilter(player, leaderboard, reason, null, null);
+        this.addFilterToCache(filter);
+        log.info("[{}] Created new filter {}", this.schema, filter);
+        return filter;
+    }
+
     public Filter<P> addFilter(final P player,
                                final Leaderboard leaderboard,
                                final Reason reason,
-                               final ZonedDateTime filterStart,
-                               final ZonedDateTime filterEnd) {
+                               @Nullable final ZonedDateTime filterStart,
+                               @Nullable final ZonedDateTime filterEnd) {
         final Filter<P> filter = this.filterRepository.addFilter(player, leaderboard, reason, filterStart, filterEnd);
         this.addFilterToCache(filter);
         log.info("[{}] Created new filter {}", this.schema, filter);

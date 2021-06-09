@@ -6,7 +6,9 @@ import org.jdbi.v3.core.statement.StatementContext;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.WeakHashMap;
 
 public class GroupMapper implements RowMapper<Group> {
     @Override
@@ -19,7 +21,7 @@ public class GroupMapper implements RowMapper<Group> {
                 rs.getString("clean_name"),
                 description == null ? "" : description,
                 new HashSet<>(),
-                new HashSet<>()
+                Collections.newSetFromMap(new WeakHashMap<>())
         );
     }
 }

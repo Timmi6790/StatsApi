@@ -74,7 +74,7 @@ public class JavaFilterController extends FilterController<JavaPlayer, JavaPlaye
         return Optional.of(filter);
     }
 
-    @PostMapping("/permanent{gameName}/{statName}/{boardName}/uuid/{playerUUID}")
+    @PostMapping("/permanent/{gameName}/{statName}/{boardName}/uuid/{playerUUID}")
     @Operation(summary = "Create a new filter")
     @RequireAdminPerms
     public Optional<Filter<JavaPlayer>> createPermanentFilter(@PathVariable final String gameName,

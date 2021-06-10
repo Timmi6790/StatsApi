@@ -9,7 +9,11 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@OpenAPIDefinition(info = @Info(title = "StatsBot Stats API", version = "4.0.0", description = "The backend api behind the StatsBot"))
+@OpenAPIDefinition(info = @Info(
+        title = "StatsBot Stats API",
+        version = "4.0.1",
+        description = "The backend api behind the StatsBot. Everything in here can and will change. This api version is very unstable")
+)
 @SecurityScheme(
         name = "ApiKey",
         description = "Put your api key here.",

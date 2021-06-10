@@ -11,6 +11,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 @ActiveProfiles("test")
 @SpringBootTest(
         classes = {AbstractSpringBootTest.TestApplication.class, AbstractSpringBootTest.TestConfig.class},
@@ -19,6 +24,16 @@ import org.testcontainers.containers.PostgreSQLContainer;
 )
 @AutoConfigureMockMvc
 public abstract class AbstractSpringBootTest {
+    static {
+        // Create the config folder that would normally created before the app is launched
+        final Path configFolderPath = Paths.get("./configs/");
+        try {
+            Files.createDirectories(configFolderPath);
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Autowired
     protected MockMvc mockMvc;
 

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.timmi6790.mpstats.api</groupId>
     <artifactId>MineplexStatsApiApplication</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.4</version>
     <name>MineplexStatsApi</name>
     <description></description>
 
@@ -391,7 +391,7 @@
                         </pluginExtension>
                     </pluginExtensions>
                     <from>
-                        <image>adoptopenjdk/openjdk16:alpine-jre</image>
+                        <image>timmi6790/java16-snappy</image>
                     </from>
                     <to>
                         <image>timmi6790/mpstatsapi</image>

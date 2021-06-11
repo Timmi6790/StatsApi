@@ -18,6 +18,7 @@ public class RedisConfiguration {
                 redisConfig.getPort()
         );
         redisStandaloneConfiguration.setPassword(redisConfig.getPassword());
+        redisStandaloneConfiguration.setDatabase(redisConfig.getDatabase());
         return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 }

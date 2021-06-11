@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.SerializationException;
-import org.xerial.snappy.Snappy;
 
 @RequiredArgsConstructor
 public class BytesRedisSerializer<T> implements RedisSerializer<T> {
@@ -28,7 +27,8 @@ public class BytesRedisSerializer<T> implements RedisSerializer<T> {
             return null;
         } else {
             try {
-                final byte[] uncompressedBytes = Snappy.uncompress(bytes);
+                // final byte[] uncompressedBytes = Snappy.uncompress(bytes);
+                final byte[] uncompressedBytes = bytes;
                 return this.objectMapper.readValue(uncompressedBytes, 0, uncompressedBytes.length, this.javaType);
             } catch (final Exception ex) {
                 throw new SerializationException("Could not read JSON: " + ex.getMessage(), ex);
@@ -43,7 +43,8 @@ public class BytesRedisSerializer<T> implements RedisSerializer<T> {
         } else {
             try {
                 final byte[] bytes = this.objectMapper.writeValueAsBytes(value);
-                return Snappy.compress(bytes);
+                return bytes;
+                // return Snappy.compress(bytes);
             } catch (final Exception ex) {
                 throw new SerializationException("Could not write JSON: " + ex.getMessage(), ex);
             }

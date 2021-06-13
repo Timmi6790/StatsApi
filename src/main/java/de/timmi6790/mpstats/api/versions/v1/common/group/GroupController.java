@@ -9,13 +9,13 @@ import de.timmi6790.mpstats.api.versions.v1.common.filter.models.Reason;
 import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.Game;
 import de.timmi6790.mpstats.api.versions.v1.common.group.exceptions.InvalidGroupNameRestException;
 import de.timmi6790.mpstats.api.versions.v1.common.group.repository.models.Group;
+import de.timmi6790.mpstats.api.versions.v1.common.group.repository.models.GroupPlayerStats;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.LeaderboardService;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import de.timmi6790.mpstats.api.versions.v1.common.player.exceptions.InvalidPlayerNameRestException;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import de.timmi6790.mpstats.api.versions.v1.common.player_stats.PlayerStatsService;
-import de.timmi6790.mpstats.api.versions.v1.common.player_stats.models.PlayerStats;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.StatService;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.exceptions.InvalidStatNameRestException;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.repository.models.Stat;
@@ -65,7 +65,7 @@ public class GroupController<P extends Player, S extends PlayerService<P>> {
     }
 
     @GetMapping("/{groupName}/stat/player/{playerName}/{statName}/{boardName}")
-    public Optional<PlayerStats<P>> getPlayerStats(
+    public Optional<GroupPlayerStats<P>> getPlayerStats(
             @PathVariable final String groupName,
             @PathVariable final String playerName,
             @PathVariable final String statName,
@@ -97,6 +97,6 @@ public class GroupController<P extends Player, S extends PlayerService<P>> {
                         filterReasons,
                         includeEmptyEntries
                 )
-        );
+        ).map(playerStats -> new GroupPlayerStats<>(playerStats, group));
     }
 }

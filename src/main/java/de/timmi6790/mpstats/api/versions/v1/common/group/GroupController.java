@@ -49,8 +49,8 @@ public class GroupController<P extends Player, S extends PlayerService<P>> {
     }
 
     @GetMapping("/{groupName}")
-    public Optional<Group> getGroup(@PathVariable final String groupName) {
-        return this.groupService.getGroup(groupName);
+    public Group getGroup(@PathVariable final String groupName) throws InvalidGroupNameRestException {
+        return RestUtilities.getGroupOrThrow(this.groupService, groupName);
     }
 
     @DeleteMapping("/{groupName}")

@@ -12,6 +12,7 @@ import lombok.extern.log4j.Log4j2;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -106,6 +107,9 @@ public abstract class LeaderboardRequestService<P extends Player> {
             } else {
                 log.info("Empty response for {}-{}-{}", game, stat, board);
             }
+            return Optional.empty();
+        } catch (final SocketTimeoutException e) {
+            log.error("{}-{}-{}", game, stat, board, e);
             return Optional.empty();
         } catch (final IOException e) {
             log.error("{}-{}-{}", game, stat, board, e);

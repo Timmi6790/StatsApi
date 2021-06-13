@@ -27,7 +27,6 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(final HttpServletRequest request,
                                     @NotNull final HttpServletResponse response,
                                     @NotNull final FilterChain chain) throws ServletException, IOException {
-        // TODO: ignore AuthenticationException in sentry
         final String token = request.getHeader("X-Api-Key");
         try {
             if (token != null) {

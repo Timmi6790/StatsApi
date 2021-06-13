@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.timmi6790.mpstats.api</groupId>
     <artifactId>MineplexStatsApiApplication</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
     <name>MineplexStatsApi</name>
     <description></description>
 

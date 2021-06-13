@@ -4,6 +4,9 @@ import com.google.re2j.Pattern;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.okhttp3.OkHttpConnectionPoolMetrics;
+import io.micrometer.core.instrument.binder.okhttp3.OkHttpMetricsEventListener;
 import io.sentry.Sentry;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -31,7 +34,7 @@ public abstract class LeaderboardRequestService<P extends Player> {
     @Getter(AccessLevel.PROTECTED)
     private final OkHttpClient httpClient;
 
-    protected LeaderboardRequestService(final String leaderboardBaseUrl) {
+    protected LeaderboardRequestService(final String leaderboardBaseUrl, final MeterRegistry meterRegistry) {
         this.leaderboardBaseUrl = leaderboardBaseUrl;
 
         final Dispatcher dispatcher = new Dispatcher();
@@ -44,10 +47,14 @@ public abstract class LeaderboardRequestService<P extends Player> {
                 TimeUnit.MILLISECONDS
         );
 
+        new OkHttpConnectionPoolMetrics(connectionPool).bindTo(meterRegistry);
         this.httpClient = new OkHttpClient.Builder()
                 .connectTimeout(45, TimeUnit.SECONDS)
                 .dispatcher(dispatcher)
                 .connectionPool(connectionPool)
+                .eventListener(OkHttpMetricsEventListener.builder(meterRegistry, "okhttp.requests")
+                        .uriMapper(req -> req.url().encodedPath())
+                        .build())
                 .addInterceptor(chain -> {
                     final Request originalRequest = chain.request();
                     final Request requestWithUserAgent = originalRequest.newBuilder()

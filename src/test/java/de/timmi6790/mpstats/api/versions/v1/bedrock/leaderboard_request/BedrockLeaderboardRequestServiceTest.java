@@ -5,6 +5,7 @@ import de.timmi6790.mpstats.api.versions.v1.bedrock.player.BedrockPlayerService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockPlayer;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.AbstractLeaderboardRequestServiceTest;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -16,7 +17,10 @@ class BedrockLeaderboardRequestServiceTest extends AbstractLeaderboardRequestSer
     private static final String BASE_PATH = "leaderboard_request/bedrock/";
 
     public BedrockLeaderboardRequestServiceTest() {
-        super(BedrockLeaderboardRequestService::new, BedrockServiceGenerator.generatePlayerService());
+        super(
+                (config, service) -> new BedrockLeaderboardRequestService(config, service, new SimpleMeterRegistry()),
+                BedrockServiceGenerator.generatePlayerService()
+        );
     }
 
     private void validatePlayerData(final LeaderboardEntry<BedrockPlayer> data,

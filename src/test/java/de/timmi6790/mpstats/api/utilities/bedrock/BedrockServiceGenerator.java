@@ -7,6 +7,7 @@ import de.timmi6790.mpstats.api.versions.v1.bedrock.leaderboard.BedrockLeaderboa
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.BedrockPlayerService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.postgres.BedrockPlayerPostgresRepository;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.stat.BedrockStatService;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.jdbi.v3.core.Jdbi;
 
 public class BedrockServiceGenerator {
@@ -36,6 +37,6 @@ public class BedrockServiceGenerator {
     }
 
     public static BedrockPlayerService generatePlayerService() {
-        return new BedrockPlayerService(new BedrockPlayerPostgresRepository(getJdbi()));
+        return new BedrockPlayerService(new BedrockPlayerPostgresRepository(getJdbi()), new SimpleMeterRegistry());
     }
 }

@@ -7,6 +7,7 @@ import de.timmi6790.mpstats.api.versions.v1.java.leaderboard.JavaLeaderboardServ
 import de.timmi6790.mpstats.api.versions.v1.java.player.JavaPlayerService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.postgres.JavaPlayerPostgresRepository;
 import de.timmi6790.mpstats.api.versions.v1.java.stat.JavaStatService;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.jdbi.v3.core.Jdbi;
 
 public class JavaServiceGenerator {
@@ -36,6 +37,6 @@ public class JavaServiceGenerator {
     }
 
     public static JavaPlayerService generatePlayerService() {
-        return new JavaPlayerService(new JavaPlayerPostgresRepository(getJdbi()));
+        return new JavaPlayerService(new JavaPlayerPostgresRepository(getJdbi()), new SimpleMeterRegistry());
     }
 }

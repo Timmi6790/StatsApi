@@ -48,6 +48,19 @@ public class FilterController<P extends Player, S extends PlayerService<P>> {
 
     @GetMapping
     @Operation(summary = "Find all available filters")
+    // TODO: Look into pageable
+    /*
+        public List<Filter<P>> getFilters(@ParameterObject @PageableDefault(page = 0, size = 20) final Pageable pageable) {
+        // TODO: Look into pageable
+
+        final List<Filter<P>> filters = this.filterService.getFilters();
+
+        final int start = (int) pageable.getOffset();
+        final int end = Math.min((start + pageable.getPageSize()), filters.size());
+
+        return new PageImpl<>(filters.subList(start, end), pageable, filters.size());
+    }
+     */
     public List<Filter<P>> getFilters() {
         return this.filterService.getFilters();
     }

@@ -7,6 +7,8 @@ import de.timmi6790.api.mojang.MojangApiClient;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.JavaPlayerRepository;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +29,14 @@ public class JavaPlayerService implements PlayerService<JavaPlayer> {
     private final Striped<Lock> playerLock = Striped.lock(1_024);
     private final Cache<UUID, JavaPlayer> playerCache = Caffeine.newBuilder()
             .expireAfterAccess(7, TimeUnit.MINUTES)
+            .recordStats()
             .build();
 
     @Autowired
-    public JavaPlayerService(final JavaPlayerRepository playerRepository) {
+    public JavaPlayerService(final JavaPlayerRepository playerRepository, final MeterRegistry registry) {
         this.playerRepository = playerRepository;
+
+        CaffeineCacheMetrics.monitor(registry, this.playerCache, "cache_java_player");
     }
 
     private Lock getPlayerLock(final UUID playerUUID) {

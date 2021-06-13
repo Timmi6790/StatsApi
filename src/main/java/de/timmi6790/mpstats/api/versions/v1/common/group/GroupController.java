@@ -86,6 +86,7 @@ public class GroupController<P extends Player, S extends PlayerService<P>> {
         }
 
         if (leaderboards.isEmpty()) {
+            // TODO: Throw exception
             return Optional.empty();
         }
 

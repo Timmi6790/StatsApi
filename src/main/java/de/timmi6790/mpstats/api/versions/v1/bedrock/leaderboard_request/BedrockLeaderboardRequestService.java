@@ -10,6 +10,7 @@ import de.timmi6790.mpstats.api.versions.v1.bedrock.player.BedrockPlayerService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockPlayer;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.LeaderboardRequestService;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +25,10 @@ public class BedrockLeaderboardRequestService extends LeaderboardRequestService<
     private final BedrockPlayerService playerService;
 
     @Autowired
-    public BedrockLeaderboardRequestService(final Config config, final BedrockPlayerService playerService) {
-        super(config.getLeaderboard().getBedrockUrl());
+    public BedrockLeaderboardRequestService(final Config config,
+                                            final BedrockPlayerService playerService,
+                                            final MeterRegistry meterRegistry) {
+        super(config.getLeaderboard().getBedrockUrl(), meterRegistry);
         this.playerService = playerService;
     }
 

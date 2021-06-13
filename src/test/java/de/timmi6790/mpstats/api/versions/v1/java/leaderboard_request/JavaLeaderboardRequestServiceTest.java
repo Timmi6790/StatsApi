@@ -5,6 +5,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.AbstractL
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.java.player.JavaPlayerService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -17,7 +18,10 @@ class JavaLeaderboardRequestServiceTest extends AbstractLeaderboardRequestServic
     private static final String BASE_PATH = "leaderboard_request/java/";
 
     public JavaLeaderboardRequestServiceTest() {
-        super(JavaLeaderboardRequestService::new, JavaServiceGenerator.generatePlayerService());
+        super(
+                (config, service) -> new JavaLeaderboardRequestService(config, service, new SimpleMeterRegistry()),
+                JavaServiceGenerator.generatePlayerService()
+        );
     }
 
     private void validatePlayerData(final LeaderboardEntry<JavaPlayer> data,

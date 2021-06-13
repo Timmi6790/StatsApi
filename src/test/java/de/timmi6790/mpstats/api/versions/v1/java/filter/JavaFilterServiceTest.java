@@ -11,6 +11,7 @@ import de.timmi6790.mpstats.api.versions.v1.java.player.JavaPlayerService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.postgres.JavaPlayerPostgresRepository;
 import de.timmi6790.mpstats.api.versions.v1.java.stat.JavaStatService;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -29,7 +30,7 @@ class JavaFilterServiceTest extends AbstractFilterServiceTest<JavaPlayer, JavaPl
             BOARD_SERVICE
     );
 
-    private static final JavaPlayerService PLAYER_SERVICE = new JavaPlayerService(new JavaPlayerPostgresRepository(AbstractIntegrationTest.jdbi()));
+    private static final JavaPlayerService PLAYER_SERVICE = new JavaPlayerService(new JavaPlayerPostgresRepository(AbstractIntegrationTest.jdbi()), new SimpleMeterRegistry());
 
     public JavaFilterServiceTest() {
         super(() -> new JavaFilterService(

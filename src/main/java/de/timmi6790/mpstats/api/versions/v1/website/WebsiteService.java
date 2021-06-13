@@ -6,6 +6,8 @@ import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.Game;
 import de.timmi6790.mpstats.api.versions.v1.website.models.GameStat;
 import de.timmi6790.mpstats.api.versions.v1.website.models.WebsitePlayer;
 import de.timmi6790.mpstats.api.versions.v1.website.parser.WebsiteParser;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,12 +23,15 @@ public class WebsiteService {
     private final AsyncLoadingCache<String, Optional<WebsitePlayer>> playerStatsCache;
 
     @Autowired
-    public WebsiteService(final WebsiteParser websiteParser) {
+    public WebsiteService(final WebsiteParser websiteParser, final MeterRegistry registry) {
         this.playerStatsCache = Caffeine
                 .newBuilder()
                 .maximumSize(100)
+                .recordStats()
                 .expireAfterAccess(5, TimeUnit.MINUTES)
                 .buildAsync(websiteParser::retrievePlayerStats);
+
+        CaffeineCacheMetrics.monitor(registry, this.playerStatsCache, "cache_website_player");
     }
 
     public CompletableFuture<Optional<WebsitePlayer>> retrievePlayer(final String playerName) {

@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+// TODO: Is not taking into account bh hider and hunter wins
 public class WinLoseRatioGenerator extends GameBoardStatGenerator {
     @Override
     protected Collection<GeneratedPlayerEntry> generateGameBoardStats(final StatGeneratorData generatorData,

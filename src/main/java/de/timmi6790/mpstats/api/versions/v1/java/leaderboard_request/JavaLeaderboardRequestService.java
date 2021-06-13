@@ -8,6 +8,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.Leaderboa
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import de.timmi6790.mpstats.api.versions.v1.java.player.JavaPlayerService;
 import de.timmi6790.mpstats.api.versions.v1.java.player.repository.models.JavaPlayer;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,8 +25,10 @@ public class JavaLeaderboardRequestService extends LeaderboardRequestService<Jav
     private final JavaPlayerService playerService;
 
     @Autowired
-    public JavaLeaderboardRequestService(final Config config, final JavaPlayerService playerService) {
-        super(config.getLeaderboard().getJavaUrl());
+    public JavaLeaderboardRequestService(final Config config,
+                                         final JavaPlayerService playerService,
+                                         final MeterRegistry meterRegistry) {
+        super(config.getLeaderboard().getJavaUrl(), meterRegistry);
 
         this.playerService = playerService;
     }

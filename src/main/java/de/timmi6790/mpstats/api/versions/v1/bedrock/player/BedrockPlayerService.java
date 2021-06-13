@@ -6,6 +6,8 @@ import com.google.common.util.concurrent.Striped;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.BedrockPlayerRepository;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockPlayer;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +28,14 @@ public class BedrockPlayerService implements PlayerService<BedrockPlayer> {
     private final Striped<Lock> playerLock = Striped.lock(512);
     private final Cache<String, BedrockPlayer> playerCache = Caffeine.newBuilder()
             .expireAfterAccess(7, TimeUnit.MINUTES)
+            .recordStats()
             .build();
 
     @Autowired
-    public BedrockPlayerService(final BedrockPlayerRepository playerRepository) {
+    public BedrockPlayerService(final BedrockPlayerRepository playerRepository, final MeterRegistry registry) {
         this.playerRepository = playerRepository;
+
+        CaffeineCacheMetrics.monitor(registry, this.playerCache, "cache_bedrock_player");
     }
 
     private Lock getPlayerLock(final String playerName) {

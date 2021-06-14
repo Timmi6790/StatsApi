@@ -60,6 +60,12 @@ public abstract class AbstractSpringBootTest {
             redisConfig.setHost(redisContainer.getHost());
             redisConfig.setPort(redisContainer.getFirstMappedPort());
 
+            // MineplexLeaderboard
+            // Just to prevent some exceptions
+            final Config.MineplexLeaderboardConfig leaderboardConfig = config.getLeaderboard();
+            leaderboardConfig.setJavaUrl("timmi6790.de");
+            leaderboardConfig.setBedrockUrl("timmi6790.de");
+
             return config;
         }
     }

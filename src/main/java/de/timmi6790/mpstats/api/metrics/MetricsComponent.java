@@ -14,11 +14,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Log4j2
 public class MetricsComponent {
-    public static MeterRegistry registry = null;
-
     public MetricsComponent(final MeterRegistry registry) {
         log.info("Start metrics");
-        MetricsComponent.registry = registry;
 
         // We need to register it this way, the config beans are not working ... for some reason
         new JvmThreadMetrics().bindTo(registry);

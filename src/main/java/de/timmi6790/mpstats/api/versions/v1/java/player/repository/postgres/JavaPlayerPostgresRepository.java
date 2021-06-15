@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class JavaPlayerPostgresRepository implements JavaPlayerRepository {
+    private static final String PLAYER_NAME = "playerName";
+    private static final String PLAYER_UUID = "playerUUID";
+
     private static final String SELECT_PLAYER_BASE = "SELECT id player_id, player_name player_name, player_uuid player_uuid FROM java.players %s;";
     private static final String SELECT_PLAYER = String.format(SELECT_PLAYER_BASE, "WHERE player_uuid = :playerUUID LIMIT 1");
     private static final String SELECT_PLAYER_BY_ID = String.format(SELECT_PLAYER_BASE, "WHERE id = :repositoryId LIMIT 1");
@@ -44,7 +47,7 @@ public class JavaPlayerPostgresRepository implements JavaPlayerRepository {
     public Optional<JavaPlayer> getPlayer(final UUID playerUUID) {
         return this.database.withHandle(handle ->
                 handle.createQuery(SELECT_PLAYER)
-                        .bind("playerUUID", playerUUID)
+                        .bind(PLAYER_UUID, playerUUID)
                         .mapTo(JavaPlayer.class)
                         .findFirst()
         );
@@ -68,8 +71,8 @@ public class JavaPlayerPostgresRepository implements JavaPlayerRepository {
     public JavaPlayer insertPlayer(final String playerName, final UUID playerUUID) {
         return this.database.withHandle(handle ->
                 handle.createQuery(INSERT_PLAYER)
-                        .bind("playerName", playerName)
-                        .bind("playerUUID", playerUUID)
+                        .bind(PLAYER_NAME, playerName)
+                        .bind(PLAYER_UUID, playerUUID)
                         .mapTo(JavaPlayer.class)
                         .first()
         );
@@ -80,7 +83,7 @@ public class JavaPlayerPostgresRepository implements JavaPlayerRepository {
         this.database.useHandle(handle ->
                 handle.createUpdate(UPDATE_PLAYER_NAME)
                         .bind("playerId", playerId)
-                        .bind("playerName", newName)
+                        .bind(PLAYER_NAME, newName)
                         .execute()
         );
     }
@@ -104,7 +107,7 @@ public class JavaPlayerPostgresRepository implements JavaPlayerRepository {
                     player.setName(newName);
 
                     updateNameBatch.bind("playerId", player.getRepositoryId());
-                    updateNameBatch.bind("playerName", newName);
+                    updateNameBatch.bind(PLAYER_NAME, newName);
                     updateNameBatch.add();
                 }
             }
@@ -116,8 +119,8 @@ public class JavaPlayerPostgresRepository implements JavaPlayerRepository {
             for (final Map.Entry<UUID, String> playerEntry : players.entrySet()) {
                 if (!foundPlayers.containsKey(playerEntry.getKey())) {
                     newPlayerUUIDs.add(playerEntry.getKey());
-                    newPlayersBatch.bind("playerName", playerEntry.getValue());
-                    newPlayersBatch.bind("playerUUID", playerEntry.getKey());
+                    newPlayersBatch.bind(PLAYER_NAME, playerEntry.getValue());
+                    newPlayersBatch.bind(PLAYER_UUID, playerEntry.getKey());
                     newPlayersBatch.add();
                 }
             }

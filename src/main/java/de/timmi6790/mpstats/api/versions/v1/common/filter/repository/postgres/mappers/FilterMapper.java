@@ -61,9 +61,7 @@ public class FilterMapper<P extends Player> implements ResultSetScanner<List<Fil
                     log.warn("Invalid reason found of " + reasonString);
                     reason = Reason.GLITCHED;
                 }
-
-                ZonedDateTime startDate;
-
+                
                 playerIds.add(playerId);
                 leaderboardIds.add(leaderboardId);
                 preParsedFilters.add(

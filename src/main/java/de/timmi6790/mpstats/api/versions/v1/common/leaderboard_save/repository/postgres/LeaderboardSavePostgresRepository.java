@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class LeaderboardSavePostgresRepository<P extends Player> extends PostgresRepository implements LeaderboardSaveRepository<P> {
+    private static final String LEADERBOARD_ID = "leaderboardId";
+
     private final LeaderboardEntryMapper<P> leaderboardEntryMapper;
 
     private final String insertLeaderboardSaveId;
@@ -51,7 +53,7 @@ public class LeaderboardSavePostgresRepository<P extends Player> extends Postgre
     private int insertSaveId(final Leaderboard leaderboard, final ZonedDateTime saveTime) {
         return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.insertLeaderboardSaveId)
-                        .bind("leaderboardId", leaderboard.getRepositoryId())
+                        .bind(LEADERBOARD_ID, leaderboard.getRepositoryId())
                         .bind("saveTime", saveTime)
                         .mapTo(int.class)
                         .first()
@@ -62,7 +64,7 @@ public class LeaderboardSavePostgresRepository<P extends Player> extends Postgre
                                                                final ZonedDateTime saveTime) {
         return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getLeaderboardSaveId)
-                        .bind("leaderboardId", leaderboard.getRepositoryId())
+                        .bind(LEADERBOARD_ID, leaderboard.getRepositoryId())
                         .bind("requestedTime", saveTime)
                         .mapTo(LeaderboardSaveData.class)
                         .findFirst()
@@ -91,7 +93,7 @@ public class LeaderboardSavePostgresRepository<P extends Player> extends Postgre
     public List<ZonedDateTime> getLeaderboardSaveTimes(final Leaderboard leaderboard) {
         return this.getDatabase().withHandle(handle ->
                 handle.createQuery(this.getLeaderboardSaveTimes)
-                        .bind("leaderboardId", leaderboard.getRepositoryId())
+                        .bind(LEADERBOARD_ID, leaderboard.getRepositoryId())
                         .mapTo(ZonedDateTime.class)
                         .list()
         );

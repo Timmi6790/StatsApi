@@ -11,6 +11,7 @@ import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.Bed
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.LeaderboardRequestService;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import io.micrometer.core.instrument.MeterRegistry;
+import lombok.EqualsAndHashCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Service
+@EqualsAndHashCode(callSuper = true)
 public class BedrockLeaderboardRequestService extends LeaderboardRequestService<BedrockPlayer> {
     private static final Pattern LEADERBOARD_PATTERN = Pattern.compile("^<td>\\d*<\\/td><td>(.{1,33})<\\/td><td> ([\\d,]*)<\\/td>");
 

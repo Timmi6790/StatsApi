@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class BedrockPlayerPostgresRepository implements BedrockPlayerRepository {
+    private static final String PLAYER_NAME = "playerName";
+
     private static final String SELECT_PLAYER_BASE = "SELECT id player_id, player_name player_name FROM bedrock.players %s;";
     private static final String SELECT_PLAYER = String.format(SELECT_PLAYER_BASE, "WHERE LOWER(player_name) = LOWER(:playerName) LIMIT 1");
     private static final String SELECT_PLAYER_BY_ID = String.format(SELECT_PLAYER_BASE, "WHERE id = :repositoryId LIMIT 1");
@@ -44,7 +46,7 @@ public class BedrockPlayerPostgresRepository implements BedrockPlayerRepository 
     public Optional<BedrockPlayer> getPlayer(final String playerName) {
         return this.database.withHandle(handle ->
                 handle.createQuery(SELECT_PLAYER)
-                        .bind("playerName", playerName)
+                        .bind(PLAYER_NAME, playerName)
                         .mapTo(BedrockPlayer.class)
                         .findFirst()
         );
@@ -54,7 +56,7 @@ public class BedrockPlayerPostgresRepository implements BedrockPlayerRepository 
     public BedrockPlayer insertPlayer(final String playerName) {
         return this.database.withHandle(handle ->
                 handle.createQuery(INSERT_PLAYER)
-                        .bind("playerName", playerName)
+                        .bind(PLAYER_NAME, playerName)
                         .mapTo(BedrockPlayer.class)
                         .first()
         );
@@ -88,7 +90,7 @@ public class BedrockPlayerPostgresRepository implements BedrockPlayerRepository 
             for (final String playerName : playerNames) {
                 if (!foundPlayers.containsKey(playerName)) {
                     newPlayerNames.add(playerName.toLowerCase());
-                    newPlayersBatch.bind("playerName", playerName);
+                    newPlayersBatch.bind(PLAYER_NAME, playerName);
                     newPlayersBatch.add();
                 }
             }

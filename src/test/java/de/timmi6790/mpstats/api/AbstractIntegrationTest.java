@@ -15,7 +15,7 @@ public abstract class AbstractIntegrationTest {
     @Container
     private static final PostgreSQLContainer<?> POSTGRES_SQL_CONTAINER = new PostgreSQLContainer<>(
             DockerImageName
-                    .parse("timescale/timescaledb:2.1.1-pg13")
+                    .parse("timescale/timescaledb:2.3.0-pg12")
                     .asCompatibleSubstituteFor("postgres")
     );
 

@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
-import de.timmi6790.commons.Pair;
 import de.timmi6790.mpstats.api.Config;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.BedrockPlayerService;
 import de.timmi6790.mpstats.api.versions.v1.bedrock.player.repository.models.BedrockPlayer;
@@ -13,6 +12,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.EqualsAndHashCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,7 +46,7 @@ public class BedrockLeaderboardRequestService extends LeaderboardRequestService<
 
                 if (parsedPlayers.add(playerName)) {
                     entries.add(
-                            new Pair<>(
+                            Pair.of(
                                     playerName,
                                     score
                             )
@@ -60,8 +60,8 @@ public class BedrockLeaderboardRequestService extends LeaderboardRequestService<
         for (final Pair<String, Long> entry : entries) {
             parsedEntries.add(
                     new LeaderboardEntry<>(
-                            players.get(entry.getLeft()),
-                            entry.getRight()
+                            players.get(entry.getFirst()),
+                            entry.getSecond()
                     )
             );
         }

@@ -1,8 +1,8 @@
 package de.timmi6790.mpstats.api.versions.v1.common.game.repository.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import edu.umd.cs.findbugs.annotations.Nullable;
 import lombok.Data;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 

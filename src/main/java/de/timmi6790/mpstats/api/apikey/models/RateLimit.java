@@ -1,8 +1,10 @@
 package de.timmi6790.mpstats.api.apikey.models;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor(force = true)
 public class RateLimit {
     private final int daily;
     private final int minute;

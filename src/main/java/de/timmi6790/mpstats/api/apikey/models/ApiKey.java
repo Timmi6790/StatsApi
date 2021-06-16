@@ -2,11 +2,13 @@ package de.timmi6790.mpstats.api.apikey.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor(force = true)
 public class ApiKey {
     public static ApiKey of(final int dailyRateLimit, final int minuteRateLimit) {
         return new ApiKey(
@@ -19,15 +21,6 @@ public class ApiKey {
     private final UUID key;
     private final RateLimit rateLimit;
     private final String[] authorities;
-
-    /**
-     * Default constructor for GSON
-     */
-    public ApiKey() {
-        this.key = null;
-        this.rateLimit = new RateLimit(1, 1);
-        this.authorities = null;
-    }
 
     public String[] getAuthorities() {
         if (this.authorities == null) {

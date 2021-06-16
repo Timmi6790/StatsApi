@@ -24,7 +24,7 @@ public class ApiKeyAuthenticationProvider implements AuthenticationProvider {
                         new UsernamePasswordAuthenticationToken(
                                 token,
                                 null,
-                                AuthorityUtils.createAuthorityList(apiKey.getAuthorities())
+                                AuthorityUtils.createAuthorityList(apiKey.getKeyInformation().getAuthorities())
                         )
                 ).orElseThrow((Supplier<RuntimeException>) () -> new BadCredentialsException("Invalid token"));
     }

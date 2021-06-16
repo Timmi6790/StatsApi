@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.time.ZonedDateTime;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,7 +54,7 @@ public abstract class AbstractRestTest extends AbstractSpringBootTest {
         return this.getWithApiKey(ApiKeyUtilities.getUserApiKey(this.apiKeyService));
     }
 
-    protected MockMvcRequestSpecification getWithApiKey(final UUID apiKey) {
+    protected MockMvcRequestSpecification getWithApiKey(final String apiKey) {
         return this.getBaseRequest()
                 .header(API_KEY_HEADER, apiKey);
     }

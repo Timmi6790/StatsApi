@@ -55,9 +55,9 @@ public class RateLimitService {
      */
     public Bucket resolveBucket(final @Nullable String apiKey, final String ipAddress) {
         return this.getApiKey(apiKey).map(key -> {
-            final RateLimit rateLimit = key.getRateLimit();
+            final RateLimit rateLimit = key.getKeyInformation().getRateLimit();
             return this.cache.get(
-                    key.getKey().toString(),
+                    key.getPublicPart(),
                     k -> this.createBucket(rateLimit.getMinute(), rateLimit.getDaily())
             );
         }).orElseGet(() -> this.cache.get(ipAddress, key -> this.newDefaultBucket()));

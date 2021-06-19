@@ -32,6 +32,7 @@ public class LeaderboardUpdateTask<P extends Player> {
     private final LeaderboardSaveService<P> leaderboardSaveService;
 
     private final List<Policy<P>> savePolicies = new ArrayList<>();
+    private final ExecutorService executorService;
 
     public LeaderboardUpdateTask(final LeaderboardService leaderboardService,
                                  final LeaderboardRequestService<P> leaderboardRequestService,
@@ -41,6 +42,13 @@ public class LeaderboardUpdateTask<P extends Player> {
         this.leaderboardRequestService = leaderboardRequestService;
         this.leaderboardCacheService = leaderboardCacheService;
         this.leaderboardSaveService = leaderboardSaveService;
+
+        final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+                .setPriority(Thread.MIN_PRIORITY)
+                .setNameFormat("lb-update-%d")
+                .build();
+
+        this.executorService = Executors.newScheduledThreadPool(UPDATE_POOL_SIZE, threadFactory);
 
         this.addSavePolicies(
                 new TimePolicy<>(),
@@ -90,13 +98,8 @@ public class LeaderboardUpdateTask<P extends Player> {
 
     public void updateLeaderboards() {
         log.info("Update leaderboards");
-        final ThreadFactory threadFactory = new ThreadFactoryBuilder()
-                .setPriority(Thread.MIN_PRIORITY)
-                .setNameFormat("lb-update-%d")
-                .build();
-        final ExecutorService executorService = Executors.newScheduledThreadPool(UPDATE_POOL_SIZE, threadFactory);
         for (final Leaderboard leaderboard : this.leaderboardService.getLeaderboards()) {
-            executorService.submit(() -> {
+            this.executorService.submit(() -> {
                 try {
                     // Pre check
                     // Check if we even want to fetch this lb

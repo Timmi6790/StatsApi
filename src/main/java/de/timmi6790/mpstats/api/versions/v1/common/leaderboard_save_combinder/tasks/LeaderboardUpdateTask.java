@@ -46,9 +46,9 @@ public class LeaderboardUpdateTask<P extends Player> {
         final ThreadFactory threadFactory = new ThreadFactoryBuilder()
                 .setPriority(Thread.MIN_PRIORITY)
                 .setNameFormat("lb-update-%d")
+                .setDaemon(true)
                 .build();
-
-        this.executorService = Executors.newScheduledThreadPool(UPDATE_POOL_SIZE, threadFactory);
+        this.executorService = Executors.newFixedThreadPool(UPDATE_POOL_SIZE, threadFactory);
 
         this.addSavePolicies(
                 new TimePolicy<>(),

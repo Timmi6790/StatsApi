@@ -459,6 +459,8 @@
                     <container>
                         <jvmFlags>
                             <jvmFlag>-XX:+UnlockExperimentalVMOptions</jvmFlag>
+                            <jvmFlag>-noverify</jvmFlag>
+                            <jvmFlag>-XX:+AlwaysPreTouch</jvmFlag>
                             <jvmFlag>-Djava.security.egd=file:/dev/./urandom</jvmFlag>
                             <jvmFlag>
                                 -DLog4jContextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector

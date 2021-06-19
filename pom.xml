@@ -30,6 +30,7 @@
         <testcontainers.version>1.15.3</testcontainers.version>
         <mockito.version>3.11.1</mockito.version>
         <okhttp3.version>4.9.1</okhttp3.version>
+        <sentry.version>5.0.1</sentry.version>
 
         <sonar.projectKey>MpStatsApi</sonar.projectKey>
         <sonar.host.url>https://sonarcube.timmi6790.de</sonar.host.url>
@@ -109,8 +110,15 @@
         </dependency>
         <dependency>
             <groupId>io.sentry</groupId>
-            <artifactId>sentry-spring-boot-starter</artifactId>
-            <version>5.0.1</version>
+            <artifactId>sentry</artifactId>
+            <version>${sentry.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry-spring</artifactId>
+            <version>${sentry.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>info.debatty</groupId>
@@ -218,15 +226,39 @@
             <version>${springdoc.version}</version>
         </dependency>
 
+        <!-- Logging -->
+        <dependency>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>3.4.4</version>
+        </dependency>
+
         <!-- Spring Dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
             <version>${spring.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <version>${spring.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
             <version>${spring.version}</version>
         </dependency>
         <dependency>
@@ -433,6 +465,9 @@
                         <jvmFlags>
                             <jvmFlag>-XX:+UnlockExperimentalVMOptions</jvmFlag>
                             <jvmFlag>-Djava.security.egd=file:/dev/./urandom</jvmFlag>
+                            <jvmFlag>
+                                -DLog4jContextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector
+                            </jvmFlag>
                         </jvmFlags>
                         <mainClass>de.timmi6790.mpstats.api.MineplexStatsApiApplication</mainClass>
                         <creationTime>USE_CURRENT_TIMESTAMP</creationTime>

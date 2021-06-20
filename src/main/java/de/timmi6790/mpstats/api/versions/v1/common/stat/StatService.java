@@ -38,18 +38,36 @@ public class StatService {
         final List<Stat> existingStats = this.statRepository.getStats();
         this.stats = new LinkedCaseInsensitiveMap<>(existingStats.size());
         this.aliasNames = new LinkedCaseInsensitiveMap<>();
-        for (final Stat stat : existingStats) {
-            this.stats.put(stat.getStatName(), stat);
-
-            for (final String aliasName : stat.getAliasNames()) {
-                this.aliasNames.put(aliasName, stat.getStatName());
-            }
-        }
+        this.registerStats(existingStats);
         log.info("[{}] Loaded {} stats from repository", schema, this.stats.size());
         log.info("[{}] Loaded {} stat alias names from repository", schema, this.aliasNames.size());
 
         // Insert all stat types
         this.statRepository.addTypes(StatType.values());
+    }
+
+    private void registerStats(final List<Stat> stats) {
+        for (final Stat stat : stats) {
+            this.stats.put(stat.getStatName(), stat);
+        }
+
+        // We register the all alias names after we registered all stats to minimize the existing stat check
+        for (final Stat stat : stats) {
+            for (final String aliasName : stat.getAliasNames()) {
+                // Assure that we are not overriding an existing stat name with an alias name
+                final Stat existingStat = this.stats.get(aliasName);
+                if (existingStat != null) {
+                    log.warn(
+                            "Tried to register alias name {} for {}[{}] that would override another stat",
+                            aliasName,
+                            stat.getStatName(),
+                            stat.getRepositoryId()
+                    );
+                } else {
+                    this.aliasNames.putIfAbsent(aliasName, stat.getStatName());
+                }
+            }
+        }
     }
 
     private Lock getStatLock(final String statName) {

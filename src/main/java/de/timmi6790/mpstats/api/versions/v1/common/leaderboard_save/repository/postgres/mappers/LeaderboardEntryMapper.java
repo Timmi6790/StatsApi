@@ -7,10 +7,10 @@ import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import lombok.AllArgsConstructor;
 import org.jdbi.v3.core.result.ResultSetScanner;
 import org.jdbi.v3.core.statement.StatementContext;
-import org.springframework.data.util.Pair;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -24,29 +24,29 @@ public class LeaderboardEntryMapper<P extends Player> implements ResultSetScanne
         try (ctx) {
             final ResultSet resultSet = resultSetSupplier.get();
 
-            final List<Integer> playerIds = Lists.newArrayListWithCapacity(resultSet.getFetchSize());
-            final List<Pair<Integer, Long>> preValues = Lists.newArrayListWithCapacity(resultSet.getFetchSize());
+            final Map<Integer, Long> preValues = new LinkedHashMap<>(resultSet.getFetchSize());
             while (resultSet.next()) {
                 final int playerId = resultSet.getInt("player_id");
                 final long score = resultSet.getLong("score");
 
-                preValues.add(Pair.of(playerId, score));
-                playerIds.add(playerId);
+                preValues.put(playerId, score);
             }
 
-            final Map<Integer, P> players = this.playerService.getPlayers(playerIds);
+            final Map<Integer, P> players = this.playerService.getPlayers(preValues.keySet());
+
             final List<LeaderboardEntry<P>> entries = Lists.newArrayListWithCapacity(preValues.size());
-            for (final Pair<Integer, Long> preValue : preValues) {
-                final P player = players.get(preValue.getFirst());
+            for (final Map.Entry<Integer, Long> preValue : preValues.entrySet()) {
+                final P player = players.get(preValue.getKey());
                 if (player != null) {
                     entries.add(
                             new LeaderboardEntry<>(
                                     player,
-                                    preValue.getSecond()
+                                    preValue.getValue()
                             )
                     );
                 }
             }
+
             return entries;
         }
     }

@@ -9,12 +9,12 @@ import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_cache.Leaderboard
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.LeaderboardRequestService;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.LeaderboardSaveService;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save_combinder.tasks.LeaderboardUpdateTask;
-import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
-import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardPositionSave;
-import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardSave;
+import de.timmi6790.mpstats.api.versions.v1.common.models.*;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
 import de.timmi6790.mpstats.api.versions.v1.common.utilities.LeaderboardConverter;
+import de.timmi6790.mpstats.api.versions.v1.common.utilities.PositionCalculation;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDate;
@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+@Log4j2
 public class LeaderboardSaveCombinerService<P extends Player, S extends PlayerService<P>> {
     private final LeaderboardCacheService<P> leaderboardCacheService;
     private final LeaderboardSaveService<P> leaderboardSaveService;
@@ -105,5 +106,36 @@ public class LeaderboardSaveCombinerService<P extends Player, S extends PlayerSe
                         LeaderboardConverter.convertEntries(filteredEntries)
                 )
         );
+    }
+
+    public Optional<LeaderboardPlayerPositionSave<P>> getLeaderboardPlayerSave(final Leaderboard leaderboard,
+                                                                               final ZonedDateTime saveTime,
+                                                                               final Player player,
+                                                                               final Set<Reason> filterReasons) {
+        final Optional<LeaderboardSave<P>> saveOpt = this.getLeaderboardEntries(leaderboard, saveTime);
+        if (saveOpt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        final LeaderboardSave<P> save = saveOpt.get();
+        final PositionCalculation positionCalculation = new PositionCalculation();
+        for (final LeaderboardEntry<P> entry : save.getEntries()) {
+            if (!this.filterService.isFiltered(entry.getPlayer(), leaderboard, save.getSaveTime(), filterReasons)) {
+                positionCalculation.addScore(entry.getScore());
+                if (entry.getPlayer().getRepositoryId() == player.getRepositoryId()) {
+                    return Optional.of(
+                            new LeaderboardPlayerPositionSave<>(
+                                    leaderboard,
+                                    save.getSaveTime(),
+                                    new LeaderboardPositionEntry<>(
+                                            entry,
+                                            positionCalculation.getPosition()
+                                    )
+                            )
+                    );
+                }
+            }
+        }
+        return Optional.empty();
     }
 }

@@ -17,25 +17,15 @@ public class LeaderboardConverter {
 
     public <P extends Player> List<LeaderboardPositionEntry<P>> convertEntries(final Collection<LeaderboardEntry<P>> entries,
                                                                                final int startPosition) {
+        final PositionCalculation positionCalculation = new PositionCalculation(startPosition);
         final List<LeaderboardPositionEntry<P>> convertedList = Lists.newArrayListWithCapacity(entries.size());
-
-        int globalPosition = startPosition - 1;
-        int position = globalPosition;
-        long lastScore = Long.MIN_VALUE;
         for (final LeaderboardEntry<P> entry : entries) {
-            globalPosition++;
-            if (entry.getScore() != lastScore) {
-                position = globalPosition;
-            }
-
             convertedList.add(
                     new LeaderboardPositionEntry<>(
                             entry,
-                            position
+                            positionCalculation.addScore(entry.getScore())
                     )
             );
-
-            lastScore = entry.getScore();
         }
 
         return convertedList;

@@ -7,6 +7,7 @@ import java.time.ZonedDateTime;
 
 @Data
 public class LeaderboardSaveData {
+    private final int leaderboardId;
     private final int saveId;
     private final ZonedDateTime saveTime;
 }

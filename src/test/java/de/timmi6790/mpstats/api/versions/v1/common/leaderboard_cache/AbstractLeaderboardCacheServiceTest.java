@@ -14,8 +14,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.stat.StatService;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,6 +56,11 @@ public abstract class AbstractLeaderboardCacheServiceTest<P extends Player> exte
         return entries;
     }
 
+    protected void verifySave(final LeaderboardSave<P> save, final List<LeaderboardEntry<P>> entries, final ZonedDateTime saveTime) {
+        assertThat(save.getEntries()).isEqualTo(entries);
+        assertThat(save.getSaveTime()).isEqualTo(saveTime);
+    }
+
     @Test
     void saveLeaderboardEntryPosition() {
         final Leaderboard leaderboard = this.generateLeaderboard();
@@ -66,11 +70,51 @@ public abstract class AbstractLeaderboardCacheServiceTest<P extends Player> exte
         // Insert
         this.getLeaderboardCacheService().saveLeaderboardEntryPosition(leaderboard, entries, saveTime);
 
-        final Optional<LeaderboardSave<P>> cacheFound = this.getLeaderboardCacheService().retrieveLeaderboardEntryPosition(leaderboard);
+        final Optional<LeaderboardSave<P>> cacheFound = this.getLeaderboardCacheService().retrieveLeaderboardSave(leaderboard);
         assertThat(cacheFound).isPresent();
 
         final LeaderboardSave<P> cache = cacheFound.get();
-        assertThat(cache.getEntries()).isEqualTo(entries);
-        assertThat(cache.getSaveTime()).isEqualTo(saveTime);
+        this.verifySave(cache, entries, saveTime);
+    }
+
+    @Test
+    void retrieveLeaderboardSaves_missing_entry() {
+        // Save only one and three into redis
+        final Leaderboard leaderboard = this.generateLeaderboard();
+        final ZonedDateTime lbSaveTime = ZonedDateTime.now();
+        final List<LeaderboardEntry<P>> lbEntries = this.generateEntries(100);
+
+        final Leaderboard leaderboard2 = this.generateLeaderboard();
+
+        final Leaderboard leaderboard3 = this.generateLeaderboard();
+        final ZonedDateTime lb3SaveTime = ZonedDateTime.now();
+        final List<LeaderboardEntry<P>> lb3Entries = this.generateEntries(100);
+
+        this.getLeaderboardCacheService().saveLeaderboardEntryPosition(leaderboard, lbEntries, lbSaveTime);
+        this.getLeaderboardCacheService().saveLeaderboardEntryPosition(leaderboard3, lb3Entries, lb3SaveTime);
+
+        final Map<Leaderboard, LeaderboardSave<P>> results = this.getLeaderboardCacheService().retrieveLeaderboardSaves(Arrays.asList(leaderboard, leaderboard2, leaderboard3));
+        assertThat(results).hasSize(2);
+
+        final LeaderboardSave<P> lbSave = results.get(leaderboard);
+        this.verifySave(lbSave, lbEntries, lbSaveTime);
+
+        final LeaderboardSave<P> lb3Save = results.get(leaderboard3);
+        this.verifySave(lb3Save, lb3Entries, lb3SaveTime);
+    }
+
+    @Test
+    void retrieveLeaderboardSaves_null_entry() {
+        final Leaderboard leaderboard = this.generateLeaderboard();
+        final Leaderboard leaderboard2 = this.generateLeaderboard();
+
+        final Map<Leaderboard, LeaderboardSave<P>> emptyMap = this.getLeaderboardCacheService().retrieveLeaderboardSaves(Arrays.asList(leaderboard, leaderboard2));
+        assertThat(emptyMap).isEmpty();
+    }
+
+    @Test
+    void retrieveLeaderboardSaves_empty_list() {
+        final Map<Leaderboard, LeaderboardSave<P>> emptyMap = this.getLeaderboardCacheService().retrieveLeaderboardSaves(Collections.emptyList());
+        assertThat(emptyMap).isEmpty();
     }
 }

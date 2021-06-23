@@ -14,7 +14,9 @@ import lombok.extern.log4j.Log4j2;
 import org.jdbi.v3.core.Jdbi;
 
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Log4j2
@@ -65,5 +67,10 @@ public abstract class LeaderboardSaveService<P extends Player> {
     public Optional<LeaderboardSave<P>> retrieveLeaderboardSave(final Leaderboard leaderboard,
                                                                 final ZonedDateTime saveTime) {
         return this.repository.getLeaderboardEntries(leaderboard, saveTime);
+    }
+
+    public Map<Leaderboard, LeaderboardSave<P>> retrieveLeaderboardSaves(final Collection<Leaderboard> leaderboards,
+                                                                         final ZonedDateTime saveTime) {
+        return this.repository.getLeaderboardEntries(leaderboards, saveTime);
     }
 }

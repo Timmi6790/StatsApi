@@ -17,9 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -137,7 +135,7 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player> {
     }
 
     @Test
-    void getLeaderboardEntries_time_checks() {
+    void retrieveLeaderboardSave_time_checks() {
         final Leaderboard leaderboard = this.generateLeaderboard();
 
         // First entries
@@ -195,5 +193,54 @@ public abstract class AbstractLeaderboardSaveServiceTest<P extends Player> {
         );
         assertThat(foundUpperSecond).isPresent();
         this.verifyLeaderboardEntries(secondEntries, foundUpperSecond.get());
+    }
+
+    @Test
+    void retrieveLeaderboardSaves() {
+        // First entries
+        final Leaderboard leaderboard = this.generateLeaderboard();
+        final ZonedDateTime firstSaveTime = ZonedDateTime.now();
+        final List<LeaderboardEntry<P>> firstEntries = this.generateEntries(1);
+        this.saveService.saveLeaderboardEntries(leaderboard, firstEntries, firstSaveTime);
+
+        // Second entries
+        final Leaderboard leaderboard2 = this.generateLeaderboard();
+        final ZonedDateTime secondSaveTime = firstSaveTime.plus(1, ChronoUnit.HOURS);
+        final List<LeaderboardEntry<P>> secondEntries = this.generateEntries(1);
+        this.saveService.saveLeaderboardEntries(leaderboard2, secondEntries, secondSaveTime);
+
+        final Map<Leaderboard, LeaderboardSave<P>> results = this.saveService.retrieveLeaderboardSaves(
+                Arrays.asList(leaderboard, leaderboard2),
+                ZonedDateTime.now()
+        );
+        assertThat(results).hasSize(2);
+
+        // First found save
+        final LeaderboardSave<P> save = results.get(leaderboard);
+        assertThat(save.getSaveTime()).isEqualToIgnoringNanos(firstSaveTime);
+        this.verifyLeaderboardEntries(firstEntries, save.getEntries());
+
+        // Second found save
+        final LeaderboardSave<P> save2 = results.get(leaderboard2);
+        assertThat(save2.getSaveTime()).isEqualToIgnoringNanos(secondSaveTime);
+        this.verifyLeaderboardEntries(secondEntries, save2.getEntries());
+    }
+
+    @Test
+    void retrieveLeaderboardSaves_no_results() {
+        final Leaderboard leaderboard = this.generateLeaderboard();
+        final Map<Leaderboard, LeaderboardSave<P>> emptyMap = this.saveService.retrieveLeaderboardSaves(
+                Collections.singletonList(leaderboard),
+                ZonedDateTime.now()
+        );
+        assertThat(emptyMap).isEmpty();
+    }
+
+    @Test
+    void retrieveLeaderboardSaves_empty_list() {
+        this.generateLeaderboard();
+
+        final Map<Leaderboard, LeaderboardSave<P>> emptyMap = this.saveService.retrieveLeaderboardSaves(Collections.emptyList(), ZonedDateTime.now());
+        assertThat(emptyMap).isEmpty();
     }
 }

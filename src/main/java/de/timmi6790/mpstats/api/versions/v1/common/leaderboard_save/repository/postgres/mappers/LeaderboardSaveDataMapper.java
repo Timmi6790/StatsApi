@@ -12,7 +12,8 @@ public class LeaderboardSaveDataMapper implements RowMapper<LeaderboardSaveData>
     @Override
     public LeaderboardSaveData map(final ResultSet rs, final StatementContext ctx) throws SQLException {
         return new LeaderboardSaveData(
-                rs.getInt("id"),
+                rs.getInt("leaderboard_id"),
+                rs.getInt("saveId"),
                 rs.getTimestamp("save_time").toLocalDateTime().atZone(ZoneId.systemDefault())
         );
     }

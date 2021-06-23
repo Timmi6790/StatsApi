@@ -2,6 +2,7 @@ package de.timmi6790.mpstats.api.versions.v1.common.leaderboard_cache;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.common.collect.Lists;
 import de.timmi6790.mpstats.api.redis.ByteRedisTemplate;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
 import de.timmi6790.mpstats.api.versions.v1.common.models.LeaderboardEntry;
@@ -13,15 +14,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
 import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Log4j2
 public abstract class LeaderboardCacheService<P extends Player> {
     private final String schemaName;
 
-    private final RedisTemplate<String, LeaderboardSave<P>> redisTemplate;
     private final ValueOperations<String, LeaderboardSave<P>> hashOperations;
 
     protected LeaderboardCacheService(final LettuceConnectionFactory redisConnectionFactory,
@@ -33,8 +32,8 @@ public abstract class LeaderboardCacheService<P extends Player> {
                 LeaderboardSave.class,
                 TypeFactory.defaultInstance().constructType(playerClass)
         );
-        this.redisTemplate = new ByteRedisTemplate<>(redisConnectionFactory, typeParameter);
-        this.hashOperations = this.redisTemplate.opsForValue();
+        final RedisTemplate<String, LeaderboardSave<P>> redisTemplate = new ByteRedisTemplate<>(redisConnectionFactory, typeParameter);
+        this.hashOperations = redisTemplate.opsForValue();
     }
 
     protected String getSaveCacheId(final Leaderboard leaderboard) {
@@ -64,11 +63,43 @@ public abstract class LeaderboardCacheService<P extends Player> {
         );
     }
 
-    public Optional<LeaderboardSave<P>> retrieveLeaderboardEntryPosition(final Leaderboard leaderboard) {
+    public Optional<LeaderboardSave<P>> retrieveLeaderboardSave(final Leaderboard leaderboard) {
         return Optional.ofNullable(
                 this.hashOperations.get(
                         this.getSaveCacheId(leaderboard)
                 )
         );
+    }
+
+    public Map<Leaderboard, LeaderboardSave<P>> retrieveLeaderboardSaves(final List<Leaderboard> leaderboards) {
+        if (leaderboards.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        final List<String> saveIds = Lists.newArrayListWithCapacity(leaderboards.size());
+        for (final Leaderboard leaderboard : leaderboards) {
+            saveIds.add(this.getSaveCacheId(leaderboard));
+        }
+
+        final List<LeaderboardSave<P>> saves = this.hashOperations.multiGet(saveIds);
+        if (saves == null) {
+            log.warn("MultiGet returned null");
+            return Collections.emptyMap();
+        }
+
+        // Based on the javadocs all values are returned in the order of the requested keys.
+        final Map<Leaderboard, LeaderboardSave<P>> results = new HashMap<>();
+        for (int index = 0; saves.size() > index; index++) {
+            // Not found values are saved as null
+            final LeaderboardSave<P> save = saves.get(index);
+            if (save != null) {
+                results.put(
+                        leaderboards.get(index),
+                        save
+                );
+            }
+        }
+
+        return results;
     }
 }

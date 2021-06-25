@@ -25,7 +25,7 @@ public class GemsPerGameGenerator extends GameBoardStatGenerator {
             return Collections.emptyList();
         }
 
-        return this.getGamesPlayed(playerEntries).map(gamesPlayed ->
+        return this.getGamesPlayed(game, playerEntries).map(gamesPlayed ->
                 List.of(
                         new GeneratedPlayerEntry(
                                 "GemsPerGame",

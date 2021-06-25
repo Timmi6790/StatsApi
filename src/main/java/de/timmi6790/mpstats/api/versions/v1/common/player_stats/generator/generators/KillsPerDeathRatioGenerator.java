@@ -20,22 +20,20 @@ public class KillsPerDeathRatioGenerator extends GameBoardStatGenerator {
                                                                       final Game game,
                                                                       final Board board,
                                                                       final Map<String, PlayerEntry> playerEntries) {
-        final PlayerEntry killEntry = playerEntries.get(KILL_WEBSITE_STAT_NAME);
-        if (!this.isPresent(killEntry)) {
+        final PlayerEntry deathsEntry = playerEntries.get(DEATHS_WEBSITE_STAT_NAME);
+        if (!this.isPresent(deathsEntry)) {
             return Collections.emptyList();
         }
 
-        final PlayerEntry deathsEntry = playerEntries.get(DEATHS_WEBSITE_STAT_NAME);
-        if (this.isPresent(deathsEntry)) {
-            return List.of(
-                    new GeneratedPlayerEntry(
-                            "KillDeathRatio",
-                            game,
-                            board,
-                            (double) killEntry.getScore() / deathsEntry.getScore()
-                    )
-            );
-        }
-        return Collections.emptyList();
+        return this.getKills(game, playerEntries).map(kills ->
+                List.of(
+                        new GeneratedPlayerEntry(
+                                "KillDeathRatio",
+                                game,
+                                board,
+                                (double) kills / deathsEntry.getScore()
+                        )
+                )
+        ).orElseGet(Collections::emptyList);
     }
 }

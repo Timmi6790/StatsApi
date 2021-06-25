@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-// TODO: Is not taking into account bh hider and hunter wins
 public class WinLoseRatioGenerator extends GameBoardStatGenerator {
     @Override
     protected Collection<GeneratedPlayerEntry> generateGameBoardStats(final StatGeneratorData generatorData,
@@ -24,17 +23,15 @@ public class WinLoseRatioGenerator extends GameBoardStatGenerator {
             return Collections.emptyList();
         }
 
-        final PlayerEntry winsEntry = playerEntries.get(WINS_WEBSITE_STAT_NAME);
-        if (this.isPresent(winsEntry)) {
-            return List.of(
-                    new GeneratedPlayerEntry(
-                            "WinLoseRatio",
-                            game,
-                            board,
-                            (double) winsEntry.getScore() / lossesEntry.getScore()
-                    )
-            );
-        }
-        return Collections.emptyList();
+        return this.getWins(game, playerEntries).map(wins ->
+                List.of(
+                        new GeneratedPlayerEntry(
+                                "WinLoseRatio",
+                                game,
+                                board,
+                                (double) wins / lossesEntry.getScore()
+                        )
+                )
+        ).orElseGet(Collections::emptyList);
     }
 }

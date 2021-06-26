@@ -28,8 +28,10 @@ public class GeneratedPlayerEntry {
         this.game = game;
         this.board = board;
 
-        // We should never return a nan value
-        if (this.isNan(score)) {
+        // We should only return a valid number
+        if (this.isValidNumber(score)) {
+            this.score = score;
+        } else {
             log.debug(
                     "Found nan value for {}-{}-{}",
                     game.getGameName(),
@@ -37,18 +39,16 @@ public class GeneratedPlayerEntry {
                     board.getBoardName()
             );
             this.score = 0;
-        } else {
-            this.score = score;
         }
     }
 
-    private boolean isNan(final Number number) {
+    private boolean isValidNumber(final Number number) {
         if (number instanceof final Float floatNumber) {
-            return floatNumber.isNaN();
+            return Float.isFinite(floatNumber);
         } else if (number instanceof final Double doubleNumber) {
-            return doubleNumber.isNaN();
+            return Double.isFinite(doubleNumber);
         }
 
-        return false;
+        return true;
     }
 }

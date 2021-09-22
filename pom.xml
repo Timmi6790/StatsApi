@@ -30,7 +30,7 @@
         <testcontainers.version>1.15.3</testcontainers.version>
         <mockito.version>3.11.2</mockito.version>
         <okhttp3.version>4.9.1</okhttp3.version>
-        <sentry.version>5.0.1</sentry.version>
+        <sentry.version>5.2.0</sentry.version>
 
         <sonar.projectKey>MpStatsApi</sonar.projectKey>
         <sonar.host.url>https://sonarcube.timmi6790.de</sonar.host.url>

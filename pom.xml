@@ -130,7 +130,7 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>7.10.0</version>
+            <version>8.0.2</version>
         </dependency>
 
         <!-- Cache -->

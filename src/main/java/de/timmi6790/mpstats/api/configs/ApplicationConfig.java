@@ -1,28 +1,28 @@
 package de.timmi6790.mpstats.api.configs;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.timmi6790.mpstats.api.Config;
-import de.timmi6790.mpstats.api.utilities.FileUtilities;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.io.File;
-import java.nio.file.Paths;
+import org.springframework.core.env.Environment;
 
 @Configuration
 public class ApplicationConfig {
+    @Autowired
+    private Environment env;
+
     @Bean
     @SneakyThrows
     public Config config() {
-        final File configFile = Paths.get("./configs/config.json").toFile();
-        final ObjectMapper objectMapper = new ObjectMapper();
-        if (configFile.exists()) {
-            return objectMapper.readValue(configFile, Config.class);
-        } else {
-            final Config config = new Config();
-            FileUtilities.saveToFile(objectMapper, configFile, config);
-            return config;
-        }
+        final Config.RepositoryConfig repositoryConfig = new Config.RepositoryConfig(
+                env.getProperty("REPOSITORY.URL"),
+                env.getProperty("REPOSITORY.NAME"),
+                env.getProperty("REPOSITORY.PASSWORD")
+        );
+
+        System.out.println("REPOSITORY " + repositoryConfig);
+
+        return new Config(repositoryConfig);
     }
 }

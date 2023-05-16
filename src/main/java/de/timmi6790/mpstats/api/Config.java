@@ -4,12 +4,12 @@ import lombok.Data;
 
 @Data
 public class Config {
-    private final RepositoryConfig repository = new RepositoryConfig();
+    private final RepositoryConfig repository;
 
     @Data
     public static class RepositoryConfig {
-        private String url = "";
-        private String name = "";
-        private String password = "";
+        private final String url;
+        private final String name;
+        private final String password;
     }
 }

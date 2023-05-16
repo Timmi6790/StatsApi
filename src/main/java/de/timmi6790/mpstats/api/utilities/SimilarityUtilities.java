@@ -18,23 +18,6 @@ public class SimilarityUtilities {
      * Returns values that are similar to the given source. The levenshtein distance strategy is used to compare all
      * values.
      *
-     * @param source      source to match against values
-     * @param values      values to check
-     * @param maxDistance max distance
-     * @param limit       limit of returned elements
-     * @return similar values
-     */
-    public List<String> getSimilarityList(@NonNull final String source,
-                                          @NonNull final Collection<String> values,
-                                          final double maxDistance,
-                                          final int limit) {
-        return getSimilarityList(source, values, String::toString, maxDistance, limit);
-    }
-
-    /**
-     * Returns values that are similar to the given source. The levenshtein distance strategy is used to compare all
-     * values.
-     *
      * @param <T>         type parameter
      * @param source      source to match against values
      * @param values      values to check

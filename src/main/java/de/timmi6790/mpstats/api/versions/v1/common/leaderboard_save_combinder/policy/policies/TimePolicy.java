@@ -60,27 +60,27 @@ public class TimePolicy<P extends Player> implements Policy<P> {
 
         // TODO: Find a better way for this. It feels wrong to do it based on those names
         switch (leaderboard.getBoard().getBoardName().toLowerCase()) {
-            case "weekly":
+            case "weekly" -> {
                 // Make one copy at the end of the week ~2 hours before the day ends.
                 final DayOfWeek currentDay = DayOfWeek.from(LocalDate.now());
                 if (currentDay == DayOfWeek.SUNDAY && currentTime.getHour() >= saveAfterHour) {
                     savePolicyEvent.setShouldSave(true);
                 }
-                break;
-            case "all":
-            case "daily":
+            }
+            case "all", "daily" -> {
                 // Make one copy per day ~2 hours before the day ends.
                 if (currentTime.getHour() >= saveAfterHour) {
                     savePolicyEvent.setShouldSave(true);
                 }
-                break;
-            default:
+            }
+            default -> {
                 // Lets make default one copy at the end of the month
                 final ValueRange range = currentTime.range(ChronoField.DAY_OF_MONTH);
                 final long lastDayOfMonth = range.getMaximum();
                 if (lastDayOfMonth == currentTime.getDayOfMonth() && currentTime.getHour() >= saveAfterHour) {
                     savePolicyEvent.setShouldSave(true);
                 }
+            }
         }
     }
 }

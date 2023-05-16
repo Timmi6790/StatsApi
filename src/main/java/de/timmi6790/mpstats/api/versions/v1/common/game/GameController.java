@@ -1,6 +1,5 @@
 package de.timmi6790.mpstats.api.versions.v1.common.game;
 
-import de.timmi6790.mpstats.api.security.annontations.RequireAdminPerms;
 import de.timmi6790.mpstats.api.versions.v1.common.game.exceptions.InvalidGameCategoryNameRestException;
 import de.timmi6790.mpstats.api.versions.v1.common.game.exceptions.InvalidGameNameRestException;
 import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.Game;
@@ -12,8 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -32,16 +29,6 @@ public abstract class GameController {
     @Operation(summary = "Find game by name")
     public Game getGame(@PathVariable final String gameName) throws InvalidGameNameRestException {
         return RestUtilities.getGameOrThrow(this.gameService, gameName);
-    }
-
-    @PutMapping("/{gameName}")
-    @Operation(summary = "Create a new game")
-    @RequireAdminPerms
-    public Game createGame(@PathVariable final String gameName,
-                           @RequestParam final String websiteName,
-                           @RequestParam final String cleanName,
-                           @RequestParam final String categoryName) {
-        return this.gameService.getOrCreateGame(websiteName, gameName, cleanName, categoryName);
     }
 
     @GetMapping("/category")

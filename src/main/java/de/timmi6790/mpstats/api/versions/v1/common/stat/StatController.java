@@ -1,6 +1,5 @@
 package de.timmi6790.mpstats.api.versions.v1.common.stat;
 
-import de.timmi6790.mpstats.api.security.annontations.RequireAdminPerms;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.exceptions.InvalidStatNameRestException;
 import de.timmi6790.mpstats.api.versions.v1.common.stat.repository.models.Stat;
 import de.timmi6790.mpstats.api.versions.v1.common.utilities.RestUtilities;
@@ -10,8 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -30,15 +27,5 @@ public abstract class StatController {
     @Operation(summary = "Find stat by name")
     public Stat getStat(@PathVariable final String statName) throws InvalidStatNameRestException {
         return RestUtilities.getStatOrThrow(this.statService, statName);
-    }
-
-    @PutMapping("/{statName}")
-    @Operation(summary = "Create a new stat")
-    @RequireAdminPerms
-    public Stat createStat(@PathVariable final String statName,
-                           @RequestParam final String websiteName,
-                           @RequestParam final String cleanName,
-                           @RequestParam final boolean isAchievement) {
-        return this.statService.getStatOrCreate(websiteName, statName, cleanName, isAchievement);
     }
 }

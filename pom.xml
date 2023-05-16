@@ -23,7 +23,7 @@
         <java.version>16</java.version>
 
         <spring.version>2.6.2</spring.version>
-        <springdoc.version>1.6.2</springdoc.version>
+        <springdoc.version>1.7.0</springdoc.version>
         <msgpack.version>0.9.0</msgpack.version>
         <rest-assured.version>4.4.0</rest-assured.version>
         <jupiter.version>5.8.2</jupiter.version>

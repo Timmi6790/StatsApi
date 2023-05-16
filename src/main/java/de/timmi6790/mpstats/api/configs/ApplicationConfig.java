@@ -21,8 +21,6 @@ public class ApplicationConfig {
                 env.getProperty("REPOSITORY.PASSWORD")
         );
 
-        System.out.println("REPOSITORY " + repositoryConfig);
-
         return new Config(repositoryConfig);
     }
 }

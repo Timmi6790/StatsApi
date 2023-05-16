@@ -1,7 +1,6 @@
 package de.timmi6790.mpstats.api.versions.v1.common.group;
 
 import com.google.common.collect.Lists;
-import de.timmi6790.mpstats.api.security.annontations.RequireAdminPerms;
 import de.timmi6790.mpstats.api.versions.v1.common.board.BoardService;
 import de.timmi6790.mpstats.api.versions.v1.common.board.exceptions.InvalidBoardNameRestException;
 import de.timmi6790.mpstats.api.versions.v1.common.board.repository.models.Board;
@@ -24,7 +23,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -41,22 +42,10 @@ public class GroupController<P extends Player, S extends PlayerService<P>> {
     private final BoardService boardService;
     private final LeaderboardService leaderboardService;
     private final PlayerStatsService<P, S> playerStatsService;
-
-    @PutMapping("/{groupName}")
-    @RequireAdminPerms
-    public Group createGroup(@PathVariable final String groupName, @RequestParam final String cleanName) {
-        throw new UnsupportedOperationException();
-    }
-
+    
     @GetMapping("/{groupName}")
     public Group getGroup(@PathVariable final String groupName) throws InvalidGroupNameRestException {
         return RestUtilities.getGroupOrThrow(this.groupService, groupName);
-    }
-
-    @DeleteMapping("/{groupName}")
-    @RequireAdminPerms
-    public void deleteGroup(@PathVariable final String groupName) {
-        throw new UnsupportedOperationException();
     }
 
     @GetMapping

@@ -16,9 +16,7 @@ public class CustomErrorAttributes extends DefaultErrorAttributes {
 
         final Throwable exception = this.getError(webRequest);
         if (exception instanceof final RestException restException) {
-            for (final Map.Entry<String, Object> entry : restException.getErrorAttributes().entrySet()) {
-                errorAttributes.put(entry.getKey(), entry.getValue());
-            }
+            errorAttributes.putAll(restException.getErrorAttributes());
         }
 
         return errorAttributes;

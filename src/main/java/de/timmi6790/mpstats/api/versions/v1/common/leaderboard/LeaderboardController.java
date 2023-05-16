@@ -1,9 +1,7 @@
 package de.timmi6790.mpstats.api.versions.v1.common.leaderboard;
 
-import de.timmi6790.mpstats.api.security.annontations.RequireAdminPerms;
 import de.timmi6790.mpstats.api.versions.v1.common.board.BoardService;
 import de.timmi6790.mpstats.api.versions.v1.common.board.exceptions.InvalidBoardNameRestException;
-import de.timmi6790.mpstats.api.versions.v1.common.board.repository.models.Board;
 import de.timmi6790.mpstats.api.versions.v1.common.game.GameService;
 import de.timmi6790.mpstats.api.versions.v1.common.game.exceptions.InvalidGameNameRestException;
 import de.timmi6790.mpstats.api.versions.v1.common.game.repository.models.Game;
@@ -19,8 +17,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -67,25 +63,6 @@ public abstract class LeaderboardController {
                 this.boardService,
                 boardName,
                 this.leaderboardService
-        );
-    }
-
-    @PutMapping("/{gameName}/{statName}/{boardName}")
-    @Operation(summary = "Create a new leaderboard")
-    @RequireAdminPerms
-    public Leaderboard createdLeaderboard(@PathVariable final String gameName,
-                                          @PathVariable final String statName,
-                                          @PathVariable final String boardName,
-                                          @RequestParam final boolean deprecated) throws InvalidGameNameRestException, InvalidStatNameRestException, InvalidBoardNameRestException {
-        final Game game = RestUtilities.getGameOrThrow(this.gameService, gameName);
-        final Stat stat = RestUtilities.getStatOrThrow(this.statService, statName);
-        final Board board = RestUtilities.getBoardOrThrow(this.boardService, boardName);
-
-        return this.leaderboardService.getLeaderboardOrCreate(
-                game,
-                stat,
-                board,
-                deprecated
         );
     }
 }

@@ -3,8 +3,6 @@ package de.timmi6790.mpstats.api.ratelimit;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import de.timmi6790.mpstats.api.apikey.ApiKeyService;
-import de.timmi6790.mpstats.api.apikey.models.ApiKey;
-import de.timmi6790.mpstats.api.apikey.models.RateLimit;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
@@ -14,7 +12,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -37,10 +34,6 @@ public class RateLimitService {
         return this.createBucket(30, 1_000);
     }
 
-    private Optional<ApiKey> getApiKey(@Nullable final String apiKey) {
-        return this.apiKeyService.getApiKey(apiKey);
-    }
-
     public void invalidateCache() {
         this.cache.invalidateAll();
     }
@@ -54,12 +47,16 @@ public class RateLimitService {
      * @return the bucket
      */
     public Bucket resolveBucket(final @Nullable String apiKey, final String ipAddress) {
-        return this.getApiKey(apiKey).map(key -> {
-            final RateLimit rateLimit = key.getKeyInformation().getRateLimit();
+        if (apiKey != null && apiKeyService.isValidApiKey(apiKey)) {
             return this.cache.get(
-                    key.getPublicPart(),
-                    k -> this.createBucket(rateLimit.getMinute(), rateLimit.getDaily())
+                    apiKey,
+                    key -> this.createBucket(1_000, 1_000)
             );
-        }).orElseGet(() -> this.cache.get(ipAddress, key -> this.newDefaultBucket()));
+        } else {
+            return this.cache.get(
+                    ipAddress,
+                    key -> this.newDefaultBucket()
+            );
+        }
     }
 }

@@ -5,10 +5,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.filter.FilterService;
 import de.timmi6790.mpstats.api.versions.v1.common.filter.models.Reason;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.LeaderboardService;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard.repository.models.Leaderboard;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_cache.LeaderboardCacheService;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_request.LeaderboardRequestService;
 import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save.LeaderboardSaveService;
-import de.timmi6790.mpstats.api.versions.v1.common.leaderboard_save_combinder.tasks.LeaderboardUpdateTask;
 import de.timmi6790.mpstats.api.versions.v1.common.models.*;
 import de.timmi6790.mpstats.api.versions.v1.common.player.PlayerService;
 import de.timmi6790.mpstats.api.versions.v1.common.player.models.Player;
@@ -16,9 +13,7 @@ import de.timmi6790.mpstats.api.versions.v1.common.utilities.LeaderboardConverte
 import de.timmi6790.mpstats.api.versions.v1.common.utilities.PositionCalculation;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.scheduling.annotation.Scheduled;
 
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -28,75 +23,31 @@ import java.util.concurrent.TimeoutException;
 
 @Log4j2
 public class LeaderboardSaveCombinerService<P extends Player, S extends PlayerService<P>> {
-    private final LeaderboardCacheService<P> leaderboardCacheService;
     private final LeaderboardSaveService<P> leaderboardSaveService;
     private final FilterService<P, S> filterService;
 
-    private final LeaderboardUpdateTask<P> updateTask;
-
     public LeaderboardSaveCombinerService(final LeaderboardService leaderboardService,
-                                          final LeaderboardRequestService<P> leaderboardRequestService,
-                                          final LeaderboardCacheService<P> leaderboardCacheService,
                                           final LeaderboardSaveService<P> leaderboardSaveService,
                                           final FilterService<P, S> filterService) {
-        this.leaderboardCacheService = leaderboardCacheService;
         this.leaderboardSaveService = leaderboardSaveService;
         this.filterService = filterService;
-
-        this.updateTask = new LeaderboardUpdateTask<>(
-                leaderboardService,
-                leaderboardRequestService,
-                leaderboardCacheService,
-                leaderboardSaveService
-        );
-    }
-
-    @Scheduled(fixedDelay = 60_000)
-    private void updateTask() {
-        this.updateTask.updateLeaderboards();
-    }
-
-    protected boolean isSavedInCache(final Leaderboard leaderboard, final ZonedDateTime saveTime) {
-        // Always run it against the save service if it is deprecated or the requested time is not from today
-        return !leaderboard.isDeprecated() && saveTime.toLocalDate().isEqual(LocalDate.now());
     }
 
     protected Optional<LeaderboardSave<P>> getLeaderboardEntries(final Leaderboard leaderboard,
                                                                  final ZonedDateTime saveTime) {
-        // We also fall back to it if nothing is found in the cache
-        if (this.isSavedInCache(leaderboard, saveTime)) {
-            final Optional<LeaderboardSave<P>> cacheOpt = this.leaderboardCacheService.retrieveLeaderboardSave(leaderboard);
-            if (cacheOpt.isPresent()) {
-                return cacheOpt;
-            }
-        }
         return this.leaderboardSaveService.retrieveLeaderboardSave(leaderboard, saveTime);
     }
 
     @SneakyThrows
     protected Map<Leaderboard, LeaderboardSave<P>> getLeaderboardEntries(final Collection<Leaderboard> leaderboards,
                                                                          final ZonedDateTime saveTime) {
-        // TODO: Implement fallback to repository if cache can't find anything
-        final List<Leaderboard> repositoryEntries = new ArrayList<>();
-        final List<Leaderboard> cacheEntries = new ArrayList<>();
-
-        // Map everything to the appropriate methods
-        for (final Leaderboard leaderboard : leaderboards) {
-            if (this.isSavedInCache(leaderboard, saveTime)) {
-                cacheEntries.add(leaderboard);
-            } else {
-                repositoryEntries.add(leaderboard);
-            }
-        }
+        final List<Leaderboard> repositoryEntries = new ArrayList<>(leaderboards);
 
         // Get resources from both ways
         final CompletableFuture<Map<Leaderboard, LeaderboardSave<P>>> repositoryFuture = CompletableFuture.supplyAsync(
                 () -> this.leaderboardSaveService.retrieveLeaderboardSaves(repositoryEntries, saveTime)
         );
-        final CompletableFuture<Map<Leaderboard, LeaderboardSave<P>>> cacheFuture = CompletableFuture.supplyAsync(
-                () -> this.leaderboardCacheService.retrieveLeaderboardSaves(cacheEntries)
-        );
-        final CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(repositoryFuture, cacheFuture);
+        final CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(repositoryFuture);
 
         try {
             combinedFuture.get(40, TimeUnit.SECONDS);
@@ -106,10 +57,7 @@ public class LeaderboardSaveCombinerService<P extends Player, S extends PlayerSe
         }
 
         // Combine values
-        final Map<Leaderboard, LeaderboardSave<P>> requestedValues = new HashMap<>(repositoryFuture.get());
-        requestedValues.putAll(cacheFuture.get());
-
-        return requestedValues;
+        return new HashMap<>(repositoryFuture.get());
     }
 
     protected Optional<LeaderboardPlayerPositionSave<P>> getPlayerPositionSave(final LeaderboardSave<P> save,
